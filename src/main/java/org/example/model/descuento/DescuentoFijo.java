@@ -21,6 +21,15 @@ public class DescuentoFijo implements Descuento {
 
     @Override
     public double calcularMontoDecuento(Producto producto) {
+        double precio = producto.getPrecioInicial();
 
+        // No puede superar el 80% del precio inicial
+        if (descuentoFijo > precio * 0.8) {
+            throw new IllegalArgumentException(
+                    "El descuento fijo no puede superar el 80% del precio del producto."
+            );
+        }
+        //
+        return descuentoFijo;
     }
 }
