@@ -1,8 +1,12 @@
 package org.example.model.pedido;
 
+import org.example.model.producto.Producto;
+
 public class LineaPedido {
     private long id;
     private int cantidad;
+    //una linea de producto puede tener solo un pedido
+    private Producto producto;
 
     //constructor
     public LineaPedido(long id, int cantidad) {
@@ -28,7 +32,7 @@ public class LineaPedido {
         this.cantidad = cantidad;
     }
 
-    public double getPrecioSubTotal () {
+    public double getPrecioSubTotal() {
 
     }
 }
