@@ -24,21 +24,25 @@ public abstract class Producto {
     private Etiqueta etiqueta;
     //un set porque no hay usuarios repetidos, reperesenta los usuarios que han puesto el producto en favoritos (que pueden ser muchos)
     private Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
-    //un producto puede tener una linea de pedido (la linea tiene id por lo que no se refiere en general, si no que a esa especifica)
+    //un producto puede tener una línea de pedido (la línea tiene id por lo que no se refiere en general, si no que a esa especifica)
     private LineaPedido lineaPedido;
     //un producto puede tener 0 o 1 descuentos
     private Descuento descuento;
 
-    public Producto(long id, String nombre, String marca, double
-            precioInicial, Talla talla, Color color, Etiqueta etiqueta) {
+    //constructor
+    public Producto(long id, String nombre, String marca, double precioInicial, Talla talla, Color color,
+                    Etiqueta etiqueta, Set<Usuario> usuariosProductosFavoritos, LineaPedido lineaPedido) {
         this.id = id;
         this.nombre = nombre;
         this.marca = marca;
         this.precioInicial = precioInicial;
         this.talla = talla;
         this.color = color;
-        //le pasamos una Etiqueta por parametro
         this.etiqueta = etiqueta;
+        this.usuariosProductosFavoritos = usuariosProductosFavoritos;
+        this.lineaPedido = lineaPedido;
+        //no ponemos descuento para empezar, después si queremos usamos el setter del descuento
+        this.descuento = null;
     }
 
     //getters y setters
@@ -90,7 +94,39 @@ public abstract class Producto {
         this.color = color;
     }
 
-    //método para obtener el precio final del producto, con descuento aplicado
+    public Etiqueta getEtiqueta() {
+        return etiqueta;
+    }
+
+    public void setEtiqueta(Etiqueta etiqueta) {
+        this.etiqueta = etiqueta;
+    }
+
+    public Set<Usuario> getUsuariosProductosFavoritos() {
+        return usuariosProductosFavoritos;
+    }
+
+    public void setUsuariosProductosFavoritos(Set<Usuario> usuariosProductosFavoritos) {
+        this.usuariosProductosFavoritos = usuariosProductosFavoritos;
+    }
+
+    public LineaPedido getLineaPedido() {
+        return lineaPedido;
+    }
+
+    public void setLineaPedido(LineaPedido lineaPedido) {
+        this.lineaPedido = lineaPedido;
+    }
+
+    public Descuento getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(Descuento descuento) {
+        this.descuento = descuento;
+    }
+
+    //método para obtener el precio final del producto, con descuento aplicado (restar el dinero que me da el método del descuento al del precioInicial
     public double getPrecioFinal() {
 
     }

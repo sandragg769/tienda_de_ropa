@@ -3,25 +3,29 @@ package org.example.model.descuento;
 import org.example.model.producto.Producto;
 
 public class DescuentoPorcentaje implements Descuento {
-    private float descuetnoporcentaje;
+    private float descuentoPorcentaje;
 
-    //constructor
-    public DescuentoPorcentaje(float descuetnoporcentaje) {
-        this.descuetnoporcentaje = descuetnoporcentaje;
+    //constructor (comprobar que no sea descuento negativo, si lo es lo iguala a 0)
+    public DescuentoPorcentaje(float porcentaje) {
+        if (porcentaje < 0) porcentaje = 0;
+        this.descuentoPorcentaje = porcentaje;
     }
 
     //getters y setters
-    public float getDescuetnoporcentaje() {
-        return descuetnoporcentaje;
+    public float getDescuentoPorcentaje() {
+        return descuentoPorcentaje;
     }
 
-    public void setDescuetnoporcentaje(float descuetnoporcentaje) {
-        this.descuetnoporcentaje = descuetnoporcentaje;
+    public void setDescuentoPorcentaje(float descuentoPorcentaje) {
+        this.descuentoPorcentaje = descuetnoporcentaje;
     }
 
     //método implementado
     @Override
     public double calcularMontoDecuento(Producto producto) {
-
+        //si no paso producto que no quite nada
+        if (producto == null) return 0;
+        //devuelve el dinero que después tengo que descontar al precio
+        return producto.getPrecioInicial() * descuentoPorcentaje;
     }
 }
