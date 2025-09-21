@@ -12,11 +12,44 @@ public class Etiqueta {
     private Set<Producto> productos = new HashSet<>();
 
     //constructor
-    public Etiqueta(long id, String nombre, LocalDate fechaCreacion) {
+    //no poner productos ya que solo estamos creando la etiqueta, no asignando productos a etiquetas
+    public Etiqueta(long id, String nombre) {
         this.id = id;
         this.nombre = nombre;
+        //fecha del día en que se crea
+        this.fechaCreacion = LocalDate.now();
+    }
+
+    //getters y setters
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 
+    public Set<Producto> getProductos() {
+        return productos;
+    }
 
+    public void setProductos(Set<Producto> productos) {
+        this.productos = productos;
+    }
 }

@@ -17,10 +17,11 @@ public class DescuentoPorcentaje implements Descuento {
     }
 
     public void setDescuentoPorcentaje(float descuentoPorcentaje) {
-        this.descuentoPorcentaje = descuetnoporcentaje;
+        this.descuentoPorcentaje = descuentoPorcentaje;
     }
 
-    //método implementado
+    //metodo implementado
+    //si no hay producto devuelve 0, si hay, calcula el dinero a restar para que se aplique el descuento
     @Override
     public double calcularMontoDecuento(Producto producto) {
         //si no paso producto que no quite nada

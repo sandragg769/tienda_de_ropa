@@ -1,16 +1,17 @@
-package org.example.model.producto.tipoDeProdcutos;
+package org.example.model.producto.tipoDeProductos;
 
+import org.example.model.producto.Etiqueta;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Talla;
 
-public class Pantalon extends Producto {
+public class Camisa extends Producto {
     private int botones;
 
     //constructor
-    public Pantalon(long id, String nombre, String marca, double precioInicial,
-                    Talla talla, Color color, int botones) {
-        super(id, nombre, marca, precioInicial, talla, color);
+    public Camisa(long id, String nombre, String marca, double precioInicial, Talla talla,
+                  Color color, Etiqueta etiqueta, int botones) {
+        super(id, nombre, marca, precioInicial, talla, color, etiqueta);
         this.botones = botones;
     }
 

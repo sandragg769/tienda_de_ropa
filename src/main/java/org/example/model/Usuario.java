@@ -31,63 +31,79 @@ public class Usuario {
         this.telefono = telefono;
         this.email = email;
         this.passsword = passsword;
+        //no poner nada en favoritos para empezar y tampoco tiene pedidos
     }
 
-    //getters
+    //getters y setters
     public long getId() {
         return id;
     }
 
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public String getPasssword() {
-        return passsword;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getDni() {
         return dni;
     }
 
-    //setters
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public void setDni(String dni) {
         this.dni = dni;
+    }
+
+    public String getDireccion() {
+        return direccion;
     }
 
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
 
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
     public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getTelefono() {
+        return telefono;
     }
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getPasssword() {
+        return passsword;
+    }
+
     public void setPasssword(String passsword) {
         this.passsword = passsword;
+    }
+
+    public Set<Producto> getFavoritos() {
+        return favoritos;
+    }
+
+    public void setFavoritos(Set<Producto> favoritos) {
+        this.favoritos = favoritos;
+    }
+
+    public Set<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(Set<Pedido> pedidos) {
+        this.pedidos = pedidos;
     }
 }

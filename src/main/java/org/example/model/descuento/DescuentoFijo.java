@@ -21,6 +21,7 @@ public class DescuentoFijo implements Descuento {
         this.descuentoFijo = descuentoFijo;
     }
 
+    //metodo implementado
     @Override
     public double calcularMontoDecuento(Producto producto) {
         //si no hay producto que devuelva 0 (para que no quite nada)
