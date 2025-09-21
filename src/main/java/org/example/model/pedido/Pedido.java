@@ -5,6 +5,7 @@ import org.example.model.Usuario;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Pedido {
     private long id;
@@ -16,8 +17,6 @@ public class Pedido {
     private List<LineaPedido> lineasPedido = new ArrayList<>();
 
     //constructor
-
-
     public Pedido(long id, Usuario usuario) {
         this.id = id;
         this.usuario = usuario;
@@ -76,5 +75,18 @@ public class Pedido {
                 .mapToDouble(LineaPedido::getPrecioSubTotal)
                 //sumar
                 .sum();
+    }
+
+    //poner hascode y equals porque en otras clases tengo Set de pedido
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Pedido pedido = (Pedido) o;
+        return id == pedido.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -2,6 +2,7 @@ package org.example.model.producto;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Etiqueta {
@@ -51,5 +52,18 @@ public class Etiqueta {
 
     public void setProductos(Set<Producto> productos) {
         this.productos = productos;
+    }
+
+    //hascode y equasls por el Set
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Etiqueta etiqueta = (Etiqueta) o;
+        return id == etiqueta.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

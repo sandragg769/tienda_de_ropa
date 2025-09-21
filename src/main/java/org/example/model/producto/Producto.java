@@ -7,6 +7,7 @@ import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 //clase que usaremos de plantilla para los diferentes productos
@@ -137,4 +138,16 @@ public abstract class Producto {
         }
     }
 
+    //hascode y equals ya que tenemos Set, si tienen el mismo id son iguales
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Producto producto = (Producto) o;
+        return id == producto.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }
