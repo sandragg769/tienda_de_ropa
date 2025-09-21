@@ -2,14 +2,11 @@ package org.example.model.producto;
 
 import org.example.model.Usuario;
 import org.example.model.descuento.Descuento;
-import org.example.model.descuento.DescuentoPorcentaje;
 import org.example.model.pedido.LineaPedido;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 //clase que usaremos de plantilla para los diferentes productos
