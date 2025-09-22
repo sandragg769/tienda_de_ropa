@@ -1,18 +1,18 @@
 package org.example.controller;
 
-import com.sun.security.auth.UnixNumericUserPrincipal;
 import org.example.model.Usuario;
 import org.example.model.producto.Producto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ControladorUsuario {
     private List<Usuario> listaUsuariosRegistrados = new ArrayList<>();
     //para asignar id a usuarios al registrar
     private long contadorUsuarios = 0;
     //usuario logueado para metodos de favoritos
-    private Usuario usuarioRegistrado;
+    private Optional<Usuario> usuarioOptinal;
 
     //registrar un usuario en la lista de usuarios registrados (y poner id)
     public Usuario registrarUsuario(Usuario usuario) {
@@ -48,11 +48,12 @@ public class ControladorUsuario {
         return listaUsuariosRegistrados;
     }
 
-    public Usuario leerUsuarioPorId(long id) {
+    public Optional<Usuario> leerUsuarioPorId(long id) {
         for (Usuario usu : listaUsuariosRegistrados) {
             //busca en la lista de registrados un email y password igual a los pasados por parámetro, si lo encuentra lo devuelve
             if (usu.getId() == id) {
-                return usu;
+                //envuelve el usuario en un Optional
+                return Optional.of(usu);
             }
         }
         //si no devuelve el usu antes lanza exception
@@ -90,10 +91,13 @@ public class ControladorUsuario {
     //metodo para añadir un producto a la lista de favoritos, en el controladorUsuario ya que es el que tiene la lista de favoritos
     public void añadirProductoFavorito(Producto producto, Usuario usuario) {
         //guardar el usuario en el usuarioRegistrado, para verificar que está registrado
-        usuarioRegistrado = leerUsuarioPorId(usuario.getId());
-        //controlar que existe el producto
-        //localizar lista de favoritos de nuestro usuario y eliminar el producto
-        usuario.getFavoritos().remove(producto);
+        usuarioOptinal = leerUsuarioPorId(usuario.getId());
+
+        //localizar lista de favoritos de nuestro usuario y ver que no tiene ya el producto en favoritos
+        if (!usuario.getFavoritos().contains(producto)) {
+            usuario.getFavoritos().add(producto);
+        }
+        //no lanzar exception si ya está el producto dentro, simplemente no se añade y ya
     }
 
     //metodo para eliminar un producto de favoritos
