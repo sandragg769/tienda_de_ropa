@@ -35,6 +35,7 @@ public class Usuario {
         //no poner nada en favoritos para empezar y tampoco tiene pedidos
     }
 
+
     //getters y setters
     public long getId() {
         return id;
