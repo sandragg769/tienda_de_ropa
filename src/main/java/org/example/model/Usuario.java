@@ -23,9 +23,9 @@ public class Usuario {
     private Set<Pedido> pedidos = new LinkedHashSet<>();
 
     //constructor
-    public Usuario(long id, String dni, String direccion, LocalDate fechaNacimiento,
+    //no id
+    public Usuario(String dni, String direccion, LocalDate fechaNacimiento,
                    String telefono, String email, String passsword) {
-        this.id = id;
         this.dni = dni;
         this.direccion = direccion;
         this.fechaNacimiento = fechaNacimiento;

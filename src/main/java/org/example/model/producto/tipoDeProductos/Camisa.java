@@ -9,9 +9,9 @@ public class Camisa extends Producto {
     private int botones;
 
     //constructor
-    public Camisa(long id, String nombre, String marca, double precioInicial, Talla talla,
+    public Camisa(String nombre, String marca, double precioInicial, Talla talla,
                   Color color, Etiqueta etiqueta, int botones) {
-        super(id, nombre, marca, precioInicial, talla, color, etiqueta);
+        super(nombre, marca, precioInicial, talla, color, etiqueta);
         this.botones = botones;
     }
 

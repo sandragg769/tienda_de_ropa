@@ -10,8 +10,7 @@ public class LineaPedido {
 
     //constructor
     //aquí sí hay que poner un Producto obligatoriamente
-    public LineaPedido(long id, int cantidad, Producto producto) {
-        this.id = id;
+    public LineaPedido(int cantidad, Producto producto) {
         this.cantidad = cantidad;
         this.producto = producto;
     }

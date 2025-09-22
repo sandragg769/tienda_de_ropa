@@ -13,9 +13,9 @@ public class Etiqueta {
     private Set<Producto> productos = new HashSet<>();
 
     //constructor
+    //no id
     //no poner productos ya que solo estamos creando la etiqueta, no asignando productos a etiquetas
-    public Etiqueta(long id, String nombre) {
-        this.id = id;
+    public Etiqueta(String nombre) {
         this.nombre = nombre;
         //fecha del día en que se crea
         this.fechaCreacion = LocalDate.now();

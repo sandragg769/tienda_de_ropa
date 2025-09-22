@@ -28,9 +28,9 @@ public abstract class Producto {
     private Descuento descuento;
 
     //constructor
-    protected Producto(long id, String nombre, String marca, double precioInicial, Talla talla, Color color,
+    //no id
+    protected Producto(String nombre, String marca, double precioInicial, Talla talla, Color color,
                     Etiqueta etiqueta) {
-        this.id = id;
         this.nombre = nombre;
         this.marca = marca;
         this.precioInicial = precioInicial;

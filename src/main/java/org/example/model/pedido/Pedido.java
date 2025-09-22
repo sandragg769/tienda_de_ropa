@@ -2,10 +2,7 @@ package org.example.model.pedido;
 
 import org.example.model.Usuario;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Pedido {
     private long id;
@@ -14,11 +11,11 @@ public class Pedido {
     //creo un objeto y no una lista porque un pedido es tenido por un usuario solo
     private Usuario usuario;
     //uso una lista para poder tener muchas lineasPedido en un producto (pueden repetirse)
-    private List<LineaPedido> lineasPedido = new ArrayList<>();
+    private Set<LineaPedido> lineasPedido = new HashSet<>();
 
     //constructor
-    public Pedido(long id, Usuario usuario) {
-        this.id = id;
+    //no id
+    public Pedido(Usuario usuario) {
         this.usuario = usuario;
         //poner fecha del día que se hace el pedido, con el Date se guarda automáticamente
         this.fecha = new Date();
@@ -59,11 +56,11 @@ public class Pedido {
         this.usuario = usuario;
     }
 
-    public List<LineaPedido> getLineasPedido() {
+    public Set<LineaPedido> getLineasPedido() {
         return lineasPedido;
     }
 
-    public void setLineasPedido(List<LineaPedido> lineasPedido) {
+    public void setLineasPedido(Set<LineaPedido> lineasPedido) {
         this.lineasPedido = lineasPedido;
     }
 

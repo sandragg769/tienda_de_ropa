@@ -10,9 +10,9 @@ public class Chaqueta extends Producto {
     private int nivelAbrigo;
 
     //constructor
-    public Chaqueta(long id, String nombre, String marca, double precioInicial, Talla talla,
+    public Chaqueta(String nombre, String marca, double precioInicial, Talla talla,
                     Color color, Etiqueta etiqueta, boolean conCapucha, int nivelAbrigo) {
-        super(id, nombre, marca, precioInicial, talla, color, etiqueta);
+        super(nombre, marca, precioInicial, talla, color, etiqueta);
         this.conCapucha = conCapucha;
         this.nivelAbrigo = nivelAbrigo;
     }
