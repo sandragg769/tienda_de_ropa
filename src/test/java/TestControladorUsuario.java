@@ -99,7 +99,7 @@ public class TestControladorUsuario {
     @Test
     void eliminarUsuarioCorrecto() {
         //quitamos el unico usuario que hay
-        controladorUsuario.eliminarUsuario(usuario);
+        controladorUsuario.eliminarUsuario(usuario.getId());
         //comprobamos que hay 0 ahora
         assertEquals(0, controladorUsuario.leerUsuarios().size());
     }
@@ -111,7 +111,7 @@ public class TestControladorUsuario {
                 LocalDate.of(2005, 9, 12), "600123123", "sandra2@gmail.com", "1234");
         noEsta.setId(1234);
         assertThrows(IllegalArgumentException.class, () -> {
-            controladorUsuario.eliminarUsuario(noEsta);
+            controladorUsuario.eliminarUsuario(noEsta.getId());
         });
     }
 

@@ -10,9 +10,8 @@ public class ControladorUsuario {
     private List<Usuario> listaUsuariosRegistrados = new ArrayList<>();
     //para asignar id a usuarios al registrar
     private long contadorUsuarios = 0;
-    //usuario logueado para metodos de favoritos
-    private Usuario usuarioLogueado;
 
+    //METODOS CRUD USUARIO
     //registrar un usuario en la lista de usuarios registrados (y poner id)
     public Usuario registrarUsuario(Usuario usuario) {
         //miramos si existe ya un usuario con ese email
@@ -29,20 +28,6 @@ public class ControladorUsuario {
         //metemos el usuario a la lista
         listaUsuariosRegistrados.add(usuario);
         return usuario;
-    }
-
-    //metodo para loguear un usuario
-    public Usuario login(String email, String password) {
-        for (Usuario usu : listaUsuariosRegistrados) {
-            //busca en la lista de registrados un email y password igual a los pasados por parámetro, si lo encuentra lo devuelve
-            if (usu.getEmail().equalsIgnoreCase(email) && usu.getPasssword().equals(password)) {
-                //ponemos este usuario en usuarioLogueado (para hacer cosas en la cuenta hay que estar logueado por lo que será necesario este metodo
-                usuarioLogueado = usu;
-                return usu;
-            }
-        }
-        //si no devuelve el usu antes lanza exception
-        throw new IllegalArgumentException("No se encuentra email o password registrado.");
     }
 
     //metodo para leer usuarios
@@ -63,11 +48,11 @@ public class ControladorUsuario {
     }
 
     //metodo para eliminar usuarios de la lista de usuarios registrados
-    public void eliminarUsuario(Usuario usuario) {
+    public void eliminarUsuario(long id) {
         Usuario aEliminar;
         for (Usuario usu : listaUsuariosRegistrados) {
             //busca en la lista de registrados el id ya que al estar registrado tiene id y si lo encuentra lo elimina
-            if (usu.getId() == usuario.getId()) {
+            if (usu.getId() == id) {
                 listaUsuariosRegistrados.remove(usu);
                 //si esto pasa que se salga de la lista, si no se pone siempre da exception de abajo
                 return;
@@ -107,6 +92,7 @@ public class ControladorUsuario {
         throw new IllegalArgumentException("No se puede actualizar el usuario ya que no se encuentra ese Id.");
     }
 
+    //METODOS DE PRDUCTOS FAVORITOS
     //metodo para añadir un producto a la lista de favoritos, en el controladorUsuario ya que es el que tiene la lista de favoritos
     //se pasa directamente el Usuario asique no hay que leerUsuarioPorId
     public void añadirProductoFavorito(Producto producto, Usuario usuario) {
@@ -123,6 +109,22 @@ public class ControladorUsuario {
         //no lanzar exception si ya está el producto dentro, simplemente no se añade y ya
         //IMPORTANTE, quitar el usuario del Set usuariosProductosFavoritos del producto ya que es bidireccional y tienen q saber los dos que se ha quitado, ya que si no es producto no sabria de q usuario es favorito
         producto.getUsuariosProductosFavoritos().remove(usuario);
+    }
+
+    //LOGIN
+    //metodo para loguear un usuario
+    public Usuario login(String email, String password) {
+        Usuario usuarioLogueado;
+        for (Usuario usu : listaUsuariosRegistrados) {
+            //busca en la lista de registrados un email y password igual a los pasados por parámetro, si lo encuentra lo devuelve
+            if (usu.getEmail().equalsIgnoreCase(email) && usu.getPasssword().equals(password)) {
+                //ponemos este usuario en usuarioLogueado (para hacer cosas en la cuenta hay que estar logueado por lo que será necesario este metodo
+                usuarioLogueado = usu;
+                return usu;
+            }
+        }
+        //si no devuelve el usu antes lanza exception
+        throw new IllegalArgumentException("No se encuentra email o password registrado.");
     }
 
 }
