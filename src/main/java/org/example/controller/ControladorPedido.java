@@ -66,7 +66,7 @@ public class ControladorPedido {
 
     //metodo para actualizar datos del pedido (no el estado, eso lo hacen métodos especificos, le pasamos el pedido nuevo y que lo cambie con setters
     public Pedido actualizarDatosPedido(Pedido pedidoNuevo) {
-        //localizamos el pedidoDeactualizado buscandolo por id (pilla la del nuevo)
+        //localizamos el pedidoDesactualizado buscandolo por id (pilla la del nuevo)
         Pedido pedidoDesactualizado = leerPedidoPorId(pedidoNuevo.getId());
         //controlamos que no se cambie el id ni el estado
         //NO CAMBIAR ID
@@ -133,19 +133,25 @@ public class ControladorPedido {
     //
     public LineaPedido añadirLineaPedidoAPedido(Usuario usuario, Producto producto, int cantidad) {
         for (Pedido pedido : listaPedidos) {
-            //el usuario solo puede tener un pedido pendiente, ppr lo que al ver que es el usuario y con estado de pedido pendiente ya lo tenemos localizado
-            if (pedido.getUsuario().equals(usuario) && pedido.getEstado() != EstadoPedido.PENDIENTE) {
-                //si no tengo un pedido pendiente lo creo
-                crearPedido(usuario);
-                //añadir la lineaPedido al pedido nuevo
-                return crearYAñadirLineaPedido(pedido, producto, cantidad);
-            } else if (pedido.getUsuario().equals(usuario) && pedido.getEstado() == EstadoPedido.PENDIENTE) {
-                //añadir la lineaPedido al pedido nuevo
-                return crearYAñadirLineaPedido(pedido, producto, cantidad);
+            //el usuario solo puede tener un pedido pendiente, por lo que al ver que es el usuario y con estado de pedido pendiente ya lo tenemos localizado
+            if (pedido.getUsuario().equals(usuario) && pedido.getEstado() == EstadoPedido.PENDIENTE) {
+                //añadir la lineaPedido el pedido nuevo
+                LineaPedido lineaPedido = crearYAñadirLineaPedido(pedido, producto, cantidad);
+                //si no devuelve línea de pedido dar exception (en el caso de tener un pedido pendiente ya existente)
+                if (lineaPedido == null) {
+                    throw new IllegalArgumentException("No se pudo añadir la línea de pedido al pedido existente.");
+                }
+                return lineaPedido;
             }
         }
-        //si no encuentra ninguno da exception
-        throw new IllegalArgumentException("No se pudo añadir la línea de pedido.");
+        //si no encuentra ninguno crea un pedido nuevo y se añade la línea
+        Pedido nuevo = crearPedido(usuario);
+        LineaPedido lineaPedido = crearYAñadirLineaPedido(nuevo, producto, cantidad);
+        //si no devuelve linea de pedido dar exception (en el caso de haber creado ahora un nuevo pedido)
+        if (lineaPedido == null) {
+            throw new IllegalArgumentException("No se pudo crear la línea de pedido en el nuevo pedido.");
+        }
+        return lineaPedido;
     }
 
     //metodo para leer lineas de pedido de UN pedido concreto
