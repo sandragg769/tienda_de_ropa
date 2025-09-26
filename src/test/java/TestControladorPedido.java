@@ -152,6 +152,8 @@ public class TestControladorPedido {
         assertEquals(1, pedido.getLineasPedido().size());
     }
 
+    //me salta la excepcion de que no encuentra usuario con pedido pendiente en los dos primeros test
+
     //test para añadir línea de pedido ya existiendo un pedido pendiente
     @Test
     void añadirLineaPedidoSegundaVezCorrecto() {
@@ -205,7 +207,7 @@ public class TestControladorPedido {
         copia.setId(linea.getId());
 
         //pasamos la línea modificada al metodo de actualizar
-        Set<LineaPedido> actualizadas = controladorPedido.actualizarLineasPedidoDeDedidoConcreto(usuario, copia);
+        Set<LineaPedido> actualizadas = controladorPedido.actualizarLineasPedidoDePedidoConcreto(usuario, copia);
         //comprobamos que está la cantidad cambiada
         assertEquals(5, actualizadas.iterator().next().getCantidad());
     }
@@ -222,7 +224,7 @@ public class TestControladorPedido {
         //le ponemos el id del original
         copia.setId(linea.getId());
         //comprobamos que no se puede cambiar el producto
-        assertThrows(IllegalArgumentException.class, () -> controladorPedido.actualizarLineasPedidoDeDedidoConcreto(usuario, copia));
+        assertThrows(IllegalArgumentException.class, () -> controladorPedido.actualizarLineasPedidoDePedidoConcreto(usuario, copia));
     }
 
     //test eliminar una línea de pedido
