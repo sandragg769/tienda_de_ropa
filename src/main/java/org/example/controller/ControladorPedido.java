@@ -67,21 +67,27 @@ public class ControladorPedido {
     //metodo para actualizar datos del pedido (no el estado, eso lo hacen métodos especificos, le pasamos el pedido nuevo y que lo cambie con setters
     public Pedido actualizarDatosPedido(Pedido pedidoNuevo) {
         //localizamos el pedidoDesactualizado buscandolo por id (pilla la del nuevo)
-        Pedido pedidoDesactualizado = leerPedidoPorId(pedidoNuevo.getId());
+        Pedido pedidoViejo = leerPedidoPorId(pedidoNuevo.getId());
         //controlamos que no se cambie el id ni el estado
         //NO CAMBIAR ID
-        if (pedidoNuevo.getId() != pedidoDesactualizado.getId()) {
+        if (pedidoNuevo.getId() != pedidoViejo.getId()) {
             throw new IllegalArgumentException("No se puede cambiar el ID de un pedido.");
         }
         //NO CAMBIAR ESTADO
-        if (pedidoNuevo.getEstado() != pedidoDesactualizado.getEstado()) {
+        if (pedidoNuevo.getEstado() != pedidoViejo.getEstado()) {
             throw new IllegalArgumentException("No se puede cambiar el estado de un pedido.");
         }
         //a este pedido le cambiamos lo que se pueda cambiar con setters
-        pedidoDesactualizado.setFecha(pedidoNuevo.getFecha());
-        pedidoDesactualizado.setUsuario(pedidoNuevo.getUsuario());
-        //devolvemos el pedido viejo el cual ya está actualizado
-        return pedidoDesactualizado;
+        //NO CAMBIAR FECHA
+        if (pedidoNuevo.getFecha() != pedidoViejo.getFecha()) {
+            throw new IllegalArgumentException("No se puede cambiar la fecha de un pedido.");
+        }
+        //NO CAMBIAR USUARIO
+        if (pedidoNuevo.getUsuario() != pedidoViejo.getUsuario()) {
+            throw new IllegalArgumentException("No se puede cambiar el usuario de un pedido.");
+        }
+        //devolvemos el pedido
+        return pedidoViejo;
     }
 
     //METODOS QUE TIENEN QUE VER CON EL ESTADO DEL PEDIDO

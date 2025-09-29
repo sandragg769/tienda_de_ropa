@@ -69,7 +69,8 @@ class TestControladorPedido {
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.leerPedidoPorId(1000));
     }
 
-    //test para actualizar un pedido, actualizamos un dato que no se puede actualizar realmente por lo que dará exception)
+
+    //test para actualizar un pedido (realmente no se puede actualizar nada)
     @Test
     void actualizarPedidoCambiaIdIncorrecto() {
         Pedido pedido = controladorPedido.crearPedido(usuario);
@@ -80,7 +81,7 @@ class TestControladorPedido {
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.actualizarDatosPedido(pedidoActualizado));
     }
 
-    //test actualizar sin terminar
+
 
     //TEST DE CAMBIAR ESTADO
     //test para cer si podemos finalizar un pedido sin problema
