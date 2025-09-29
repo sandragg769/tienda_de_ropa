@@ -6,6 +6,7 @@ import org.example.model.pedido.LineaPedido;
 import org.example.model.pedido.Pedido;
 import org.example.model.producto.Producto;
 
+import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,15 +124,13 @@ public class ControladorPedido {
     //aquí no se puede usar el metodo auxiluiar pq si no tiene pedido pendiuente lanza exception y no deja que siga el metodo y se cree el pedido pendiente!!!
     public LineaPedido añadirLineaPedidoAPedido(Usuario usuario, Producto producto, int cantidad) {
         //buscamos el pedido pendiente del usuario sin dar exception
-        Optional<Pedido> pedidoOptional = listaPedidos.stream().filter(it -> it.getUsuario().equals(usuario) && it.getEstado() == EstadoPedido.PENDIENTE).findFirst();
+        Pedido pedido = encontrarPedidoPendienteDeUSuarioConcretoONull(usuario);
 
         //si no encuentra pedido lo crea
-        //con el orElseGet devuelve el pedido si está presente
-        Pedido pedido = pedidoOptional.orElseGet(() -> {
-            //se crea el pedido nuevo (lo guardamos para ponerlo
-            crearYAñadirLineaPedido(nuevoPedido,producto,cantidad);
-
-        });
+        if (pedido == null) {
+            //asignar el nuevo pedido a pedido para que no sea null
+            pedido = crearPedido(usuario);
+        }
 
 
         // Se haya creado ahora o ya existía el pedido pendiente, se crea y añade la línea de pedido
@@ -207,6 +206,18 @@ public class ControladorPedido {
         }
         //si no encuentra ninguno da exception
         throw new IllegalArgumentException("No se encuentra el pedido pendiente del usuario.");
+    }
+
+    //metodo para buscar el pedido pendiente de un usuario si no lo encuentra en vez de lanzar exception, devuelve null
+    //este se usa para el metodo añadirLineaPedido ya que necesito este mismo metodo pero que no lanzara exceptio, que devolviera null para un if que necesito después
+    public Pedido encontrarPedidoPendienteDeUSuarioConcretoONull(Usuario usuario) {
+        for (Pedido pedido : listaPedidos) {
+            if (pedido.getUsuario().equals(usuario) && pedido.getEstado() == EstadoPedido.PENDIENTE) {
+                return pedido;
+            }
+        }
+        //si no encuentra ninguno devuelve null
+        return null;
     }
 
 }
