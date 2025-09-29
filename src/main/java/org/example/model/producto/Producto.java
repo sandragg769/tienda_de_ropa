@@ -30,7 +30,7 @@ public abstract class Producto {
     //constructor
     //no id
     protected Producto(String nombre, String marca, double precioInicial, Talla talla, Color color,
-                    Etiqueta etiqueta) {
+                       Etiqueta etiqueta) {
         this.nombre = nombre;
         this.marca = marca;
         this.precioInicial = precioInicial;

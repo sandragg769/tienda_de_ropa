@@ -27,6 +27,6 @@ public class DescuentoPorcentaje implements Descuento {
         //si no paso producto que no quite nada
         if (producto == null) return 0;
         //devuelve el dinero que después tengo que descontar al precio
-        return producto.getPrecioInicial() * descuentoPorcentaje;
+        return producto.getPrecioInicial() * (descuentoPorcentaje / 100.0);
     }
 }
