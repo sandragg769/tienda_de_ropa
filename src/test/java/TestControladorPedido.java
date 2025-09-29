@@ -1,6 +1,8 @@
 
 import org.example.controller.ControladorPedido;
 import org.example.model.Usuario;
+import org.example.model.descuento.DescuentoFijo;
+import org.example.model.descuento.DescuentoPorcentaje;
 import org.example.model.pedido.EstadoPedido;
 import org.example.model.pedido.LineaPedido;
 import org.example.model.pedido.Pedido;
@@ -10,6 +12,7 @@ import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipoDeProductos.Camisa;
 import org.example.model.producto.tipoDeProductos.Chaqueta;
+import org.example.model.producto.tipoDeProductos.Pantalon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -82,14 +85,16 @@ class TestControladorPedido {
     }
 
 
-
     //TEST DE CAMBIAR ESTADO
     //test para cer si podemos finalizar un pedido sin problema
     @Test
     void finalizarPedidoCorrecto() {
         Pedido pedido = controladorPedido.crearPedido(usuario);
+        //finalizamos el pedido
         Pedido finalizado = controladorPedido.finalizarPedido(usuario);
+        //comprobamos que ha finalizado bien
         assertEquals(EstadoPedido.FINALIZADO, finalizado.getEstado());
+
     }
 
     //test para finalizar un pedido incorrecto ya que no hay ningún pedido pendiente creado (error)
@@ -240,6 +245,55 @@ class TestControladorPedido {
     void testEliminarLineaPedidoIncorrecto() {
         controladorPedido.crearPedido(usuario);
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.eliminarLineaPedidoDePedido(usuario, 999));
+    }
+
+
+    //TEST COMPROBAR PRECIOS
+    //test para probar metodo getPrecioSubtotal
+    @Test
+    void lineaPedidoSubtotalCorrecto() {
+        LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 4);
+        assertEquals(100.0, linea.getPrecioSubTotal());
+    }
+
+    //test para probar descuento porcentaje
+    @Test
+    void productoConDescuentoPorcentaje() {
+        Producto pantalon = new Pantalon("Pantalón Vaquero", "Levis", 100, Talla.M, Color.AZUL, etiqueta, 3);
+        //10% descuento
+        pantalon.setDescuento(new DescuentoPorcentaje(10));
+        //añadir la línea (con el descuento)
+        LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, pantalon, 1);
+
+        // 100 - 10% = 90
+        assertEquals(90.0, linea.getProducto().getPrecioFinal());
+        assertEquals(90.0, linea.getPrecioSubTotal());
+    }
+
+    //test para probar descuento porcentaje
+    @Test
+    void productoConDescuentoFijo() {
+        Producto chaqueta = new Chaqueta("Chaqueta Premium", "Gucci", 200, Talla.L, Color.NEGRO, etiqueta, true, 5);
+        //50 euros de descuento
+        chaqueta.setDescuento(new DescuentoFijo(50));
+        LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, chaqueta, 1);
+
+        // 200 - 50 = 150
+        assertEquals(150.0, linea.getProducto().getPrecioFinal());
+        assertEquals(150.0, linea.getPrecioSubTotal());
+    }
+
+    //test para comprobar el metodo getPrecioTotal
+    @Test
+    void testPedidoPrecioTotalConDescuentoFijo() {
+        Producto chaqueta = new Chaqueta("Chaqueta Premium", "Gucci", 200, Talla.L, Color.NEGRO, etiqueta, true, 5);
+        chaqueta.setDescuento(new DescuentoFijo(30)); // 200 - 30 = 170
+
+        controladorPedido.aniadirLineaPedidoAPedido(usuario, chaqueta, 1);
+
+        Pedido pedido = controladorPedido.encontrarPedidoPendienteDeUSuarioConcreto(usuario);
+
+        assertEquals(170.0, pedido.getPecioTotal());
     }
 
 
