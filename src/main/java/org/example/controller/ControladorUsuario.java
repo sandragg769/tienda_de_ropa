@@ -49,7 +49,6 @@ public class ControladorUsuario {
 
     //metodo para eliminar usuarios de la lista de usuarios registrados
     public void eliminarUsuario(long id) {
-        Usuario aEliminar;
         for (Usuario usu : listaUsuariosRegistrados) {
             //busca en la lista de registrados el id ya que al estar registrado tiene id y si lo encuentra lo elimina
             if (usu.getId() == id) {
@@ -95,7 +94,7 @@ public class ControladorUsuario {
     //METODOS DE PRDUCTOS FAVORITOS
     //metodo para añadir un producto a la lista de favoritos, en el controladorUsuario ya que es el que tiene la lista de favoritos
     //se pasa directamente el Usuario asique no hay que leerUsuarioPorId
-    public void añadirProductoFavorito(Producto producto, Usuario usuario) {
+    public void aniadirProductoFavorito(Producto producto, Usuario usuario) {
         //ya que es un Set favoritos simplemente añadimos el producto no hace falta ver si está o no
         usuario.getFavoritos().add(producto);
         //no lanzar exception si ya está el producto dentro, simplemente no se añade y ya
@@ -114,12 +113,10 @@ public class ControladorUsuario {
     //LOGIN
     //metodo para loguear un usuario
     public Usuario login(String email, String password) {
-        Usuario usuarioLogueado;
         for (Usuario usu : listaUsuariosRegistrados) {
             //busca en la lista de registrados un email y password igual a los pasados por parámetro, si lo encuentra lo devuelve
             if (usu.getEmail().equalsIgnoreCase(email) && usu.getPasssword().equals(password)) {
                 //ponemos este usuario en usuarioLogueado (para hacer cosas en la cuenta hay que estar logueado por lo que será necesario este metodo
-                usuarioLogueado = usu;
                 return usu;
             }
         }

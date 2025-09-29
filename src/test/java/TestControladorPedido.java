@@ -18,9 +18,8 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestControladorPedido {
+class TestControladorPedido {
     private ControladorPedido controladorPedido;
-    private LineaPedido lineaPedido;
     private Usuario usuario;
     private Producto producto;
     private Etiqueta etiqueta;
@@ -141,7 +140,7 @@ public class TestControladorPedido {
     @Test
     void añadirLineaPedidoPrimeraVezCrearPedidoCorrecto() {
         //creamos la línea
-        LineaPedido linea = controladorPedido.añadirLineaPedidoAPedido(usuario, producto, 5);
+        LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 5);
         //comprobamos que se ha creado bien
         assertEquals(5, linea.getCantidad());
         assertEquals(producto, linea.getProducto());
@@ -158,12 +157,12 @@ public class TestControladorPedido {
     @Test
     void añadirLineaPedidoSegundaVezCorrecto() {
         //añadimos una línea de pedido
-        controladorPedido.añadirLineaPedidoAPedido(usuario, producto, 1);
+        controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 1);
 
         //creamos otro producto
         Producto producto2 = new Chaqueta("Chaquetón", "Adidas", 45, Talla.L, Color.NEGRO, etiqueta, true, 3);
         //añadimos la línea al pedido
-        LineaPedido segundaLinea = controladorPedido.añadirLineaPedidoAPedido(usuario, producto2, 3);
+        LineaPedido segundaLinea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto2, 3);
 
         // debe seguir en el mismo pedido pendiente
         Pedido pedido = usuario.getPedidos().iterator().next();
@@ -172,18 +171,14 @@ public class TestControladorPedido {
         assertEquals(producto2, segundaLinea.getProducto());
     }
 
-    //test para añadir una línea de pedido incorrecto (error)
-    @Test
-    void añadirLineaPedidoSinPedidoIncorrecto() {
-        assertThrows(IllegalArgumentException.class, () -> controladorPedido.añadirLineaPedidoAPedido(usuario, producto, 1));
-    }
+    //test para añadir una línea de pedido incorrecto NO SE HACE, ya que nunca da exception
 
     //test leer líneas de pedido bien
     //guardar en un set las líneas y comprobar el size después
     @Test
     void leerLineasPedidoCorrecto() {
         controladorPedido.crearPedido(usuario);
-        controladorPedido.añadirLineaPedidoAPedido(usuario, producto, 2);
+        controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
         Set<LineaPedido> lineas = controladorPedido.leerLineasPedidoDeDedidoConcreto(usuario);
         assertEquals(1, lineas.size());
     }
@@ -199,7 +194,7 @@ public class TestControladorPedido {
     void actualizarLineaPedidoCorrecto() {
         //creamos el pedido y la línea
         controladorPedido.crearPedido(usuario);
-        LineaPedido linea = controladorPedido.añadirLineaPedidoAPedido(usuario, producto, 2);
+        LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
 
         //creamos una copia de este con diferente cantidad para actualizarla
         LineaPedido copia = new LineaPedido(5, producto);
@@ -216,7 +211,7 @@ public class TestControladorPedido {
     @Test
     void actualizarLineaPedidoCambiaProductoIncorrecto() {
         controladorPedido.crearPedido(usuario);
-        LineaPedido linea = controladorPedido.añadirLineaPedidoAPedido(usuario, producto, 2);
+        LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
         //creamos un producto distinto
         Producto otroProducto = new Chaqueta("Chaquetón", "Adidas", 45, Talla.L, Color.NEGRO, etiqueta, true, 3);
         //creamos una copia de la línea pero cambiando el producto
@@ -231,7 +226,7 @@ public class TestControladorPedido {
     @Test
     void testEliminarLineaPedidoCorrecto() {
         controladorPedido.crearPedido(usuario);
-        LineaPedido linea = controladorPedido.añadirLineaPedidoAPedido(usuario, producto, 2);
+        LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
         //eliminar la línea
         controladorPedido.eliminarLineaPedidoDePedido(usuario, linea.getId());
         //comprobamos que no hay líneas

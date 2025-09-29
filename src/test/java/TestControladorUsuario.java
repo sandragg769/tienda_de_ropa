@@ -13,13 +13,12 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestControladorUsuario {
+class TestControladorUsuario {
     private ControladorUsuario controladorUsuario;
     //este lo usaremos común para los distintos test, así se declara una vez solo
     private Usuario usuario;
     //para los test de favoritos necesitamos productos
     private Producto camisa;
-    private Producto pantalon;
     private Etiqueta etiqueta;
 
 
@@ -41,7 +40,7 @@ public class TestControladorUsuario {
         //creamos un usuario con todo correcto y lo registramos
         Usuario usuarioCorrecto = new Usuario("11111111B", "Alguna calle",
                 LocalDate.of(2005, 9, 12), "600123123", "sandra2@gmail.com", "1234");
-        controladorUsuario.registrarUsuario(usuario);
+        controladorUsuario.registrarUsuario(usuarioCorrecto);
 
         //nos tiene q salir con size 2 (lo que viene a ser lo mismo que la id) ya que el 1 lo metemos con el BerforeEach
         assertEquals(2, controladorUsuario.leerUsuarios().size());
@@ -170,7 +169,7 @@ public class TestControladorUsuario {
         etiqueta = new Etiqueta("Nuevo");
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
         //añadimos el producto a favorito
-        controladorUsuario.añadirProductoFavorito(camisa, usuario);
+        controladorUsuario.aniadirProductoFavorito(camisa, usuario);
         //miramos si el Set contiene el producto
         assertTrue(usuario.getFavoritos().contains(camisa));
     }
@@ -180,8 +179,8 @@ public class TestControladorUsuario {
         //creamos lo necesario
         etiqueta = new Etiqueta("Nuevo");
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
-        controladorUsuario.añadirProductoFavorito(camisa, usuario);
-        controladorUsuario.añadirProductoFavorito(camisa, usuario);
+        controladorUsuario.aniadirProductoFavorito(camisa, usuario);
+        controladorUsuario.aniadirProductoFavorito(camisa, usuario);
         //al ser Set no duplica
         assertEquals(1, usuario.getFavoritos().size());
     }
@@ -192,7 +191,7 @@ public class TestControladorUsuario {
         etiqueta = new Etiqueta("Nuevo");
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
         //lo añadimos y eliminamos
-        controladorUsuario.añadirProductoFavorito(camisa, usuario);
+        controladorUsuario.aniadirProductoFavorito(camisa, usuario);
         controladorUsuario.eliminarProductoFavorito(camisa, usuario);
         //comprobamos que no lo contiene
         assertFalse(usuario.getFavoritos().contains(camisa));

@@ -6,11 +6,8 @@ import org.example.model.pedido.LineaPedido;
 import org.example.model.pedido.Pedido;
 import org.example.model.producto.Producto;
 
-import javax.imageio.plugins.jpeg.JPEGImageReadParam;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 public class ControladorPedido {
@@ -122,7 +119,7 @@ public class ControladorPedido {
 
     //METODOS DE LINEAS DE PEDIDO
     //aquí no se puede usar el metodo auxiluiar pq si no tiene pedido pendiuente lanza exception y no deja que siga el metodo y se cree el pedido pendiente!!!
-    public LineaPedido añadirLineaPedidoAPedido(Usuario usuario, Producto producto, int cantidad) {
+    public LineaPedido aniadirLineaPedidoAPedido(Usuario usuario, Producto producto, int cantidad) {
         //buscamos el pedido pendiente del usuario sin dar exception
         Pedido pedido = encontrarPedidoPendienteDeUSuarioConcretoONull(usuario);
 
@@ -134,7 +131,7 @@ public class ControladorPedido {
 
 
         // Se haya creado ahora o ya existía el pedido pendiente, se crea y añade la línea de pedido
-        return crearYAñadirLineaPedido(pedido, producto, cantidad);
+        return crearYAniadirLineaPedido(pedido, producto, cantidad);
     }
 
     //metodo para leer lineas de pedido de UN pedido concreto
@@ -188,7 +185,7 @@ public class ControladorPedido {
 
     //METODO AUXILIAR
     //metodo para no repetir el crear y añadir una línea de pedido en el metodo de añadir línea pedido
-    public LineaPedido crearYAñadirLineaPedido(Pedido pedido, Producto producto, int cantidad) {
+    public LineaPedido crearYAniadirLineaPedido(Pedido pedido, Producto producto, int cantidad) {
         LineaPedido lineaPedido = new LineaPedido(cantidad, producto);
         lineaPedido.setId(contadorLineaPedido++);
         pedido.getLineasPedido().add(lineaPedido);
