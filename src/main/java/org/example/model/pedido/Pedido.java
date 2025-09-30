@@ -2,11 +2,12 @@ package org.example.model.pedido;
 
 import org.example.model.Usuario;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class Pedido {
     private long id;
-    private Date fecha;
+    private LocalDate fecha;
     private EstadoPedido estado;
     //creo un objeto y no una lista porque un pedido es tenido por un usuario solo
     private Usuario usuario;
@@ -18,7 +19,7 @@ public class Pedido {
     public Pedido(Usuario usuario) {
         this.usuario = usuario;
         //poner fecha del día que se hace el pedido, con el Date se guarda automáticamente
-        this.fecha = new Date();
+        this.fecha = LocalDate.now();
         //el pedido está pendiente ya que se ha creado
         this.estado = EstadoPedido.PENDIENTE;
     }
@@ -32,11 +33,11 @@ public class Pedido {
         this.id = id;
     }
 
-    public Date getFecha() {
+    public LocalDate getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
 

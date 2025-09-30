@@ -10,9 +10,9 @@ import org.example.model.producto.Etiqueta;
 import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
-import org.example.model.producto.tipoDeProductos.Camisa;
-import org.example.model.producto.tipoDeProductos.Chaqueta;
-import org.example.model.producto.tipoDeProductos.Pantalon;
+import org.example.model.producto.tipo_de_productos.Camisa;
+import org.example.model.producto.tipo_de_productos.Chaqueta;
+import org.example.model.producto.tipo_de_productos.Pantalon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +89,7 @@ class TestControladorPedido {
     //test para cer si podemos finalizar un pedido sin problema
     @Test
     void finalizarPedidoCorrecto() {
-        Pedido pedido = controladorPedido.crearPedido(usuario);
+        controladorPedido.crearPedido(usuario);
         //finalizamos el pedido
         Pedido finalizado = controladorPedido.finalizarPedido(usuario);
         //comprobamos que ha finalizado bien
@@ -106,7 +106,7 @@ class TestControladorPedido {
     //test para poder cancelar un pedido
     @Test
     void cancelarPedidoCorrecto() {
-        Pedido pedido = controladorPedido.crearPedido(usuario);
+        controladorPedido.crearPedido(usuario);
         Pedido pedidoCancelado = controladorPedido.cancelarPedido(usuario);
         assertEquals(EstadoPedido.CANCELADO, pedidoCancelado.getEstado());
     }
@@ -120,7 +120,7 @@ class TestControladorPedido {
     //test cancelar un pedido ya finalizado (error)
     @Test
     void cancelarPedidoFinalizadoIncorecto() {
-        Pedido pedido = controladorPedido.crearPedido(usuario);
+        controladorPedido.crearPedido(usuario);
         controladorPedido.finalizarPedido(usuario);
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.cancelarPedido(usuario));
     }

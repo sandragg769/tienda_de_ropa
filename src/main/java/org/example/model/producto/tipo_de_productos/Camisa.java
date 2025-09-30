@@ -1,4 +1,4 @@
-package org.example.model.producto.tipoDeProductos;
+package org.example.model.producto.tipo_de_productos;
 
 import org.example.model.producto.Etiqueta;
 import org.example.model.producto.enumeraciones.Color;
@@ -23,4 +23,6 @@ public class Camisa extends Producto {
     public void setBotones(int botones) {
         this.botones = botones;
     }
+
+
 }
