@@ -123,7 +123,7 @@ public abstract class Producto {
         this.descuento = descuento;
     }
 
-    //metodo para obtener el precio final del producto, con descuento aplicado (restar el dinero que me da el método del descuento al del precioInicial
+    //metodo para obtener el precio final del producto, con descuento aplicado (restar el dinero que me da el metodo del descuento al del precioInicial
     public double getPrecioFinal() {
         double descuentoAAplicar;
         if (descuento == null) {
@@ -132,13 +132,13 @@ public abstract class Producto {
         } else {
             //gracias al polimorfismo sabe cuál tiene y podemos ponerlo generalmente
             //se pone el this pq se refiere a el Producto (hay que pasarle un producto)
-            descuentoAAplicar = descuento.calcularMontoDecuento(this);
+            descuentoAAplicar = descuento.calcularMontoDescuento(this);
             //se calcula el precio con descuento
             return precioInicial - descuentoAAplicar;
         }
     }
 
-    //hascode y equals ya que tenemos Set, si tienen el mismo id son iguales
+    //hasCode y equals ya que tenemos Set, si tienen el mismo id son iguales
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

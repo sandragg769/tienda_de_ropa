@@ -8,6 +8,7 @@ import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -70,7 +71,7 @@ class TestControladorProducto {
         //comprobamos que se añadió a la lista
         assertEquals(1, controladorProducto.leerProductos().size());
         //borrar el producto
-        controladorProducto.eliminarUsuario(p.getId());
+        controladorProducto.eliminarProducto(p.getId());
 
         //comprobamos que la lista está vacía
         assertEquals(0, controladorProducto.leerProductos().size());
@@ -79,7 +80,7 @@ class TestControladorProducto {
     //test para borrar un producto incorrecto (error) (no encuentra la id)
     @Test
     void eliminarProductoIdInexistente() {
-        assertThrows(IllegalArgumentException.class, () -> controladorProducto.eliminarUsuario(999));
+        assertThrows(IllegalArgumentException.class, () -> controladorProducto.eliminarProducto(999));
     }
 
     //test actualizar un producto correcto (sin intentar cambiar nada que no se puede)
@@ -118,13 +119,15 @@ class TestControladorProducto {
     @Test
     void asignarYEliminarDescuentoCorrecto() {
         p = controladorProducto.crearCamisa("Camisa", "Nike", 25, Talla.M, Color.BLANCO, etiqueta, 3);
-        Producto d = new DescuentoPorcentaje(0.2f); // 20%
+        //creamos un descuento porcentaje de 20%
+        DescuentoPorcentaje d = new DescuentoPorcentaje(0.2f);
+        //le asignamos el descuento
         controladorProducto.asignarDescuento(p.getId(), d);
-
+        //comprobamos que lo tiene
         assertEquals(d, p.getDescuento());
-
+        //lo eliminamos
         controladorProducto.eliminarDescuento(p.getId());
+        //comprobamos que no lo tiene ahora
+        assertEquals(null, p.getDescuento());
     }
-
-
 }

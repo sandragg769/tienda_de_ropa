@@ -66,11 +66,12 @@ public class ControladorPedido {
         throw new IllegalArgumentException("No se encuentra el pedido con esa Id.");
     }
 
-    //metodo para actualizar datos del pedido (no el estado, eso lo hacen métodos especificos, le pasamos el pedido nuevo y que lo cambie con setters
+    //metodo para actualizar datos del pedido (no el estado, eso lo hacen métodos específicos, le pasamos el pedido nuevo y que lo cambie con setters
     public Pedido actualizarDatosPedido(Pedido pedidoNuevo) {
-        //localizamos el pedidoDesactualizado buscandolo por id (pilla la del nuevo)
+        //localizamos el pedidoDesactualizado buscándolo por id (pilla la del nuevo)
         Pedido pedidoViejo = leerPedidoPorId(pedidoNuevo.getId());
         //controlamos que no se cambie el id ni el estado
+
         //NO CAMBIAR ID
         if (pedidoNuevo.getId() != pedidoViejo.getId()) {
             throw new IllegalArgumentException("No se puede cambiar el ID de un pedido.");
@@ -79,7 +80,7 @@ public class ControladorPedido {
         if (pedidoNuevo.getEstado() != pedidoViejo.getEstado()) {
             throw new IllegalArgumentException("No se puede cambiar el estado de un pedido.");
         }
-        //a este pedido le cambiamos lo que se pueda cambiar con setters
+
         //NO CAMBIAR FECHA
         if (pedidoNuevo.getFecha() != pedidoViejo.getFecha()) {
             throw new IllegalArgumentException("No se puede cambiar la fecha de un pedido.");
@@ -88,15 +89,17 @@ public class ControladorPedido {
         if (pedidoNuevo.getUsuario() != pedidoViejo.getUsuario()) {
             throw new IllegalArgumentException("No se puede cambiar el usuario de un pedido.");
         }
+        //no se cambia nada del pedido
+
         //devolvemos el pedido
         return pedidoViejo;
     }
 
     //METODOS QUE TIENEN QUE VER CON EL ESTADO DEL PEDIDO
-    //se le pasa el Usuario ya que es el que actua sobre esto, por ejemplo entregar no, porque ahí el cliente ya no tiene nada que ver
+    //se le pasa el Usuario ya que es el que actúa sobre esto, por ejemplo entregar no, porque ahí el cliente ya no tiene nada que ver
     public Pedido finalizarPedido(Usuario usuario) {
         //finalizamos el pedido
-        Pedido pedido = encontrarPedidoPendienteDeUSuarioConcreto(usuario);
+        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
         pedido.setEstado(EstadoPedido.FINALIZADO);
         //devuelve el pedido
         return pedido;
@@ -105,7 +108,7 @@ public class ControladorPedido {
     //metodo para cancelar un pedido (antes de ser finalizado o entregado)
     public Pedido cancelarPedido(Usuario usuario) {
         //cancelamos el pedido si encuentra un pedido pendiente del usuario
-        Pedido pedido = encontrarPedidoPendienteDeUSuarioConcreto(usuario);
+        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
         pedido.setEstado(EstadoPedido.CANCELADO);
         //devuelve el pedido
         return pedido;
@@ -126,10 +129,10 @@ public class ControladorPedido {
 
 
     //METODOS DE LINEAS DE PEDIDO
-    //aquí no se puede usar el metodo auxiluiar pq si no tiene pedido pendiuente lanza exception y no deja que siga el metodo y se cree el pedido pendiente!!!
+    //aquí no se puede usar el metodo auxiluiar pq si no tiene pedido pendiente lanza exception y no deja que siga el metodo y se cree el pedido pendiente!!!
     public LineaPedido aniadirLineaPedidoAPedido(Usuario usuario, Producto producto, int cantidad) {
         //buscamos el pedido pendiente del usuario sin dar exception
-        Pedido pedido = encontrarPedidoPendienteDeUSuarioConcretoONull(usuario);
+        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcretoONull(usuario);
 
         //si no encuentra pedido lo crea
         if (pedido == null) {
@@ -137,33 +140,35 @@ public class ControladorPedido {
             pedido = crearPedido(usuario);
         }
 
-
-        // Se haya creado ahora o ya existía el pedido pendiente, se crea y añade la línea de pedido
+        //se haya creado ahora o ya existía el pedido pendiente, se crea y añade la línea de pedido
         return crearYAniadirLineaPedido(pedido, producto, cantidad);
     }
 
     //metodo para leer lineas de pedido de UN pedido concreto
-    public Set<LineaPedido> leerLineasPedidoDeDedidoConcreto(Usuario usuario) {
-        Pedido pedido = encontrarPedidoPendienteDeUSuarioConcreto(usuario);
+    public Set<LineaPedido> leerLineasPedidoDePedidoConcreto(Usuario usuario) {
+        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
         return pedido.getLineasPedido();
     }
 
     //metodo para actualizar lineas de pedido de UN pedido concreto
     public Set<LineaPedido> actualizarLineasPedidoDePedidoConcreto(Usuario usuario, LineaPedido lineaPedidoNueva) {
         //buscar pedido pendiente
-        Pedido pedido = encontrarPedidoPendienteDeUSuarioConcreto(usuario);
+        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
         //actualizamos este pedido por el nuevo
-        //bucamos la línea concretamente
+        //buscamos la línea concretamente
         for (LineaPedido lineaPedido : pedido.getLineasPedido()) {
             if (lineaPedido.getId() == lineaPedidoNueva.getId()) {
+
                 //NO CAMBIAR ID
                 if (lineaPedidoNueva.getId() != lineaPedido.getId()) {
-                    throw new IllegalArgumentException("No se puede cambiar el ID de una línea de pedido..");
+                    throw new IllegalArgumentException("No se puede cambiar el ID de una línea de pedido.");
                 }
+
                 //NO CAMBIAR PRODUCTO (no tiene sentido ya que si no quitas el producto y pones el nuevo)
                 if (lineaPedidoNueva.getProducto() != lineaPedido.getProducto()) {
                     throw new IllegalArgumentException("No se puede cambiar el producto de una línea de pedido.");
                 }
+
                 //a esta línea de pedido le cambiamos lo que se pueda cambiar con setters
                 lineaPedido.setCantidad(lineaPedidoNueva.getCantidad());
             }
@@ -174,7 +179,7 @@ public class ControladorPedido {
     //metodo para eliminar una línea de pedido de UN pedido concreto
     public void eliminarLineaPedidoDePedido(Usuario usuario, long idLinea) {
         //buscamos el pedido de la línea
-        Pedido pedido = encontrarPedidoPendienteDeUSuarioConcreto(usuario);
+        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
         //buscamos la línea a eliminar
         for (LineaPedido lineaPedido : pedido.getLineasPedido()) {
             if (lineaPedido.getId() == idLinea) {
@@ -191,7 +196,7 @@ public class ControladorPedido {
         throw new IllegalArgumentException("El usuario no tiene pedido pendiente.");
     }
 
-    //METODO AUXILIAR
+    //METODOS AUXILIARES
     //metodo para no repetir el crear y añadir una línea de pedido en el metodo de añadir línea pedido
     public LineaPedido crearYAniadirLineaPedido(Pedido pedido, Producto producto, int cantidad) {
         LineaPedido lineaPedido = new LineaPedido(cantidad, producto);
@@ -203,7 +208,7 @@ public class ControladorPedido {
     }
 
     //metodo para buscar el pedido pendiente de un usuario
-    public Pedido encontrarPedidoPendienteDeUSuarioConcreto(Usuario usuario) {
+    public Pedido encontrarPedidoPendienteDeUsuarioConcreto(Usuario usuario) {
         for (Pedido pedido : listaPedidos) {
             if (pedido.getUsuario().equals(usuario) && pedido.getEstado() == EstadoPedido.PENDIENTE) {
                 return pedido;
@@ -215,7 +220,7 @@ public class ControladorPedido {
 
     //metodo para buscar el pedido pendiente de un usuario si no lo encuentra en vez de lanzar exception, devuelve null
     //este se usa para el metodo añadirLineaPedido ya que necesito este mismo metodo pero que no lanzara exceptio, que devolviera null para un if que necesito después
-    public Pedido encontrarPedidoPendienteDeUSuarioConcretoONull(Usuario usuario) {
+    public Pedido encontrarPedidoPendienteDeUsuarioConcretoONull(Usuario usuario) {
         for (Pedido pedido : listaPedidos) {
             if (pedido.getUsuario().equals(usuario) && pedido.getEstado() == EstadoPedido.PENDIENTE) {
                 return pedido;

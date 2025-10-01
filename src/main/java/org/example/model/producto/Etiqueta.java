@@ -54,7 +54,7 @@ public class Etiqueta {
         this.productos = productos;
     }
 
-    //hascode y equasls por el Set
+    //hasCode y equals por el Set
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

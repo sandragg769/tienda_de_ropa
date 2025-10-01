@@ -75,7 +75,7 @@ public class Pedido {
                 .sum();
     }
 
-    //poner hascode y equals porque en otras clases tengo Set de pedido
+    //poner hasCode y equals porque en otras clases tengo Set de pedido
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

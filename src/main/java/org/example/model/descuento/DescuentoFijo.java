@@ -6,7 +6,7 @@ public class DescuentoFijo implements Descuento {
     //la cantidad a restar del descuento
     private float descuentoFijo;
 
-    //constructor (comprobar que no sea descuento negativo, si lo es lo iguala a 0)
+    //constructor (comprobar que no sea descuento negativo, si lo es lo igual a 0)
     public DescuentoFijo(float descuentoFijo) {
         if (descuentoFijo < 0) descuentoFijo = 0;
         this.descuentoFijo = descuentoFijo;
@@ -23,7 +23,7 @@ public class DescuentoFijo implements Descuento {
 
     //metodo implementado
     @Override
-    public double calcularMontoDecuento(Producto producto) {
+    public double calcularMontoDescuento(Producto producto) {
         //si no hay producto que devuelva 0 (para que no quite nada)
         if (producto == null) return 0;
         double precio = producto.getPrecioInicial();

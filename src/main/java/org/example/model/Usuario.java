@@ -19,7 +19,7 @@ public class Usuario {
     private String passsword;
     //un set de Productos favoritos, para que no se repitan productos favoritos, pero puede tener muchos
     private Set<Producto> favoritos = new HashSet<>();
-    // un set de pedidos (para que no se repitan los mismos pedidos) ya que un usuario puede tener muchos pedidos, lo hacemos Linkedhash para que se ordene por insercción
+    // un set de pedidos (para que no se repitan los mismos pedidos) ya que un usuario puede tener muchos pedidos, lo hacemos Linkedhash para que se ordene por inserción
     private Set<Pedido> pedidos = new LinkedHashSet<>();
 
     //constructor
@@ -34,7 +34,6 @@ public class Usuario {
         this.passsword = passsword;
         //no poner nada en favoritos para empezar y tampoco tiene pedidos
     }
-
 
     //getters y setters
     public long getId() {
@@ -109,7 +108,7 @@ public class Usuario {
         this.pedidos = pedidos;
     }
 
-    //hascode y equals por los Set
+    //hasCode y equals por los Set
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

@@ -17,7 +17,6 @@ public class Pantalon extends Producto {
     }
 
     //getters y setters
-
     public int getBotones() {
         return botones;
     }

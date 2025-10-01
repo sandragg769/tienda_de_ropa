@@ -42,7 +42,7 @@ class TestControladorUsuario {
                 LocalDate.of(2005, 9, 12), "600123123", "sandra2@gmail.com", "1234");
         controladorUsuario.registrarUsuario(usuarioCorrecto);
 
-        //nos tiene q salir con size 2 (lo que viene a ser lo mismo que la id) ya que el 1 lo metemos con el BerforeEach
+        //nos tiene que salir con size 2 (lo que viene a ser lo mismo que la id) ya que el 1 lo metemos con el BerforeEach
         assertEquals(2, controladorUsuario.leerUsuarios().size());
     }
 
@@ -54,7 +54,7 @@ class TestControladorUsuario {
                 LocalDate.of(2005, 9, 12), "600123123", "sandra@gmail.com", "1234");
         //poner el registrarUsuario dentro del assert, no fuera que da error
 
-        //nos tiene q salir con size 2 (lo que viene a ser lo mismo que la id) ya que el 1 lo metemos con el BerforeEach
+        //nos tiene que salir con size 2 (lo que viene a ser lo mismo que la id) ya que el 1 lo metemos con el BerforeEach
         assertThrows(IllegalArgumentException.class, () -> {
             controladorUsuario.registrarUsuario(usuarioIncorrecto);
         });
@@ -66,7 +66,6 @@ class TestControladorUsuario {
         Usuario loginCorrecto = controladorUsuario.login(usuario.getEmail(), usuario.getPasssword());
 
         assertEquals(usuario, loginCorrecto);
-
     }
 
     @Test
@@ -85,6 +84,7 @@ class TestControladorUsuario {
     @Test
     void leerUsuarioPorIdCorrecto() {
         Usuario userPorId = controladorUsuario.leerUsuarioPorId(usuario.getId());
+
         assertEquals(usuario, userPorId);
     }
 
@@ -99,6 +99,7 @@ class TestControladorUsuario {
     void eliminarUsuarioCorrecto() {
         //quitamos el unico usuario que hay
         controladorUsuario.eliminarUsuario(usuario.getId());
+
         //comprobamos que hay 0 ahora
         assertEquals(0, controladorUsuario.leerUsuarios().size());
     }
@@ -109,12 +110,13 @@ class TestControladorUsuario {
         Usuario noEsta = new Usuario("11111111A", "Alguna calle",
                 LocalDate.of(2005, 9, 12), "600123123", "sandra2@gmail.com", "1234");
         noEsta.setId(1234);
+
         assertThrows(IllegalArgumentException.class, () -> {
             controladorUsuario.eliminarUsuario(noEsta.getId());
         });
     }
 
-    //metodo comprabar actualizar, este
+    //test comprobar actualizar
     @Test
     void actualizarUsuarioCorrecto() {
         Usuario modificado = new Usuario("11111111A", "Calle Original",
@@ -123,8 +125,8 @@ class TestControladorUsuario {
         modificado.setId(1);
         //actualizamos
         controladorUsuario.actualizarUsuario(modificado);
-
         Usuario actualizado = controladorUsuario.leerUsuarioPorId(1);
+
         assertEquals("11111111", actualizado.getTelefono());
     }
 
@@ -170,6 +172,7 @@ class TestControladorUsuario {
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
         //añadimos el producto a favorito
         controladorUsuario.aniadirProductoFavorito(camisa, usuario);
+
         //miramos si el Set contiene el producto
         assertTrue(usuario.getFavoritos().contains(camisa));
     }
@@ -181,6 +184,7 @@ class TestControladorUsuario {
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
         controladorUsuario.aniadirProductoFavorito(camisa, usuario);
         controladorUsuario.aniadirProductoFavorito(camisa, usuario);
+
         //al ser Set no duplica
         assertEquals(1, usuario.getFavoritos().size());
     }
@@ -193,6 +197,7 @@ class TestControladorUsuario {
         //lo añadimos y eliminamos
         controladorUsuario.aniadirProductoFavorito(camisa, usuario);
         controladorUsuario.eliminarProductoFavorito(camisa, usuario);
+
         //comprobamos que no lo contiene
         assertFalse(usuario.getFavoritos().contains(camisa));
 
@@ -205,6 +210,7 @@ class TestControladorUsuario {
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
         // eliminar antes de haberlo añadido
         controladorUsuario.eliminarProductoFavorito(camisa, usuario);
+
         //comprobamos que no lo contiene
         assertFalse(usuario.getFavoritos().contains(camisa));
     }

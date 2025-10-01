@@ -20,7 +20,6 @@ public class ControladorUsuario {
                 throw new IllegalArgumentException("Ya existe un usuario con ese email.");
             }
         }
-        //si no existe (no salta la exception ya incrementamos el contador ya que vamos a añadir un usuario
         //le ponemos el id
         contadorUsuarios++;
         //le ponemos el id al usuario a registrar
@@ -35,16 +34,16 @@ public class ControladorUsuario {
         return listaUsuariosRegistrados;
     }
 
-    //metodo para enontrar un usuario con un id específico
+    //metodo para encontrar un usuario con un id específico
     public Usuario leerUsuarioPorId(long id) {
         for (Usuario usu : listaUsuariosRegistrados) {
-            //busca en la lista de registrados un email y password igual a los pasados por parámetro, si lo encuentra lo devuelve
+            //busca en la lista de registrados el id, si lo encuentra lo devuelve
             if (usu.getId() == id) {
                 return usu;
             }
         }
-        //si no devuelve el usu antes lanza exception
-        throw new IllegalArgumentException("No se encuentra el usuario con esa Id.");
+        //si no devuelve el usu antes, lanza exception
+        throw new IllegalArgumentException("No se encuentra el usuario con esa id.");
     }
 
     //metodo para eliminar usuarios de la lista de usuarios registrados
@@ -58,7 +57,7 @@ public class ControladorUsuario {
             }
         }
         //si no devuelve el usu antes lanza exception
-        throw new IllegalArgumentException("No se puede eliminar el usuario ya que no se encuentra ese Id.");
+        throw new IllegalArgumentException("No se puede eliminar el usuario ya que no se encuentra ese id.");
     }
 
     //metodo para actualizar perfil de usuario, se busca id ya que ese no cambia
@@ -67,45 +66,51 @@ public class ControladorUsuario {
         for (Usuario usu : listaUsuariosRegistrados) {
             //busca en la lista de registrados el id ya que al estar registrado tiene id y si lo encuentra lo elimina
             if (usu.getId() == usuarioNuevo.getId()) {
+
                 //NO CAMBIAR DNI
                 if (!usu.getDni().equalsIgnoreCase(usuarioNuevo.getDni())) {
                     throw new IllegalArgumentException("No se puede cambiar el DNI de un usuario registrado.");
                 }
+
                 //NO CAMBIAR FECHANACIMIENTO
                 if (!usu.getFechaNacimiento().equals(usuarioNuevo.getFechaNacimiento())) {
                     throw new IllegalArgumentException("No se puede cambiar la fecha de nacimiento de un usuario registrado.");
                 }
+
                 //NO CAMBIAR ID
                 if (usuarioNuevo.getId() != usu.getId()) {
-                    throw new IllegalArgumentException("No se puede cambiar el ID de un usuario.");
+                    throw new IllegalArgumentException("No se puede cambiar el id de un usuario.");
                 }
+
                 usu.setDireccion(usuarioNuevo.getDireccion());
                 usu.setEmail(usuarioNuevo.getEmail());
                 usu.setPasssword(usuarioNuevo.getPasssword());
                 usu.setTelefono(usuarioNuevo.getTelefono());
+
                 //devuelve el usuario cuando lo cambia
                 return usu;
             }
         }
+
         //si no devuelve el usu antes lanza exception
-        throw new IllegalArgumentException("No se puede actualizar el usuario ya que no se encuentra ese Id.");
+        throw new IllegalArgumentException("No se puede actualizar el usuario ya que no se encuentra ese id.");
     }
 
-    //METODOS DE PRDUCTOS FAVORITOS
+    //METODOS DE PRODUCTOS FAVORITOS
     //metodo para añadir un producto a la lista de favoritos, en el controladorUsuario ya que es el que tiene la lista de favoritos
-    //se pasa directamente el Usuario asique no hay que leerUsuarioPorId
+    //se pasa directamente el Usuario así que no hay que leerUsuarioPorId
     public void aniadirProductoFavorito(Producto producto, Usuario usuario) {
         //ya que es un Set favoritos simplemente añadimos el producto no hace falta ver si está o no
         usuario.getFavoritos().add(producto);
         //no lanzar exception si ya está el producto dentro, simplemente no se añade y ya
-        //IMPORTANTE, añadir también el usuario en el Set de UsuariosProductosFavoritos para que el producto sepa de quien es favorito (bidireccional)
+        //IMPORTANTE, añadir también el usuario en el Set de UsuariosProductosFavoritos para que el producto sepa de quién es favorito (bidireccional)
+        producto.getUsuariosProductosFavoritos().add(usuario);
     }
 
     //metodo para eliminar un producto de favoritos
     public void eliminarProductoFavorito(Producto producto, Usuario usuario) {
-        //ya que es un Set favoritos simplemente añadimos el producto no hace falta ver si está o no
+        //eliminamos el producto de los favoritos del usuario
         usuario.getFavoritos().remove(producto);
-        //no lanzar exception si ya está el producto dentro, simplemente no se añade y ya
         //IMPORTANTE, quitar el usuario del Set usuariosProductosFavoritos del producto ya que es bidireccional y tienen q saber los dos que se ha quitado, ya que si no es producto no sabria de q usuario es favorito
         producto.getUsuariosProductosFavoritos().remove(usuario);
     }
@@ -116,7 +121,6 @@ public class ControladorUsuario {
         for (Usuario usu : listaUsuariosRegistrados) {
             //busca en la lista de registrados un email y password igual a los pasados por parámetro, si lo encuentra lo devuelve
             if (usu.getEmail().equalsIgnoreCase(email) && usu.getPasssword().equals(password)) {
-                //ponemos este usuario en usuarioLogueado (para hacer cosas en la cuenta hay que estar logueado por lo que será necesario este metodo
                 return usu;
             }
         }

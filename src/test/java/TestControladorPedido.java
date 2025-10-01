@@ -42,7 +42,7 @@ class TestControladorPedido {
     void crearPedido() {
         //Creamos un pedido con el metodo
         Pedido pedido = controladorPedido.crearPedido(usuario);
-        //comprobacion
+        //comprobación
         assertEquals(usuario, pedido.getUsuario());
         //también comprobamos que se cree el pedido pendiente
         assertEquals(EstadoPedido.PENDIENTE, pedido.getEstado());
@@ -71,7 +71,6 @@ class TestControladorPedido {
     void leerPedidoPorIdIncorrecto() {
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.leerPedidoPorId(1000));
     }
-
 
     //test para actualizar un pedido (realmente no se puede actualizar nada)
     @Test
@@ -157,8 +156,6 @@ class TestControladorPedido {
         assertEquals(1, pedido.getLineasPedido().size());
     }
 
-    //me salta la excepcion de que no encuentra usuario con pedido pendiente en los dos primeros test
-
     //test para añadir línea de pedido ya existiendo un pedido pendiente
     @Test
     void aniadirLineaPedidoSegundaVezCorrecto() {
@@ -185,14 +182,14 @@ class TestControladorPedido {
     void leerLineasPedidoCorrecto() {
         controladorPedido.crearPedido(usuario);
         controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
-        Set<LineaPedido> lineas = controladorPedido.leerLineasPedidoDeDedidoConcreto(usuario);
+        Set<LineaPedido> lineas = controladorPedido.leerLineasPedidoDePedidoConcreto(usuario);
         assertEquals(1, lineas.size());
     }
 
     //test leer líneas incorrecto ya que no hay líneas añadidas (error)
     @Test
     void leerLineasPedidoSinPedidoPendienteIncorrecto() {
-        assertThrows(IllegalArgumentException.class, () -> controladorPedido.leerLineasPedidoDeDedidoConcreto(usuario));
+        assertThrows(IllegalArgumentException.class, () -> controladorPedido.leerLineasPedidoDePedidoConcreto(usuario));
     }
 
     //test actualizar una línea de pedido correctamente
@@ -236,7 +233,7 @@ class TestControladorPedido {
         //eliminar la línea
         controladorPedido.eliminarLineaPedidoDePedido(usuario, linea.getId());
         //comprobamos que no hay líneas
-        assertEquals(0, controladorPedido.leerLineasPedidoDeDedidoConcreto(usuario).size());
+        assertEquals(0, controladorPedido.leerLineasPedidoDePedidoConcreto(usuario).size());
         assertEquals(null, producto.getLineaPedido());
     }
 
@@ -288,10 +285,8 @@ class TestControladorPedido {
     void pedidoPrecioTotalConDescuentoFijo() {
         Producto chaqueta = new Chaqueta("Chaqueta Premium", "Gucci", 200, Talla.L, Color.NEGRO, etiqueta, true, 5);
         chaqueta.setDescuento(new DescuentoFijo(30)); // 200 - 30 = 170
-
         controladorPedido.aniadirLineaPedidoAPedido(usuario, chaqueta, 1);
-
-        Pedido pedido = controladorPedido.encontrarPedidoPendienteDeUSuarioConcreto(usuario);
+        Pedido pedido = controladorPedido.encontrarPedidoPendienteDeUsuarioConcreto(usuario);
 
         assertEquals(170.0, pedido.getPecioTotal());
     }

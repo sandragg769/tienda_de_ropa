@@ -16,6 +16,7 @@ import java.util.List;
 public class ControladorProducto {
     private List<Producto> listaProductos = new ArrayList<>();
     private long contadorProductos = 0;
+    private List<Etiqueta> listaEtiquetas = new ArrayList<>();
     private long contadorEtiquetas = 0;
 
 
@@ -47,12 +48,13 @@ public class ControladorProducto {
         return p;
     }
 
-    //METODO AUXILIAR para validar los datos a la hora de crear objetos, lo pongo separado ya que al crear objetos de distintos tipos y con distintos atributos se repetiría tres veves el control
+    //METODO AUXILIAR para validar los datos a la hora de crear objetos, lo pongo separado ya que al crear objetos de distintos tipos
+    //y con distintos atributos se repetiría tres veces el control
     private void validarDatos(String nombre, String marca, double precioInicial) {
         if (nombre == null || marca == null)
-            throw new IllegalArgumentException("Nombre o marca no pueden ser nulos");
+            throw new IllegalArgumentException("Nombre o marca no pueden ser nulos.");
         if (precioInicial < 0)
-            throw new IllegalArgumentException("Precio inicial negativo");
+            throw new IllegalArgumentException("Precio inicial negativo.");
     }
 
     //metodo para leer productos
@@ -65,21 +67,21 @@ public class ControladorProducto {
         for (Producto p : listaProductos) {
             if (p.getId() == id) return p;
         }
-        throw new IllegalArgumentException("Producto no encontrado con id=" + id);
+        throw new IllegalArgumentException("No se encuentra producto con ese id.");
     }
 
     //metodo para eliminar productos de la lista
-    public void eliminarUsuario(long id) {
+    public void eliminarProducto(long id) {
         for (Producto producto : listaProductos) {
-            //busca en la lista de registrados el id ya que al estar registrado tiene id y si lo encuentra lo elimina
+            //busca en la lista el id y si lo encuentra lo elimina
             if (producto.getId() == id) {
                 listaProductos.remove(producto);
                 //si esto pasa que se salga de la lista, si no se pone siempre da exception de abajo
                 return;
             }
         }
-        //si no devuelve el usu antes lanza exception
-        throw new IllegalArgumentException("No se puede eliminar el producto ya que no se encuentra ese Id.");
+        //si no encuentra lanza exception
+        throw new IllegalArgumentException("No se puede eliminar el producto ya que no se encuentra ese id.");
     }
 
     //metodo para actualizar producto, se cambia todo menos, id, los usuariosProductosFavoritos y la linea de pedido
@@ -89,20 +91,20 @@ public class ControladorProducto {
             if (p.getId() == productoNuevo.getId()) {
                 // NO CAMBIAR ID
                 if (productoNuevo.getId() != p.getId()) {
-                    throw new IllegalArgumentException("No se puede cambiar el ID de un producto.");
+                    throw new IllegalArgumentException("No se puede cambiar el id de un producto.");
                 }
-
+                // NO CAMBIAR lineasPedido
+                if (productoNuevo.getLineaPedido() != null &&
+                        !p.getLineaPedido().equals(productoNuevo.getLineaPedido())) {
+                    throw new IllegalArgumentException("No se pueden modificar las líneas de pedido desde aquí.");
+                }
                 // NO CAMBIAR usuariosProductosFavoritos
-                if (!p.getUsuariosProductosFavoritos().equals(productoNuevo.getUsuariosProductosFavoritos())) {
+                if (productoNuevo.getUsuariosProductosFavoritos() != null &&
+                        !p.getUsuariosProductosFavoritos().equals(productoNuevo.getUsuariosProductosFavoritos())) {
                     throw new IllegalArgumentException("No se pueden modificar los usuarios que tienen el producto como favorito desde aquí.");
                 }
 
-                // NO CAMBIAR lineasPedido
-                if (!p.getLineaPedido().equals(productoNuevo.getLineaPedido())) {
-                    throw new IllegalArgumentException("No se pueden modificar las líneas de pedido desde aquí.");
-                }
-
-                // Sí se pueden cambiar las propiedades básicas
+                // sí se pueden cambiar las propiedades básicas
                 p.setNombre(productoNuevo.getNombre());
                 p.setMarca(productoNuevo.getMarca());
                 p.setPrecioInicial(productoNuevo.getPrecioInicial());
@@ -119,28 +121,32 @@ public class ControladorProducto {
     }
 
     //METODOS QUE TIENEN QUE VER CON DESCUENTO
-    //cambiarle el descuento especificamente al producto
+    //cambiarle el descuento específicamente al producto
     public void asignarDescuento(long productoId, Descuento descuento) {
         Producto p = buscarProductoPorId(productoId);
         p.setDescuento(descuento);
     }
 
-    //quitar ese descuento poniendolo null
+    //quitar ese descuento poniéndolo null
     public void eliminarDescuento(long productoId) {
         Producto p = buscarProductoPorId(productoId);
         p.setDescuento(null);
     }
 
-    //METODO PARA CREAR ETIQUETA (no hace falta el crud)
-    public void asignarEtiqueta(long productoId, Etiqueta etiqueta) {
-        Producto p = buscarProductoPorId(productoId);
-        p.setEtiqueta(etiqueta);
+    //METODO PARA CREAR ETIQUETA (no hace falta el crud, solo crear)
+    public Etiqueta crearEtiqueta(String nombre) {
+        //comprobar que tenga nombre
+        if (nombre == null) {
+            throw new IllegalArgumentException("El nombre de la etiqueta no puede ser nulo.");
+        }
+        //crear la etiqueta
+        Etiqueta etiqueta = new Etiqueta(nombre);
+        //asignarle id automáticamente
+        etiqueta.setId(contadorEtiquetas++);
+        //añadirla a la lista de etiquetas
+        listaEtiquetas.add(etiqueta);
+        return etiqueta;
     }
-
-
-
-
-
 
 
 }
