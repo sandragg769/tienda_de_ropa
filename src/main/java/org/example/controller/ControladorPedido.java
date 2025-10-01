@@ -45,6 +45,8 @@ public class ControladorPedido {
                 return;
             }
         }
+        //si no devuelve el usu antes lanza exception
+        throw new IllegalArgumentException("No se puede eliminar el pedido ya que no se encuentra ese Id.");
     }
 
     //metodo para leer todos los pedidos

@@ -48,9 +48,9 @@ class TestControladorPedido {
         assertEquals(EstadoPedido.PENDIENTE, pedido.getEstado());
     }
 
-    //test para borrar un pedido, comprobamos que no encuentra el pedido por lo que lanza exception
+    //test para borrar un pedido correcto (error), comprobamos que no encuentra el pedido por lo que lanza exception
     @Test
-    void testBorrarPedidoCorrecto() {
+    void borrarPedidoCorrecto() {
         Pedido pedido = controladorPedido.crearPedido(usuario);
         controladorPedido.borrarPedido(pedido.getId());
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.leerPedidoPorId(pedido.getId()));
@@ -144,7 +144,7 @@ class TestControladorPedido {
     //TEST CRUD LINEAPEDIDO
     //test para añadir linea de pedido si no existe pedido anteriormente
     @Test
-    void añadirLineaPedidoPrimeraVezCrearPedidoCorrecto() {
+    void aniadirLineaPedidoPrimeraVezCrearPedidoCorrecto() {
         //creamos la línea
         LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 5);
         //comprobamos que se ha creado bien
@@ -161,7 +161,7 @@ class TestControladorPedido {
 
     //test para añadir línea de pedido ya existiendo un pedido pendiente
     @Test
-    void añadirLineaPedidoSegundaVezCorrecto() {
+    void aniadirLineaPedidoSegundaVezCorrecto() {
         //añadimos una línea de pedido
         controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 1);
 
@@ -230,7 +230,7 @@ class TestControladorPedido {
 
     //test eliminar una línea de pedido
     @Test
-    void testEliminarLineaPedidoCorrecto() {
+    void eliminarLineaPedidoCorrecto() {
         controladorPedido.crearPedido(usuario);
         LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
         //eliminar la línea
@@ -242,7 +242,7 @@ class TestControladorPedido {
 
     //test para eliminar una línea de pedido inexistente (error)
     @Test
-    void testEliminarLineaPedidoIncorrecto() {
+    void eliminarLineaPedidoIncorrecto() {
         controladorPedido.crearPedido(usuario);
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.eliminarLineaPedidoDePedido(usuario, 999));
     }
@@ -285,7 +285,7 @@ class TestControladorPedido {
 
     //test para comprobar el metodo getPrecioTotal
     @Test
-    void testPedidoPrecioTotalConDescuentoFijo() {
+    void pedidoPrecioTotalConDescuentoFijo() {
         Producto chaqueta = new Chaqueta("Chaqueta Premium", "Gucci", 200, Talla.L, Color.NEGRO, etiqueta, true, 5);
         chaqueta.setDescuento(new DescuentoFijo(30)); // 200 - 30 = 170
 

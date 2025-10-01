@@ -164,7 +164,7 @@ class TestControladorUsuario {
     }
 
     @Test
-    void añadirProductoFavoritoCorrecto() {
+    void aniadirProductoFavoritoCorrecto() {
         //creamos lo necesario
         etiqueta = new Etiqueta("Nuevo");
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
@@ -175,7 +175,7 @@ class TestControladorUsuario {
     }
 
     @Test
-    void añadirProductoFavoritoDuplicado() {
+    void aniadirProductoFavoritoDuplicado() {
         //creamos lo necesario
         etiqueta = new Etiqueta("Nuevo");
         camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
