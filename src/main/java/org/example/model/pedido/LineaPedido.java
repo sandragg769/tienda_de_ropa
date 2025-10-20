@@ -7,12 +7,15 @@ public class LineaPedido {
     private int cantidad;
     //una línea de producto puede tener solo un pedido
     private Producto producto;
+    //añadir pedido
+    private Pedido pedido;
 
     //constructor
     //aquí sí hay que poner un Producto obligatoriamente
-    public LineaPedido(int cantidad, Producto producto) {
+    public LineaPedido(int cantidad, Producto producto, Pedido pedido) {
         this.cantidad = cantidad;
         this.producto = producto;
+        this.pedido = pedido;
     }
 
     //getters y setters
@@ -46,4 +49,7 @@ public class LineaPedido {
     public double getPrecioSubTotal() {
         return producto.getPrecioFinal() * cantidad;
     }
+
+    public Pedido getPedido() { return pedido; }
+    public void setPedido(Pedido pedido) { this.pedido = pedido; }
 }

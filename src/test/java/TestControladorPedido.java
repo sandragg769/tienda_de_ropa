@@ -72,6 +72,31 @@ class TestControladorPedido {
         assertThrows(IllegalArgumentException.class, () -> controladorPedido.leerPedidoPorId(1000));
     }
 
+    //test para el buen funcionamiento de actualizar
+    @Test
+    void actualizarPedidoCambiaEstadoCorrecto() {
+        // Crear un pedido inicial
+        Pedido pedido = controladorPedido.crearPedido(usuario);
+        // Crear un pedido con el mismo ID pero estado distinto
+        Pedido pedidoActualizado = new Pedido(usuario);
+        pedidoActualizado.setId(pedido.getId());  // mismo ID
+        // Cambiamos el estado a uno distinto del original
+        pedidoActualizado.setEstado(EstadoPedido.ENTREGADO);
+
+        // Copiamos el resto de campos igual al pedido original para no alterar restricciones
+        pedidoActualizado.setFecha(pedido.getFecha());
+        pedidoActualizado.setUsuario(pedido.getUsuario());
+
+        // Llamamos al metodo y esperamos que no lance excepción
+        Pedido pedidoResultante = controladorPedido.actualizarDatosPedido(pedidoActualizado);
+
+        // Comprobamos que el estado sí se ha actualizado
+        assertEquals(EstadoPedido.ENTREGADO, pedidoResultante.getEstado());
+
+        // Comprobamos que el ID no ha cambiado
+        assertEquals(pedido.getId(), pedidoResultante.getId());
+    }
+
     //test para actualizar un pedido (realmente no se puede actualizar nada)
     @Test
     void actualizarPedidoCambiaIdIncorrecto() {
@@ -137,7 +162,7 @@ class TestControladorPedido {
     @Test
     void entregarPedidoNoFinalizadoIncorrecto() {
         Pedido pedido = controladorPedido.crearPedido(usuario);
-        assertThrows(IllegalArgumentException.class, () -> controladorPedido.entregarPedido(pedido.getId()));
+        assertThrows(IllegalStateException.class, () -> controladorPedido.entregarPedido(pedido.getId()));
     }
 
     //TEST CRUD LINEAPEDIDO
@@ -196,11 +221,11 @@ class TestControladorPedido {
     @Test
     void actualizarLineaPedidoCorrecto() {
         //creamos el pedido y la línea
-        controladorPedido.crearPedido(usuario);
+        Pedido pedido = controladorPedido.crearPedido(usuario);
         LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
 
         //creamos una copia de este con diferente cantidad para actualizarla
-        LineaPedido copia = new LineaPedido(5, producto);
+        LineaPedido copia = new LineaPedido(5, producto, pedido);
         //le ponemos el mismo id que al anterior
         copia.setId(linea.getId());
 
@@ -213,12 +238,12 @@ class TestControladorPedido {
     //test para actualizar el producto de una línea de pedido (error)
     @Test
     void actualizarLineaPedidoCambiaProductoIncorrecto() {
-        controladorPedido.crearPedido(usuario);
+        Pedido pedido = controladorPedido.crearPedido(usuario);
         LineaPedido linea = controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
         //creamos un producto distinto
         Producto otroProducto = new Chaqueta("Chaquetón", "Adidas", 45, Talla.L, Color.NEGRO, etiqueta, true, 3);
         //creamos una copia de la línea pero cambiando el producto
-        LineaPedido copia = new LineaPedido(3, otroProducto);
+        LineaPedido copia = new LineaPedido(3, otroProducto, pedido);
         //le ponemos el id del original
         copia.setId(linea.getId());
         //comprobamos que no se puede cambiar el producto

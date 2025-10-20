@@ -76,9 +76,9 @@ public class ControladorPedido {
         if (pedidoNuevo.getId() != pedidoViejo.getId()) {
             throw new IllegalArgumentException("No se puede cambiar el ID de un pedido.");
         }
-        //NO CAMBIAR ESTADO
+        //permitir cambiar estado (corrección profesor) pata que pueda actualizar algo y sea útl
         if (pedidoNuevo.getEstado() != pedidoViejo.getEstado()) {
-            throw new IllegalArgumentException("No se puede cambiar el estado de un pedido.");
+            pedidoViejo.setEstado(pedidoNuevo.getEstado());
         }
 
         //NO CAMBIAR FECHA
@@ -89,7 +89,6 @@ public class ControladorPedido {
         if (pedidoNuevo.getUsuario() != pedidoViejo.getUsuario()) {
             throw new IllegalArgumentException("No se puede cambiar el usuario de un pedido.");
         }
-        //no se cambia nada del pedido
 
         //devolvemos el pedido
         return pedidoViejo;
@@ -97,34 +96,23 @@ public class ControladorPedido {
 
     //METODOS QUE TIENEN QUE VER CON EL ESTADO DEL PEDIDO
     //se le pasa el Usuario ya que es el que actúa sobre esto, por ejemplo entregar no, porque ahí el cliente ya no tiene nada que ver
+    //CAMBIADO POR CORRECCIÓN DE PROFESORT el controlador solo dirige, no tiene que usar el setter él
     public Pedido finalizarPedido(Usuario usuario) {
-        //finalizamos el pedido
         Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
-        pedido.setEstado(EstadoPedido.FINALIZADO);
-        //devuelve el pedido
+        pedido.finalizar();
         return pedido;
     }
 
-    //metodo para cancelar un pedido (antes de ser finalizado o entregado)
     public Pedido cancelarPedido(Usuario usuario) {
-        //cancelamos el pedido si encuentra un pedido pendiente del usuario
         Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
-        pedido.setEstado(EstadoPedido.CANCELADO);
-        //devuelve el pedido
+        pedido.cancelar();
         return pedido;
     }
 
-    //metodo para entregar pedido (solo si está finalizado)
-    //ya no necesitamos el Usuario pq esto es totalmente aparte de este, lo localizamos por id como hemos hecho en los demás metodos
     public Pedido entregarPedido(long id) {
-        Pedido pedidoEntregar = leerPedidoPorId(id);
-        //si está finalizado cambiamos a entregado
-        if (pedidoEntregar.getEstado() == EstadoPedido.FINALIZADO) {
-            pedidoEntregar.setEstado(EstadoPedido.ENTREGADO);
-            return pedidoEntregar;
-        } else {
-            throw new IllegalArgumentException("Solo se puede entregar pedidos finalizados.");
-        }
+        Pedido pedido = leerPedidoPorId(id);
+        pedido.entregar();
+        return pedido;
     }
 
 
@@ -199,7 +187,7 @@ public class ControladorPedido {
     //METODOS AUXILIARES
     //metodo para no repetir el crear y añadir una línea de pedido en el metodo de añadir línea pedido
     public LineaPedido crearYAniadirLineaPedido(Pedido pedido, Producto producto, int cantidad) {
-        LineaPedido lineaPedido = new LineaPedido(cantidad, producto);
+        LineaPedido lineaPedido = new LineaPedido(cantidad, producto, pedido);
         lineaPedido.setId(contadorLineaPedido++);
         pedido.getLineasPedido().add(lineaPedido);
         //IMPORTANTE la línea de pedido también se añade al producto (bidireccional)

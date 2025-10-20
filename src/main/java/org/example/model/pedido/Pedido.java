@@ -75,6 +75,28 @@ public class Pedido {
                 .sum();
     }
 
+    //métodos de cambiar estado (corrección profesor) NO SE CAMBIA EN EL CONTROLADOR, EL CONTROLADOR SOLO DIRIGE
+    public void finalizar() {
+        if (estado != EstadoPedido.PENDIENTE) {
+            throw new IllegalStateException("Solo se puede finalizar un pedido pendiente.");
+        }
+        estado = EstadoPedido.FINALIZADO;
+    }
+
+    public void cancelar() {
+        if (estado != EstadoPedido.PENDIENTE) {
+            throw new IllegalStateException("Solo se puede cancelar un pedido pendiente.");
+        }
+        estado = EstadoPedido.CANCELADO;
+    }
+
+    public void entregar() {
+        if (estado != EstadoPedido.FINALIZADO) {
+            throw new IllegalStateException("Solo se puede entregar pedidos finalizados.");
+        }
+        estado = EstadoPedido.ENTREGADO;
+    }
+
     //poner hasCode y equals porque en otras clases tengo Set de pedido
     @Override
     public boolean equals(Object o) {
