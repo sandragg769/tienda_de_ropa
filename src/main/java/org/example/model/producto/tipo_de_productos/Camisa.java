@@ -9,6 +9,10 @@ public class Camisa extends Producto {
     private int botones;
 
     //constructor
+    //vacío para JSON
+    public Camisa() {
+    }
+
     public Camisa(String nombre, String marca, double precioInicial, Talla talla,
                   Color color, Etiqueta etiqueta, int botones) {
         super(nombre, marca, precioInicial, talla, color, etiqueta);

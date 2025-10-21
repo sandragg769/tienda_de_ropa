@@ -1,18 +1,28 @@
 package org.example.model.producto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public class Etiqueta {
+    //no id en JSON
+    @JsonIgnore
     private long id;
     private String nombre;
     private LocalDate fechaCreacion;
+    //evitar errores JSON
+    @JsonIgnore
     //un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
     private Set<Producto> productos = new HashSet<>();
 
     //constructor
+    //vacío para JSON
+    public Etiqueta() {
+    }
+
     //no id
     //no poner productos ya que solo estamos creando la etiqueta, no asignando productos a etiquetas
     public Etiqueta(String nombre) {

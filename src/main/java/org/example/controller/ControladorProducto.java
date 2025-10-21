@@ -9,6 +9,7 @@ import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
 import org.example.model.producto.tipo_de_productos.Chaqueta;
 import org.example.model.producto.tipo_de_productos.Pantalon;
+import org.example.utils.GestorFicherosJSON;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,6 +147,21 @@ public class ControladorProducto {
         //añadirla a la lista de etiquetas
         listaEtiquetas.add(etiqueta);
         return etiqueta;
+    }
+
+    //METODOS PARA EXPORTAR E IMPORTAR PRODUCTOS
+    //exportar objetos producto a fichero JSON
+    public void exportarProductosAJSON() {
+        String rutaFichero = "Productos.json";
+        GestorFicherosJSON.exportarAJSON(listaProductos, rutaFichero);
+    }
+
+    //importar JSON a objetos producto
+    public void importarProductosDesdeJSON() {
+        String rutaFichero = "productos.json";
+        List<Producto> importados = GestorFicherosJSON.importarDesdeJSON(rutaFichero, Producto.class);
+        listaProductos.clear();
+        listaProductos.addAll(importados);
     }
 
 

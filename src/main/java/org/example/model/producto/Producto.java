@@ -1,17 +1,38 @@
 package org.example.model.producto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.example.model.Usuario;
 import org.example.model.descuento.Descuento;
 import org.example.model.pedido.LineaPedido;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
+import org.example.model.producto.tipo_de_productos.Camisa;
+import org.example.model.producto.tipo_de_productos.Chaqueta;
+import org.example.model.producto.tipo_de_productos.Pantalon;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+//por JSON
+//al haber herencia hay que poner esto
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "tipo"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Camisa.class, name = "Camisa"),
+        @JsonSubTypes.Type(value = Pantalon.class, name = "Pantalon"),
+        @JsonSubTypes.Type(value = Chaqueta.class, name = "Chaqueta")
+})
+
 //clase que usaremos de plantilla para los diferentes productos
 public abstract class Producto {
+    //no id en JSON
+    @JsonIgnore
     private long id;
     private String nombre;
     private String marca;
@@ -20,12 +41,18 @@ public abstract class Producto {
     private Color color;
     //solo puede tener una etiqueta por eso no se hace lista
     private Etiqueta etiqueta;
+    @JsonIgnore
     //un set porque no hay usuarios repetidos, representa los usuarios que han puesto el producto en favoritos (que pueden ser muchos)
     private Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
+    @JsonIgnore
     //un producto puede tener una línea de pedido (la línea tiene id por lo que no se refiere en general, si no que a esa especifica)
     private LineaPedido lineaPedido;
     //un producto puede tener 0 o 1 descuentos
     private Descuento descuento;
+
+    //constructor vacío para la exportación e importación de JSON
+    public Producto() {
+    }
 
     //constructor
     //no id
@@ -123,6 +150,8 @@ public abstract class Producto {
         this.descuento = descuento;
     }
 
+    //no atributos calculados en JSON
+    @JsonIgnore
     //metodo para obtener el precio final del producto, con descuento aplicado (restar el dinero que me da el metodo del descuento al del precioInicial
     public double getPrecioFinal() {
         double descuentoAAplicar;

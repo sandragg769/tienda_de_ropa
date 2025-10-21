@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class Pedido {
+   //no hace falta transient por la referencia circular
     private long id;
     private LocalDate fecha;
     private EstadoPedido estado;

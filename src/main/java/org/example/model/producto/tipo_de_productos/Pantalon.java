@@ -9,6 +9,11 @@ public class Pantalon extends Producto {
     private int botones;
 
     //constructor
+    //vacío para JSON
+    public Pantalon() {
+
+    }
+
     //pedir con super los datos del Producto y después los atributos del producto en si
     public Pantalon(String nombre, String marca, double precioInicial, Talla talla,
                     Color color, Etiqueta etiqueta, int botones) {

@@ -5,6 +5,7 @@ import org.example.model.pedido.EstadoPedido;
 import org.example.model.pedido.LineaPedido;
 import org.example.model.pedido.Pedido;
 import org.example.model.producto.Producto;
+import org.example.utils.GestorFicherosGSON;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -216,6 +217,16 @@ public class ControladorPedido {
         }
         //si no encuentra ninguno devuelve null
         return null;
+    }
+
+    //METODOS PARA EXPOTAR E IMPORTAR PEDIDOS
+    public void exportarPedidosGson() {
+        GestorFicherosGSON.exportarListaAGson(listaPedidos, "pedidos.json");
+    }
+
+    public void importarPedidosGson() {
+        List<Pedido> pedidosImportados = GestorFicherosGSON.importarListaDesdeGson("pedidos.json", Pedido[].class);
+        listaPedidos.addAll(pedidosImportados);
     }
 
 }

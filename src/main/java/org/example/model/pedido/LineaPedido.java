@@ -5,10 +5,11 @@ import org.example.model.producto.Producto;
 public class LineaPedido {
     private long id;
     private int cantidad;
+    //transient por el GSON por la referencia circular
     //una línea de producto puede tener solo un pedido
-    private Producto producto;
+    private transient Producto producto;
     //añadir pedido
-    private Pedido pedido;
+    private transient Pedido pedido;
 
     //constructor
     //aquí sí hay que poner un Producto obligatoriamente
@@ -50,6 +51,11 @@ public class LineaPedido {
         return producto.getPrecioFinal() * cantidad;
     }
 
-    public Pedido getPedido() { return pedido; }
-    public void setPedido(Pedido pedido) { this.pedido = pedido; }
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
 }

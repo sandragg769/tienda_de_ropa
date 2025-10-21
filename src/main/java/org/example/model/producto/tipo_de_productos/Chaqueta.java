@@ -10,6 +10,10 @@ public class Chaqueta extends Producto {
     private int nivelAbrigo;
 
     //constructor
+    //vacío para JSON
+    public Chaqueta() {
+    }
+
     public Chaqueta(String nombre, String marca, double precioInicial, Talla talla,
                     Color color, Etiqueta etiqueta, boolean conCapucha, int nivelAbrigo) {
         super(nombre, marca, precioInicial, talla, color, etiqueta);
