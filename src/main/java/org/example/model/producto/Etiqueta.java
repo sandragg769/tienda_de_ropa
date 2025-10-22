@@ -1,6 +1,8 @@
 package org.example.model.producto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -10,8 +12,14 @@ import java.util.Set;
 public class Etiqueta {
     //no id en JSON
     @JsonIgnore
+    //excluimos id para CSV (no lo anotamos)
     private long id;
+    //para CSV
+    @CsvBindByName(column = "nombre")
     private String nombre;
+    //para CSV
+    @CsvBindByName(column = "fechaCreacion")
+    @CsvDate("dd/MM/yyyy") // formato español
     private LocalDate fechaCreacion;
     //evitar errores JSON
     @JsonIgnore
@@ -19,7 +27,7 @@ public class Etiqueta {
     private Set<Producto> productos = new HashSet<>();
 
     //constructor
-    //vacío para JSON
+    //vacío para JSON y CSV
     public Etiqueta() {
     }
 

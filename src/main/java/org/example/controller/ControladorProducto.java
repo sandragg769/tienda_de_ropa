@@ -9,6 +9,7 @@ import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
 import org.example.model.producto.tipo_de_productos.Chaqueta;
 import org.example.model.producto.tipo_de_productos.Pantalon;
+import org.example.utils.GestorFicherosCSV;
 import org.example.utils.GestorFicherosJSON;
 
 import java.util.ArrayList;
@@ -152,16 +153,25 @@ public class ControladorProducto {
     //METODOS PARA EXPORTAR E IMPORTAR PRODUCTOS
     //exportar objetos producto a fichero JSON
     public void exportarProductosAJSON() {
-        String rutaFichero = "Productos.json";
-        GestorFicherosJSON.exportarAJSON(listaProductos, rutaFichero);
+        String rutaFichero = "productos.json";
+        GestorFicherosJSON.exportarProductosAJSON(listaProductos, rutaFichero);
     }
 
     //importar JSON a objetos producto
     public void importarProductosDesdeJSON() {
         String rutaFichero = "productos.json";
-        List<Producto> importados = GestorFicherosJSON.importarDesdeJSON(rutaFichero, Producto.class);
+        List<Producto> importados = GestorFicherosJSON.importarProductosDesdeJSON(rutaFichero);
         listaProductos.clear();
         listaProductos.addAll(importados);
+    }
+
+    //METODOS PARA EXPORTAR E IM PORTAR ETIQUETAS A CSV
+    public void exportarEtiquetasCSV() {
+        GestorFicherosCSV.exportarEtiquetasACSV(listaEtiquetas, "etiquetas.csv");
+    }
+
+    public void importarEtiquetasCSV() {
+        listaEtiquetas = GestorFicherosCSV.importarEtiquetasDesdeCSV("etiquetas.csv");
     }
 
 

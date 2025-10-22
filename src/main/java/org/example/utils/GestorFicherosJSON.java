@@ -3,6 +3,7 @@ package org.example.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.example.model.producto.Producto;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,26 +19,23 @@ public class GestorFicherosJSON {
         mapper.registerModule(new JavaTimeModule());
     }
 
-    //METODO EXPORTAR DE OBJETOS A JSON
-    //para que en el futuro se pueda usar apra otras cosas no se pone como tal aquí que es para productos
-    //se pone luego en el controlador, por eso no se pone un tipado específico a la lista y demás
-    public static <T> void exportarAJSON(List<T> lista, String rutaFichero) {
+    //METODO EXPORTAR DE PRODUCTOS A JSON
+    public static void exportarProductosAJSON(List<Producto> listaProductos, String rutaFichero) {
         try {
-            //typereference por lista
-            mapper.writerFor(new TypeReference<List<T>>() {
-            }).writeValue(new File(rutaFichero), lista);
+            mapper.writerFor(new TypeReference<List<Producto>>() {}).writeValue(new File(rutaFichero), listaProductos);
         } catch (IOException e) {
-            throw new RuntimeException("Error al exportar a JSON: " + e.getMessage(), e);
+            throw new RuntimeException("Error al exportar productos a JSON: " + e.getMessage(), e);
         }
     }
 
+
     //METODO IMPORTAR DE JSON A OBJETOS
-    public static <T> List<T> importarDesdeJSON(String rutaFichero, Class<T> tipo) {
+    public static List<Producto> importarProductosDesdeJSON(String rutaFichero) {
         try {
             return mapper.readValue(new File(rutaFichero),
-                    mapper.getTypeFactory().constructCollectionType(List.class, tipo));
+                    mapper.getTypeFactory().constructCollectionType(List.class, Producto.class));
         } catch (IOException e) {
-            throw new RuntimeException("Error al importar desde JSON: " + e.getMessage(), e);
+            throw new RuntimeException("Error al importar productos desde JSON: " + e.getMessage(), e);
         }
     }
 

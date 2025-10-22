@@ -221,11 +221,11 @@ public class ControladorPedido {
 
     //METODOS PARA EXPOTAR E IMPORTAR PEDIDOS
     public void exportarPedidosGson() {
-        GestorFicherosGSON.exportarListaAGson(listaPedidos, "pedidos.json");
+        GestorFicherosGSON.exportarPedidosAGson(listaPedidos, "pedidos.json");
     }
 
     public void importarPedidosGson() {
-        List<Pedido> pedidosImportados = GestorFicherosGSON.importarListaDesdeGson("pedidos.json", Pedido[].class);
+        List<Pedido> pedidosImportados = GestorFicherosGSON.importarPedidosDesdeGson("pedidos.json");
         listaPedidos.addAll(pedidosImportados);
     }
 

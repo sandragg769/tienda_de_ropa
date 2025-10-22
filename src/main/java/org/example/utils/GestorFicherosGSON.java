@@ -2,6 +2,7 @@ package org.example.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.example.model.pedido.Pedido;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,34 +12,32 @@ import java.util.List;
 
 //esta ya no admite herencia
 public class GestorFicherosGSON {
-    //metodo para exportar objetos a GSON
-    public static <T> void exportarListaAGson(List<T> lista, String rutaArchivo) {
-        //crear el builder
+    //metodo para exportar pedidos a JSOn a través de GSON
+    public static void exportarPedidosAGson(List<Pedido> listaPedidos, String rutaArchivo) {
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                 .create();
 
-        //serializacion y guardar
         try (FileWriter writer = new FileWriter(rutaArchivo)) {
-            gson.toJson(lista, writer);
+            gson.toJson(listaPedidos, writer);
         } catch (IOException e) {
-            throw new RuntimeException("Error al exportar datos a JSON con Gson: " + e.getMessage(), e);
+            throw new RuntimeException("Error al exportar pedidos a JSON con Gson: " + e.getMessage(), e);
         }
     }
 
-    //metodo para importar de GSON a objeto
+    //metodo para importar de GSON a pedidos
     //array por ser lista
-    public static <T> List<T> importarListaDesdeGson(String rutaArchivo, Class<T[]> claseArray) {
+    public static List<Pedido> importarPedidosDesdeGson(String rutaArchivo) {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                 .create();
 
         try (FileReader reader = new FileReader(rutaArchivo)) {
-            T[] array = gson.fromJson(reader, claseArray);
-            return List.of(array);
+            Pedido[] arrayPedidos = gson.fromJson(reader, Pedido[].class);
+            return List.of(arrayPedidos);
         } catch (IOException e) {
-            throw new RuntimeException("Error al importar datos desde JSON con Gson: " + e.getMessage(), e);
+            throw new RuntimeException("Error al importar pedidos desde JSON con Gson: " + e.getMessage(), e);
         }
     }
 }

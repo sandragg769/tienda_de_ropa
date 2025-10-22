@@ -6,11 +6,20 @@ import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
+import org.example.model.producto.tipo_de_productos.Pantalon;
+import org.example.utils.GestorFicherosJSON;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TestControladorProducto {
     private ControladorProducto controladorProducto;
@@ -129,5 +138,69 @@ class TestControladorProducto {
         controladorProducto.eliminarDescuento(p.getId());
         //comprobamos que no lo tiene ahora
         assertEquals(null, p.getDescuento());
+    }
+
+    //TEST EXPORTAR E IMPORTAR JSON
+    //test exportar JSON correcto y verificando el tipo
+    @Test
+    void exportarProductosCorrecto() throws IOException {
+        //aunque se tenga que crear el objeto en estos tyest siempre mejor no poner en el BeforeEach para que no interfiera con los test que ya tengo
+        Producto camisa = new Camisa();
+        camisa.setNombre("Camisa Formal");
+        camisa.setPrecioInicial(25.0);
+        camisa.setEtiqueta(etiqueta);
+        controladorProducto.leerProductos().add(camisa);
+
+        //exportar
+        controladorProducto.exportarProductosAJSON();
+
+        //crea un file apuntando al fichero donde se exporta
+        File file = new File("productos.json");
+        //leer contenido
+        String contenido = Files.readString(file.toPath());
+        //comprobar que contiene el campo tipo con el nombre "Camisa"
+        assertTrue(contenido.contains("\"tipo\":\"Camisa\""), "El JSON debe incluir el campo tipo con valor Camisa");
+    }
+
+    //test ruta invalida de exportar a JSON
+    @Test
+    void exportarProductosIncorrectoRutaInvalida() {
+        Producto pantalon = new Pantalon();
+        pantalon.setNombre("ProductoTest");
+        pantalon.setPrecioInicial(20.0);
+        pantalon.setEtiqueta(etiqueta);
+        controladorProducto.leerProductos().add(pantalon);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            GestorFicherosJSON.exportarProductosAJSON(controladorProducto.leerProductos(), "/ruta/invalida/productos.json");
+        });
+        System.out.println("Mensaje excepción: " + exception.getMessage());
+        assertTrue(exception.getMessage().startsWith("Error al exportar productos a JSON"), "Mensaje de error esperado");
+    }
+
+    //test correcto de importar desde JSON
+    @Test
+    void importarProductosCorrecto() {
+        String json = "[{\"tipo\":\"Camisa\",\"nombre\":\"Camisa Formal\",\"precioInicial\":25.0,\"etiqueta\":{\"nombre\":\"Rebajas\",\"fechaCreacion\":[2025,10,22]}}]";
+
+
+
+        //importamos desde JSON
+        List<Producto> listaImportada = GestorFicherosJSON.importarProductosDesdeJSON(file.getAbsolutePath());
+        Producto p = listaImportada.get(0);
+        //compruebo que es instancia de Camisa y q el nombre es correcto
+        assertTrue(p instanceof Camisa, "El objeto importado debe ser instancia de Camisa");
+        assertEquals("Camisa Formal", p.getNombre());
+
+
+
+    }
+
+    @Test
+    void importarProductosIncorrectoArchivoNoExiste() {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            GestorFicherosJSON.importarProductosDesdeJSON("archivo_inexistente.json");
+        });
+        assertTrue(exception.getMessage().contains("Error al importar desde JSON"));
     }
 }
