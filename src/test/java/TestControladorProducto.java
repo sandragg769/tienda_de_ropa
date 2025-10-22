@@ -8,15 +8,13 @@ import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
 import org.example.model.producto.tipo_de_productos.Pantalon;
 import org.example.utils.GestorFicherosJSON;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -181,26 +179,79 @@ class TestControladorProducto {
     //test correcto de importar desde JSON
     @Test
     void importarProductosCorrecto() {
-        String json = "[{\"tipo\":\"Camisa\",\"nombre\":\"Camisa Formal\",\"precioInicial\":25.0,\"etiqueta\":{\"nombre\":\"Rebajas\",\"fechaCreacion\":[2025,10,22]}}]";
+        //creamos el objeto y lo exportamos primero
+        Producto camisa = new Camisa();
+        camisa.setNombre("Camisa Formal");
+        camisa.setPrecioInicial(25.0);
+        camisa.setEtiqueta(etiqueta);
+        controladorProducto.leerProductos().add(camisa);
+        controladorProducto.exportarProductosAJSON();
 
+        //vaciamos la lista para simular que el programa acaba de iniciar
+        controladorProducto.leerProductos().clear();
+        controladorProducto.importarProductosDesdeJSON();
 
-
-        //importamos desde JSON
-        List<Producto> listaImportada = GestorFicherosJSON.importarProductosDesdeJSON(file.getAbsolutePath());
-        Producto p = listaImportada.get(0);
-        //compruebo que es instancia de Camisa y q el nombre es correcto
-        assertTrue(p instanceof Camisa, "El objeto importado debe ser instancia de Camisa");
-        assertEquals("Camisa Formal", p.getNombre());
-
-
-
+        //comprobar que el producto se ha importado correctamente
+        List<Producto> productosImportados = controladorProducto.leerProductos();
+        assertEquals(1, productosImportados.size(), "Debe haber un producto importado");
+        assertEquals("Camisa Formal", productosImportados.get(0).getNombre());
+        assertEquals(25.0, productosImportados.get(0).getPrecioInicial());
     }
 
     @Test
     void importarProductosIncorrectoArchivoNoExiste() {
+        //aseguramos que el archivo no existe
+        File file = new File("productos.json");
+        if (file.exists()) file.delete();
+
+        //creamos la exception q lanzará el metodo importar
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            GestorFicherosJSON.importarProductosDesdeJSON("archivo_inexistente.json");
+            controladorProducto.importarProductosDesdeJSON();
         });
-        assertTrue(exception.getMessage().contains("Error al importar desde JSON"));
+
+        assertTrue(exception.getMessage().contains("Error al importar"),
+                "Debe lanzar error si el fichero no existe");
+    }
+
+    //TEST EXPORTAR E IMPORTAR ETIQUETAS EN CSV
+    @Test
+    void exportarEtiquetasCSVCorrecto() {
+        controladorProducto.getListaEtiquetas().add(etiqueta);
+        controladorProducto.exportarEtiquetasCSV();
+
+        File archivo = new File("etiquetas.csv");
+        assertTrue(archivo.exists(), "El archivo CSV debe existir tras exportar");
+        assertTrue(archivo.length() > 0, "El archivo CSV no debe estar vacío");
+    }
+
+    //NO HACER TEST DE EXPORTAR INCORRECTO YA QUE LA RUTA SIEMPRE VA A SER CORRECTA AL PONERLA EN EL METODO DIRECTAMENTE
+
+    @Test
+    void importarEtiquetasCSVCorrecto() {
+        controladorProducto.getListaEtiquetas().add(new Etiqueta("Rebajas"));
+        controladorProducto.exportarEtiquetasCSV();
+        controladorProducto.getListaEtiquetas().clear();
+        controladorProducto.importarEtiquetasCSV();
+
+        List<Etiqueta> importadas = controladorProducto.getListaEtiquetas();
+        assertEquals(1, importadas.size(), "Debe importar una etiqueta");
+
+        Etiqueta importada = importadas.get(0);
+        assertEquals("Rebajas", importada.getNombre(), "El nombre de la etiqueta importada debe coincidir");
+    }
+
+    @Test
+    void importarEtiquetasCSV_archivoNoExiste_lanzaExcepcion() {
+        //asegurar que el archivo no existe
+        File archivo = new File("etiquetas.csv");
+        if (archivo.exists()) {
+            archivo.delete();
+        }
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            controladorProducto.importarEtiquetasCSV();
+        });
+
+        assertTrue(exception.getMessage().contains("Error al importar etiquetas"), "Debe lanzar una excepción con mensaje adecuado");
     }
 }

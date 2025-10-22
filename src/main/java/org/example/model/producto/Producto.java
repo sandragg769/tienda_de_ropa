@@ -43,10 +43,10 @@ public abstract class Producto {
     private Etiqueta etiqueta;
     @JsonIgnore
     //un set porque no hay usuarios repetidos, representa los usuarios que han puesto el producto en favoritos (que pueden ser muchos)
-    private Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
+    private transient Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
     @JsonIgnore
     //un producto puede tener una línea de pedido (la línea tiene id por lo que no se refiere en general, si no que a esa especifica)
-    private LineaPedido lineaPedido;
+    private transient LineaPedido lineaPedido;
     //un producto puede tener 0 o 1 descuentos
     private Descuento descuento;
 

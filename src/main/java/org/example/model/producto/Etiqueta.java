@@ -24,7 +24,7 @@ public class Etiqueta {
     //evitar errores JSON
     @JsonIgnore
     //un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
-    private Set<Producto> productos = new HashSet<>();
+    private transient Set<Producto> productos = new HashSet<>();
 
     //constructor
     //vacío para JSON y CSV

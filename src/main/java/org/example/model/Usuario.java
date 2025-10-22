@@ -18,9 +18,9 @@ public class Usuario {
     private String email;
     private String passsword;
     //un set de Productos favoritos, para que no se repitan productos favoritos, pero puede tener muchos
-    private Set<Producto> favoritos = new HashSet<>();
+    private transient Set<Producto> favoritos = new HashSet<>();
     // un set de pedidos (para que no se repitan los mismos pedidos) ya que un usuario puede tener muchos pedidos, lo hacemos Linkedhash para que se ordene por inserción
-    private Set<Pedido> pedidos = new LinkedHashSet<>();
+    private transient Set<Pedido> pedidos = new LinkedHashSet<>();
 
     //constructor
     //no id

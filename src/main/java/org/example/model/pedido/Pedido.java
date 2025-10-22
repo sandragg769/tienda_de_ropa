@@ -11,7 +11,7 @@ public class Pedido {
     private LocalDate fecha;
     private EstadoPedido estado;
     //creo un objeto y no una lista porque un pedido es tenido por un usuario solo
-    private Usuario usuario;
+    private transient Usuario usuario;
     //uso una lista para poder tener muchas lineasPedido en un producto (pueden repetirse)
     private Set<LineaPedido> lineasPedido = new HashSet<>();
 

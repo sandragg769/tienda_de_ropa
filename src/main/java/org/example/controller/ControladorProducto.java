@@ -165,6 +165,10 @@ public class ControladorProducto {
         listaProductos.addAll(importados);
     }
 
+    public List<Etiqueta> getListaEtiquetas() {
+        return listaEtiquetas;
+    }
+
     //METODOS PARA EXPORTAR E IM PORTAR ETIQUETAS A CSV
     public void exportarEtiquetasCSV() {
         GestorFicherosCSV.exportarEtiquetasACSV(listaEtiquetas, "etiquetas.csv");

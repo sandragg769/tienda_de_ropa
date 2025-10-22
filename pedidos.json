@@ -1,0 +1,13 @@
+[
+  {
+    "id": 0,
+    "fecha": "2025-10-22",
+    "estado": "PENDIENTE",
+    "lineasPedido": [
+      {
+        "id": 0,
+        "cantidad": 2
+      }
+    ]
+  }
+]

@@ -16,7 +16,11 @@ import org.example.model.producto.tipo_de_productos.Pantalon;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -314,6 +318,57 @@ class TestControladorPedido {
         Pedido pedido = controladorPedido.encontrarPedidoPendienteDeUsuarioConcreto(usuario);
 
         assertEquals(170.0, pedido.getPecioTotal());
+    }
+
+    //TEST EXPORTAR E IMPORTAR PEDIDOS GSON
+    @Test
+    void exportarPedidosGsonCorrecto() throws IOException {
+        Pedido pedido = controladorPedido.crearPedido(usuario);
+        controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
+
+        controladorPedido.exportarPedidosGson();
+
+        File file = new File("pedidos.json");
+        assertTrue(file.exists());
+        String contenido = Files.readString(file.toPath());
+        System.out.println(contenido);
+        assertTrue(contenido.contains("\"estado\": \"PENDIENTE\""),
+                "El JSON debe contener el estado PENDIENTE del pedido");
+        assertTrue(contenido.contains("\"cantidad\": 2"),
+                "El JSON debe incluir la cantidad de la línea de pedido");
+    }
+
+    //NO PROBAR EXPORTAR INCORRECTAMENTE GSON YA QUE EN EL PROPIO METODO SE PONE LA RUTA DEL ARCHIVO POR LO QUE NO VA A FALLAR NUNCA
+
+    @Test
+    void importarPedidosGsonCorrecto() {
+        // Crear pedido y exportar
+        Pedido pedido = controladorPedido.crearPedido(usuario);
+        controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 1);
+        controladorPedido.exportarPedidosGson();
+
+        // Vaciar lista y luego importar
+        controladorPedido.leerPedidos().clear();
+        assertEquals(0, controladorPedido.leerPedidos().size(), "La lista debe estar vacía antes de importar");
+        controladorPedido.importarPedidosGson();
+
+        //comprobar que funciona
+        List<Pedido> pedidosImportados = controladorPedido.leerPedidos();
+        assertEquals(1, pedidosImportados.size(), "Debe importar un pedido");
+    }
+
+    @Test
+    void importarPedidosGsonIncorrectoArchivoNoExiste() {
+        //borrar el fichero por si existe
+        File file = new File("pedidos.json");
+        if (file.exists()) file.delete();
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                controladorPedido.importarPedidosGson()
+        );
+
+        assertTrue(exception.getMessage().contains("Error al importar pedidos desde JSON"),
+                "Debe lanzar un mensaje de error adecuado al fallar la importación");
     }
 
 
