@@ -21,7 +21,7 @@ public class Etiqueta {
     @CsvBindByName(column = "fechaCreacion")
     @CsvDate("dd/MM/yyyy") // formato español
     private LocalDate fechaCreacion;
-    //evitar errores JSON
+    //evitar errores JSON y CSV
     @JsonIgnore
     //un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
     private transient Set<Producto> productos = new HashSet<>();

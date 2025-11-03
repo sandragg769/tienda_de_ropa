@@ -15,6 +15,7 @@ import java.util.List;
 //tampoco herencia
 public class GestorFicherosCSV {
 
+    //metodo para exportar etiquetas a archivo CSV
     public static void exportarEtiquetasACSV(List<Etiqueta> listaEtiquetas, String nombreFichero) {
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(nombreFichero), StandardCharsets.UTF_8)) {
 
@@ -29,6 +30,7 @@ public class GestorFicherosCSV {
         }
     }
 
+    //metodo para importar etiquetas de un archivo CSV
     public static List<Etiqueta> importarEtiquetasDesdeCSV(String nombreFichero) {
         try (Reader reader = new InputStreamReader(new FileInputStream(nombreFichero), StandardCharsets.UTF_8)) {
 

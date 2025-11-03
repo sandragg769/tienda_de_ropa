@@ -323,11 +323,12 @@ class TestControladorPedido {
     //TEST EXPORTAR E IMPORTAR PEDIDOS GSON
     @Test
     void exportarPedidosGsonCorrecto() throws IOException {
+        //crear pedido y añadir una línea para poder visualizarla
         Pedido pedido = controladorPedido.crearPedido(usuario);
         controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 2);
-
+        //exportar
         controladorPedido.exportarPedidosGson();
-
+        //comprobar que se ha creado el archivo, leer el contenido y verificar que sale lo que tiene que salir
         File file = new File("pedidos.json");
         assertTrue(file.exists());
         String contenido = Files.readString(file.toPath());
@@ -342,12 +343,12 @@ class TestControladorPedido {
 
     @Test
     void importarPedidosGsonCorrecto() {
-        // Crear pedido y exportar
+        //crear pedido y exportar
         Pedido pedido = controladorPedido.crearPedido(usuario);
         controladorPedido.aniadirLineaPedidoAPedido(usuario, producto, 1);
         controladorPedido.exportarPedidosGson();
 
-        // Vaciar lista y luego importar
+        //vaciar lista y luego importar
         controladorPedido.leerPedidos().clear();
         assertEquals(0, controladorPedido.leerPedidos().size(), "La lista debe estar vacía antes de importar");
         controladorPedido.importarPedidosGson();
@@ -359,10 +360,11 @@ class TestControladorPedido {
 
     @Test
     void importarPedidosGsonIncorrectoArchivoNoExiste() {
-        //borrar el fichero por si existe
+        //borrar el fichero por si existe (para que de error)
         File file = new File("pedidos.json");
         if (file.exists()) file.delete();
 
+        //comprobamos que falla
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
                 controladorPedido.importarPedidosGson()
         );

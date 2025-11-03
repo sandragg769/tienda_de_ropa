@@ -142,7 +142,7 @@ class TestControladorProducto {
     //test exportar JSON correcto y verificando el tipo
     @Test
     void exportarProductosCorrecto() throws IOException {
-        //aunque se tenga que crear el objeto en estos tyest siempre mejor no poner en el BeforeEach para que no interfiera con los test que ya tengo
+        //aunque se tenga que crear el objeto en estos test siempre mejor no poner en el BeforeEach para que no interfiera con los test que ya tengo
         Producto camisa = new Camisa();
         camisa.setNombre("Camisa Formal");
         camisa.setPrecioInicial(25.0);
@@ -169,6 +169,7 @@ class TestControladorProducto {
         pantalon.setEtiqueta(etiqueta);
         controladorProducto.leerProductos().add(pantalon);
 
+        //comprobar que da error al poner una ruta inválida
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             GestorFicherosJSON.exportarProductosAJSON(controladorProducto.leerProductos(), "/ruta/invalida/productos.json");
         });
@@ -198,13 +199,14 @@ class TestControladorProducto {
         assertEquals(25.0, productosImportados.get(0).getPrecioInicial());
     }
 
+    //test que prueba importar de un archivo que no existe
     @Test
     void importarProductosIncorrectoArchivoNoExiste() {
         //aseguramos que el archivo no existe
         File file = new File("productos.json");
         if (file.exists()) file.delete();
 
-        //creamos la exception q lanzará el metodo importar
+        //creamos la exception que lanzará el metodo importar
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             controladorProducto.importarProductosDesdeJSON();
         });
@@ -216,9 +218,11 @@ class TestControladorProducto {
     //TEST EXPORTAR E IMPORTAR ETIQUETAS EN CSV
     @Test
     void exportarEtiquetasCSVCorrecto() {
+        //crear la etiqueta y exportar
         controladorProducto.getListaEtiquetas().add(etiqueta);
         controladorProducto.exportarEtiquetasCSV();
 
+        //comprobar que existe el archivo y que tiene contenido
         File archivo = new File("etiquetas.csv");
         assertTrue(archivo.exists(), "El archivo CSV debe existir tras exportar");
         assertTrue(archivo.length() > 0, "El archivo CSV no debe estar vacío");
@@ -228,14 +232,17 @@ class TestControladorProducto {
 
     @Test
     void importarEtiquetasCSVCorrecto() {
+        //crear etiqueta, exportarlo, limpiar la lista (para poder importar sin que esté ya dentro) e importar
         controladorProducto.getListaEtiquetas().add(new Etiqueta("Rebajas"));
         controladorProducto.exportarEtiquetasCSV();
         controladorProducto.getListaEtiquetas().clear();
         controladorProducto.importarEtiquetasCSV();
 
+        //comprobamos que se ha importado
         List<Etiqueta> importadas = controladorProducto.getListaEtiquetas();
         assertEquals(1, importadas.size(), "Debe importar una etiqueta");
 
+        //y comprobamos que sea la correcta la que se ha importado
         Etiqueta importada = importadas.get(0);
         assertEquals("Rebajas", importada.getNombre(), "El nombre de la etiqueta importada debe coincidir");
     }
@@ -248,6 +255,7 @@ class TestControladorProducto {
             archivo.delete();
         }
 
+        //comprobamos que da exception al importar
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             controladorProducto.importarEtiquetasCSV();
         });
