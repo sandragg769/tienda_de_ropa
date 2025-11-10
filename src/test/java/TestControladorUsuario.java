@@ -28,7 +28,7 @@ class TestControladorUsuario {
         //siempre hay que crear el controlador
         controladorUsuario = new ControladorUsuario();
         //crear el usuario
-        usuario = new Usuario("11111111A", "Alguna calle",
+        usuario = new Usuario("Sandra","11111111A", "Alguna calle",
                 LocalDate.of(2005, 9, 12), "600123123", "sandra@gmail.com", "1234");
         //y meter al usuario para que haya uno al menos
         controladorUsuario.registrarUsuario(usuario);
@@ -38,7 +38,7 @@ class TestControladorUsuario {
     @Test
     void registrarUsuarioCorrecto() {
         //creamos un usuario con todo correcto y lo registramos
-        Usuario usuarioCorrecto = new Usuario("11111111B", "Alguna calle",
+        Usuario usuarioCorrecto = new Usuario("Sandra","11111111B", "Alguna calle",
                 LocalDate.of(2005, 9, 12), "600123123", "sandra2@gmail.com", "1234");
         controladorUsuario.registrarUsuario(usuarioCorrecto);
 
@@ -50,7 +50,7 @@ class TestControladorUsuario {
     @Test
     void registrarUsuarioIncorrecto() {
         //creamos un usuario con todo correcto y lo registramos
-        Usuario usuarioIncorrecto = new Usuario("11111111B", "Alguna calle",
+        Usuario usuarioIncorrecto = new Usuario("Sandra","11111111B", "Alguna calle",
                 LocalDate.of(2005, 9, 12), "600123123", "sandra@gmail.com", "1234");
         //poner el registrarUsuario dentro del assert, no fuera que da error
 
@@ -107,7 +107,7 @@ class TestControladorUsuario {
     @Test
     void eliminarUsuarioIncorrecto() {
         //creamos un usuario y le asignamos manualmente una id q no esté en la lista para que de error
-        Usuario noEsta = new Usuario("11111111A", "Alguna calle",
+        Usuario noEsta = new Usuario("Sandra","11111111A", "Alguna calle",
                 LocalDate.of(2005, 9, 12), "600123123", "sandra2@gmail.com", "1234");
         noEsta.setId(1234);
 
@@ -119,7 +119,7 @@ class TestControladorUsuario {
     //test comprobar actualizar
     @Test
     void actualizarUsuarioCorrecto() {
-        Usuario modificado = new Usuario("11111111A", "Calle Original",
+        Usuario modificado = new Usuario("Sandra","11111111A", "Calle Original",
                 LocalDate.of(2005, 9, 12), "11111111", "sandra2@gmail.com", "1234");
         //le ponemos el mismo id del anterior
         modificado.setId(1);
@@ -132,7 +132,7 @@ class TestControladorUsuario {
 
     @Test
     void actualizarUsuarioInexistente() {
-        Usuario inexistente = new Usuario("11111111A", "Calle Original",
+        Usuario inexistente = new Usuario("Sandra","11111111A", "Calle Original",
                 LocalDate.of(2005, 9, 12), "11111111", "sandra2@gmail.com", "1234");
         //le ponemos id inexistente
         inexistente.setId(11111);
@@ -144,7 +144,7 @@ class TestControladorUsuario {
 
     @Test
     void actualizarUsuarioCampoIneditable() {
-        Usuario modificado = new Usuario("11111111A", "Calle Original",
+        Usuario modificado = new Usuario("Sandra","11111111A", "Calle Original",
                 LocalDate.of(2005, 9, 12), "11111111", "sandra2@gmail.com", "1234");
         //le ponemos id igual al anterior
         modificado.setId(1);

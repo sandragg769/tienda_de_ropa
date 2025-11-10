@@ -56,6 +56,7 @@ public class DatabaseConf {
                     " con_capucha BOOLEAN," +
                     " nivel_abrigo INT," +
                     //relación de producto- etiqueta (un producto tiene una etiqueta, una etiqueta puede tenerla muchos productos)
+                    //se hace SET NULL para que si borramos las etiquetas no se borren los productos, así los productos siguen existiendo pero quedan sin clasificación
                     " FOREIGN KEY (etiqueta_id) REFERENCES etiqueta(id) ON DELETE SET NULL" +
                     ");";
 

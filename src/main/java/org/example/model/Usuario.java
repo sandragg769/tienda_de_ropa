@@ -11,6 +11,7 @@ import java.util.Set;
 
 public class Usuario {
     private long id;
+    private String nombre;
     private String dni;
     private String direccion;
     private LocalDate fechaNacimiento;
@@ -24,8 +25,9 @@ public class Usuario {
 
     //constructor
     //no id
-    public Usuario(String dni, String direccion, LocalDate fechaNacimiento,
+    public Usuario(String nombre, String dni, String direccion, LocalDate fechaNacimiento,
                    String telefono, String email, String passsword) {
+        this.nombre = nombre;
         this.dni = dni;
         this.direccion = direccion;
         this.fechaNacimiento = fechaNacimiento;
@@ -36,6 +38,15 @@ public class Usuario {
     }
 
     //getters y setters
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     public long getId() {
         return id;
     }

@@ -1,5 +1,6 @@
 
 import org.example.controller.ControladorProducto;
+import org.example.model.descuento.Descuento;
 import org.example.model.descuento.DescuentoPorcentaje;
 import org.example.model.producto.Etiqueta;
 import org.example.model.producto.Producto;
@@ -147,6 +148,9 @@ class TestControladorProducto {
         camisa.setNombre("Camisa Formal");
         camisa.setPrecioInicial(25.0);
         camisa.setEtiqueta(etiqueta);
+        //añadir descuento (corrección profe)
+        Descuento descuento = new DescuentoPorcentaje(0.2f);
+        camisa.setDescuento(descuento);
         controladorProducto.leerProductos().add(camisa);
 
         //exportar
@@ -158,6 +162,8 @@ class TestControladorProducto {
         String contenido = Files.readString(file.toPath());
         //comprobar que contiene el campo tipo con el nombre "Camisa"
         assertTrue(contenido.contains("\"tipo\":\"Camisa\""), "El JSON debe incluir el campo tipo con valor Camisa");
+        //comprobar que funciona el descuento
+        assertTrue(contenido.contains("0.2"), "El JSON debe incluir el descuento del producto");
     }
 
     //test ruta invalida de exportar a JSON

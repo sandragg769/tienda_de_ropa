@@ -35,7 +35,7 @@ class TestControladorPedido {
     @BeforeEach
     void setUp() {
         controladorPedido = new ControladorPedido();
-        usuario = new Usuario("11111111A", "Alguna calle",
+        usuario = new Usuario("Sandra","11111111A", "Alguna calle",
                 LocalDate.of(2005, 9, 12), "600123123", "sandra@gmail.com", "1234");
         producto = new Camisa("Camisa Blanca", "Nike", 25, Talla.L, Color.BLANCO, etiqueta, 0);
     }
