@@ -45,7 +45,7 @@ public class DatabaseConf {
                     " precio_inicial DOUBLE NOT NULL," +
                     //la talla y el color son enum
                     " talla ENUM('XS', 'S', 'M', 'L', 'XL', 'XXL') NOT NULL," +
-                    " color ENUM('AZUL', 'ROSA', 'ROJO', 'MARRON', 'BEIGE', 'BLANCO', 'NEGRO', 'VERDE', 'AMARILLO') NOT NULL," +
+                    " color ENUM('AZUL', 'ROSA', 'ROJO', 'MARRON', 'BEIGE', 'BLANCO', 'NEGRO', 'VERDE', 'AMARILLO','GRIS') NOT NULL," +
                     //crear campo para el fk con etiqueta
                     " etiqueta_id BIGINT," +
                     //poner el tipo por la herencia, no hace falta hacer una tabla

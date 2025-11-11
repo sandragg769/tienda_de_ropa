@@ -50,7 +50,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
                 return true;
             }
 
-            //capturar exception si algo no sale bien
         } catch (SQLException e) {
             System.err.println("Error al guardar usuario: " + e.getMessage());
         }
@@ -58,9 +57,43 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
         return false;
     }
 
-    //metodo pars encontrar un usuario mediante su id
+    //metodo auxiliar (porque se repite mucho) para pasar de lo obtenido de la consulta a un objeto java
+    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
+        Usuario usuario = new Usuario();
+        usuario.setId(rs.getLong("id"));
+        usuario.setDni(rs.getString("dni"));
+        usuario.setNombre(rs.getString("nombre"));
+        usuario.setDireccion(rs.getString("direccion"));
+        usuario.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
+        usuario.setTelefono(rs.getString("telefono"));
+        usuario.setEmail(rs.getString("email"));
+        usuario.setPasssword(rs.getString("password"));
+        return usuario;
+    }
+
+    //metodo para encontrar un usuario mediante su id
     @Override
     public Optional<Usuario> findById(long id) {
+        String sentencia = "SELECT * FROM usuario WHERE id = ?";
+        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
+             PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
+
+            //poner el valor del '?' y ponerlo como id (que es lo que buscamos)
+            pstmt.setLong(1, id);
+            //ejecutar sentencia
+            ResultSet rs = pstmt.executeQuery();
+
+            //mapear al usuario a java de lo obtenido en la consulta
+            if (rs.next()) {
+                Usuario usuario = mapearUsuario(rs);
+                //usar Optional por si no lo encuentra
+                return Optional.of(usuario);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar usuario por id: " + e.getMessage());
+        }
+        //si no obtiene nada devolver un optional vacío
         return Optional.empty();
     }
 
