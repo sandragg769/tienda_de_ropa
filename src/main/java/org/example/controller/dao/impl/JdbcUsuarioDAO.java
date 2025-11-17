@@ -13,9 +13,37 @@ import java.util.Optional;
 
 //implementación del DAO, aquí es donde se debe utilizar la tecnología específica de base de datos como JDBC
 public class JdbcUsuarioDAO implements UsuarioDAO {
+
+    //usar singleton en los dao, sirve para que solo haya una instancia de una clase en toda la aplicacion, es un punto global de acceso a esa instancia
+    //se usa en los dao para que solo haya una implementación que gestione el acceso a la base de datos
+    //referencia estática
+    private static volatile JdbcUsuarioDAO instance;
+
+    //constructor privado
+    private JdbcUsuarioDAO() {
+    }
+
+    //punto de acceso
+    public static JdbcUsuarioDAO getInstance() {
+        if (instance == null) {
+            synchronized (JdbcUsuarioDAO.class) {
+                if (instance == null) {
+                    //crea instancia por primera vez
+                    instance = new JdbcUsuarioDAO();
+                }
+            }
+        }
+        return instance;
+    }
+
+    // solo para tests
+    static void resetForTests() {
+        instance = null;
+    }
+
     //metodo de insertar usuario a la base de datos
     @Override
-    public boolean save(Usuario usuario) throws  SQLException{
+    public boolean save(Usuario usuario) throws SQLException {
         //el id se autoincrementa sin tener que ponerlo
         String sentencia = "INSERT INTO usuario (dni, nombre, direccion, fecha_nacimiento, telefono, email, password) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -34,7 +62,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             pstmt.setDate(4, Date.valueOf(usuario.getFechaNacimiento()));
             pstmt.setString(5, usuario.getTelefono());
             pstmt.setString(6, usuario.getEmail());
-            pstmt.setString(7, usuario.getPasssword());
+            pstmt.setString(7, usuario.getPassword());
 
             //ejecutamos la sentencia guardando el número de filas afectadas
             int filas = pstmt.executeUpdate();
@@ -62,6 +90,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         Usuario usuario = new Usuario(
                 rs.getString("dni"),
+                rs.getString("nombre"),
                 rs.getString("direccion"),
                 rs.getDate("fecha_nacimiento").toLocalDate(),
                 rs.getString("telefono"),
@@ -76,13 +105,13 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
         usuario.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
         usuario.setTelefono(rs.getString("telefono"));
         usuario.setEmail(rs.getString("email"));
-        usuario.setPasssword(rs.getString("password"));
+        usuario.setPassword(rs.getString("password"));
         return usuario;
     }
 
     //metodo para encontrar un usuario mediante su id
     @Override
-    public Optional<Usuario> findById(long id) {
+    public Optional<Usuario> findById(long id) throws SQLException {
         String sentencia = "SELECT * FROM usuario WHERE id = ?";
         try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
              PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
@@ -99,8 +128,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
                 return Optional.of(usuario);
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error al buscar usuario por id: " + e.getMessage());
         }
         //si no obtiene nada devolver un optional vacío
         return Optional.empty();
@@ -108,7 +135,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
     //metodo que devuelve todos los usuarios
     @Override
-    public List<Usuario> findAll() {
+    public List<Usuario> findAll() throws SQLException {
         List<Usuario> lista = new ArrayList<>();
         String sentencia = "SELECT * FROM usuario";
 
@@ -122,8 +149,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
                 lista.add(mapearUsuario(rs));
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error al obtener todos los usuarios: " + e.getMessage());
         }
 
         return lista;
@@ -131,7 +156,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
     //metodo para actualizar un usuario
     @Override
-    public boolean update(Usuario usuario) {
+    public boolean update(Usuario usuario) throws SQLException {
         String sentencia = "UPDATE usuario SET nombre=?, direccion=?, telefono=?, email=?, password=? WHERE id=?";
 
         try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
@@ -142,7 +167,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             pstmt.setString(2, usuario.getDireccion());
             pstmt.setString(3, usuario.getTelefono());
             pstmt.setString(4, usuario.getEmail());
-            pstmt.setString(5, usuario.getPasssword());
+            pstmt.setString(5, usuario.getPassword());
             pstmt.setLong(6, usuario.getId());
 
             // ejecutamos la consulta
@@ -150,8 +175,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             //si da 0 líneas devuelve false, si da alguna linea es true (está correcto)
             return filas > 0;
 
-        } catch (SQLException e) {
-            System.err.println("Error al actualizar usuario: " + e.getMessage());
         }
 
         //si no se conecta da false pq no se hace
@@ -160,7 +183,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
     //metodo para borrar un usuario
     @Override
-    public boolean delete(long id) {
+    public boolean delete(long id) throws SQLException {
         String sentencia = "DELETE FROM usuario WHERE id=?";
 
         try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
@@ -173,8 +196,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             //si devuelve alguna linea es true si  devuelve 0 es false
             return filas > 0;
 
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar usuario: " + e.getMessage());
         }
 
         return false;
@@ -182,7 +203,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
     //metodo para buscar un usuario por email
     @Override
-    public Optional<Usuario> findByEmail(String email) {
+    public Optional<Usuario> findByEmail(String email) throws SQLException {
         String sentencia = "SELECT * FROM usuario WHERE email = ?";
         try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
              PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
@@ -195,8 +216,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
                 return Optional.of(mapearUsuario(rs));
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error al buscar usuario por email: " + e.getMessage());
         }
 
         return Optional.empty();
@@ -204,7 +223,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
     //metodo se obtienen los productos favoritos de un usuario
     @Override
-    public List<Producto> findFavoritos(long usuarioId) {
+    public List<Producto> findFavoritos(long usuarioId) throws SQLException {
         List<Producto> productosFavoritos = new ArrayList<>();
         String sentencia = "SELECT p.* FROM producto p " +
                 "JOIN usuario_producto_favorito upf ON p.id = upf.producto_id " +
@@ -221,10 +240,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
                 productosFavoritos.add(producto);
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error al obtener productos favoritos del usuario: " + e.getMessage());
         }
-
         return productosFavoritos;
     }
 }

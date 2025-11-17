@@ -17,7 +17,7 @@ public class Usuario {
     private LocalDate fechaNacimiento;
     private String telefono;
     private String email;
-    private String passsword;
+    private String password;
     //un set de Productos favoritos, para que no se repitan productos favoritos, pero puede tener muchos
     private transient Set<Producto> favoritos = new HashSet<>();
     // un set de pedidos (para que no se repitan los mismos pedidos) ya que un usuario puede tener muchos pedidos, lo hacemos Linkedhash para que se ordene por inserción
@@ -26,14 +26,14 @@ public class Usuario {
     //constructor
     //no id
     public Usuario(String nombre, String dni, String direccion, LocalDate fechaNacimiento,
-                   String telefono, String email, String passsword) {
+                   String telefono, String email, String password) {
         this.nombre = nombre;
         this.dni = dni;
         this.direccion = direccion;
         this.fechaNacimiento = fechaNacimiento;
         this.telefono = telefono;
         this.email = email;
-        this.passsword = passsword;
+        this.password = password;
         //no poner nada en favoritos para empezar y tampoco tiene pedidos
     }
 
@@ -95,12 +95,12 @@ public class Usuario {
         this.email = email;
     }
 
-    public String getPasssword() {
-        return passsword;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasssword(String passsword) {
-        this.passsword = passsword;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<Producto> getFavoritos() {

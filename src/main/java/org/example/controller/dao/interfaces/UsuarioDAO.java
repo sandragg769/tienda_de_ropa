@@ -13,16 +13,16 @@ public interface UsuarioDAO {
     //CRUD
     boolean save(Usuario usuario) throws SQLException;
 
-    Optional<Usuario> findById(long id);
+    Optional<Usuario> findById(long id) throws SQLException;
 
-    List<Usuario> findAll();
+    List<Usuario> findAll() throws SQLException;
 
-    boolean update(Usuario usuario);
+    boolean update(Usuario usuario) throws SQLException;
 
-    boolean delete(long id);
+    boolean delete(long id) throws SQLException;
 
     //operaciones adicionales
-    Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByEmail(String email) throws SQLException;
 
-    List<Producto> findFavoritos(long usuarioId);
+    List<Producto> findFavoritos(long usuarioId) throws SQLException;
 }
