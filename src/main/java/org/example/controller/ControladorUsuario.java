@@ -13,7 +13,7 @@ public class ControladorUsuario {
         usuarioDAO.save(usuario);
     }
 
-    public Optional<Usuario> login(String email, String pass) {
+    public Optional<Usuario> login(String email, String pass) throws SQLException {
         return usuarioDAO.findByEmail(email)
                 .filter(u -> u.getPassword().equals(pass));
     }
