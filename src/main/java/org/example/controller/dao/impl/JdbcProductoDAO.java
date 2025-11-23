@@ -319,6 +319,11 @@ public class JdbcProductoDAO implements ProductoDAO {
         return producto;
     }
 
+    // metodo público para que sea usado en otras clases
+    public Producto mapearProductoPublic(ResultSet rs) throws SQLException {
+        return mapearProductoCompleto(rs);
+    }
+
     // crea la instancia concreta de descuento según el tipo y valor de la base de datos
     private Descuento mapearDescuentoDesdeBD(String tipo, double valor) {
         //si no tiene tipo devuelve null
@@ -371,26 +376,34 @@ public class JdbcProductoDAO implements ProductoDAO {
         try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS)) {
             // iniciamos transacción (autocommit false)
             con.setAutoCommit(false);
+            // gestionamos la etiqueta, si el producto tiene etiqueta y es nueva (id=0)
             try {
-                // etiqueta, si es nueva (id == 0) la insertamos y tomamos su id
+                // obtener el objeto etiqueta asociado al producto
                 Etiqueta et = producto.getEtiqueta();
+                // variable que guardará el id final que pondremos en producto
                 Long etiquetaId = null;
+                // si el producto tiene etiqueta
                 if (et != null) {
+                    // si la etiqueta mo tiene id (0) la consideramos nueva y la insertamos en la base de datos
                     if (et.getId() == 0) {
                         try (PreparedStatement pstmt = con.prepareStatement(sentenciaEtiqueta, Statement.RETURN_GENERATED_KEYS)) {
+                            // asignamos parámetros del insert (nombre y fecha de creación)
                             pstmt.setString(1, et.getNombre());
                             pstmt.setDate(2, Date.valueOf(et.getFechaCreacion() != null ? et.getFechaCreacion() : LocalDate.now()));
+                            // ejecutamos
                             pstmt.executeUpdate();
                             try (ResultSet rs = pstmt.getGeneratedKeys()) {
                                 if (rs.next()) {
+                                    // id generado por la base de datos
                                     etiquetaId = rs.getLong(1);
+                                    // actualizamos el objeto etiqueta con su id
                                     et.setId(etiquetaId);
                                 }
                             }
                         }
+                        //si la etiqueta ya tiene id, la usamos tal cual (no la insertamos)
                     } else {
                         etiquetaId = et.getId();
-                        // aquí podríamos actualizar la etiqueta existente si se desea ?????
                     }
                 }
 
@@ -499,18 +512,13 @@ public class JdbcProductoDAO implements ProductoDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     // añadir los usuarios que haya obtenido mapeandolos
-                    usuarios.add(mapearUsuarioBasico(rs));
+                    usuarios.add(JdbcUsuarioDAO.getInstance().mapearUsuarioPublic(rs));
                 }
             }
         }
 
         // devolvemos la lista
         return usuarios;
-    }
-
-    // se hace porque no se puede usar directamente el metodo de mapearUsuario de la implementación del dao de usuario ya que es privado
-    public Usuario mapearUsuarioBasico(ResultSet rs) throws SQLException {
-        return mapearUsuario(rs);
     }
 
     // metodo para agregar un producto concreto a favoritos de un usuario concreto

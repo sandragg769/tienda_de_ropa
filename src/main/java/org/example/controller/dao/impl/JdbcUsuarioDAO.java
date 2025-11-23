@@ -109,6 +109,12 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
         return usuario;
     }
 
+    // metodo PÚBLICO que se podrá usar en otra clase, no se puedo poner el mapeo público directamente
+    // porque se rompen los principios del dao, pero si se puede hacer esto porque no se exponen los detalles internos
+    public Usuario mapearUsuarioPublic(ResultSet rs) throws SQLException {
+        return mapearUsuario(rs);
+    }
+
     //metodo para encontrar un usuario mediante su id
     @Override
     public Optional<Usuario> findById(long id) throws SQLException {
@@ -176,9 +182,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             return filas > 0;
 
         }
-
-        //si no se conecta da false pq no se hace
-        return false;
     }
 
     //metodo para borrar un usuario
@@ -197,8 +200,6 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             return filas > 0;
 
         }
-
-        return false;
     }
 
     //metodo para buscar un usuario por email
@@ -236,7 +237,8 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                Producto producto = mapearProducto(rs);
+                //usar el public ya que si no no deja
+                Producto producto = JdbcProductoDAO.getInstance().mapearProductoPublic(rs);
                 productosFavoritos.add(producto);
             }
 
