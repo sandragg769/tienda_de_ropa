@@ -41,6 +41,10 @@ public class JdbcProductoDAO implements ProductoDAO {
         return instance;
     }
 
+    public static void resetForTests() {
+        instance = null;
+    }
+
     // CRUD
     //metodo que guarda un producto en la base de datos, si tiene etiqueta
     // sin id inserta la etiqueta primero, se hace en una transacción para

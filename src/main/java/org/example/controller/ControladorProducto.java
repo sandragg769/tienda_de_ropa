@@ -4,17 +4,21 @@ package org.example.controller;
 import org.example.controller.dao.impl.JdbcProductoDAO;
 import org.example.controller.dao.interfaces.ProductoDAO;
 import org.example.model.Usuario;
+import org.example.model.producto.Etiqueta;
 import org.example.model.producto.Producto;
 import org.example.utils.GestorFicherosCSV;
 import org.example.utils.GestorFicherosJSON;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class ControladorProducto {
     private final ProductoDAO productoDAO = JdbcProductoDAO.getInstance();
 
+    // para gestionar ficheros
+    List<Etiqueta> listaEtiquetas = new ArrayList<>();
 
     // CRUD
     //guardar producto (con su etiqueta si la tiene)
@@ -56,23 +60,22 @@ public class ControladorProducto {
     // GESTOR FICHEROS PRODUCTOS
     // exportar objetos producto a fichero JSON
     public void exportarProductosAJSON() throws SQLException {
-        List<Producto> listaProductos = productoDAO.findAll();
-        String rutaFichero = "productos.json";
-        GestorFicherosJSON.exportarProductosAJSON(listaProductos, rutaFichero);
+        List<Producto> productos = productoDAO.findAll();
+        GestorFicherosJSON.exportarProductosAJSON(productos, "productos.json");
     }
 
     // importar JSON a objetos producto
-    public void importarProductosDesdeJSON() {
-        String rutaFichero = "productos.json";
-        List<Producto> importados = GestorFicherosJSON.importarProductosDesdeJSON(rutaFichero);
-        listaProductos.clear();
-        listaProductos.addAll(importados);
+    public void importarProductosDesdeJSON() throws SQLException {
+        List<Producto> importados = GestorFicherosJSON.importarProductosDesdeJSON("productos.json");
+        // importar significa guardarlos en BD
+        for (Producto p : importados) {
+            productoDAO.save(p);
+        }
     }
 
 
     // GESTOR FICHEROS ETIQUETAS
-    public void exportarEtiquetasCSV() throws SQLException {
-        List<Producto>  =productoDAO.findAll();
+    public void exportarEtiquetasCSV() {
         GestorFicherosCSV.exportarEtiquetasACSV(listaEtiquetas, "etiquetas.csv");
     }
 

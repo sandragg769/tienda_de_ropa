@@ -60,9 +60,12 @@ public class ControladorPedido {
         GestorFicherosGSON.exportarPedidosAGson(listaPedidos, "pedidos.json");
     }
 
-    public void importarPedidosGson() {
+    public void importarPedidosGson() throws SQLException {
         List<Pedido> pedidosImportados = GestorFicherosGSON.importarPedidosDesdeGson("pedidos.json");
-        listaPedidos.addAll(pedidosImportados);
+        // importar significa persistir en BD
+        for (Pedido p : pedidosImportados) {
+            pedidoDAO.save(p);
+        }
     }
 
 }

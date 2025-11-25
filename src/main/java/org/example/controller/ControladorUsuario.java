@@ -31,9 +31,8 @@ public class ControladorUsuario {
         return usuarioDAO.findById(id);
     }
 
-
     // obtener TODOS los usuarios
-    public Iterable<Usuario> obtenerTodos() throws SQLException {
+    public List<Usuario> obtenerTodos() throws SQLException {
         return usuarioDAO.findAll();
     }
 

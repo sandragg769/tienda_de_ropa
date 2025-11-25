@@ -35,6 +35,10 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
         return instance;
     }
 
+    public static void resetForTests() {
+        instance = null;
+    }
+
     // CRUD
     //metodo de insertar usuario a la base de datos
     @Override

@@ -29,6 +29,10 @@ public class JdbcPedidoDAO implements PedidoDAO {
         return instance;
     }
 
+    public static void resetForTests() {
+        instance = null;
+    }
+
     // CRUD
     // inserta pedidos y todas sus lineas
     @Override
