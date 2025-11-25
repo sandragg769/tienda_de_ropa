@@ -1,226 +1,62 @@
 package org.example.controller;
 
-import org.example.model.Usuario;
+import org.example.controller.dao.impl.JdbcPedidoDAO;
+import org.example.controller.dao.interfaces.PedidoDAO;
 import org.example.model.pedido.EstadoPedido;
 import org.example.model.pedido.LineaPedido;
 import org.example.model.pedido.Pedido;
-import org.example.model.producto.Producto;
 import org.example.utils.GestorFicherosGSON;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 public class ControladorPedido {
-    private List<Pedido> listaPedidos = new ArrayList<>();
-    private long contadorPedidos = 0;
-    //el contador de lineaPedido también se controla aquí
-    private long contadorLineaPedido = 0;
+    private final PedidoDAO pedidoDAO = JdbcPedidoDAO.getInstance();
 
-    //METODOS CRUD PEDIDO
-    //metodo para crear un pedido, para esto hay que saber que usuario lo crea
-    public Pedido crearPedido(Usuario usuario) {
-        //creamos el pedido
-        Pedido pedido = new Pedido(usuario);
-        //le asignamos un id
-        pedido.setId(contadorPedidos++);
-        //cambiar estado a PENDIENTE
-        pedido.setEstado(EstadoPedido.PENDIENTE);
-        //añadimos a la lista de pedidos
-        listaPedidos.add(pedido);
-        //IMPORTANTE añadir al pedido a la lista de pedidos de ese usuario en concreto
-        usuario.getPedidos().add(pedido);
-        //devolvemos el pedido
-        return pedido;
+    // CRUD
+    public void crearPedido(Pedido pedido) throws SQLException {
+        pedidoDAO.save(pedido);
     }
 
-    //metodo para borrar un pedido
-    public void borrarPedido(long id) {
-        //buscar pedido por id
-        for (Pedido pedido : listaPedidos) {
-            if (pedido.getId() == id) {
-                //si lo encuentra lo elimina y hacer un return para que se salga del for
-                listaPedidos.remove(pedido);
-                //IMPORTANTE también lo eliminamos del usuario
-                pedido.getUsuario().getPedidos().remove(pedido);
-                return;
-            }
-        }
-        //si no devuelve el usu antes lanza exception
-        throw new IllegalArgumentException("No se puede eliminar el pedido ya que no se encuentra ese Id.");
+    public Optional<Pedido> buscarPorId(long id) throws SQLException {
+        return pedidoDAO.findById(id);
     }
 
-    //metodo para leer todos los pedidos
-    public List<Pedido> leerPedidos() {
-        return listaPedidos;
+    public List<Pedido> obtenerTodos() throws SQLException {
+        return pedidoDAO.findAll();
     }
 
-    //metodo para encontrar un pedido por id, devuelve el pedido
-    public Pedido leerPedidoPorId(long id) {
-        for (Pedido pedido : listaPedidos) {
-            //busca en la lista el pedido con ese id y lo devuelve
-            if (pedido.getId() == id) {
-                return pedido;
-            }
-        }
-        //si no devuelve el pedido antes lanza exception
-        throw new IllegalArgumentException("No se encuentra el pedido con esa Id.");
+    public void actualizarPedido(Pedido pedido) throws SQLException {
+        pedidoDAO.update(pedido);
     }
 
-    //metodo para actualizar datos del pedido (no el estado, eso lo hacen métodos específicos, le pasamos el pedido nuevo y que lo cambie con setters
-    public Pedido actualizarDatosPedido(Pedido pedidoNuevo) {
-        //localizamos el pedidoDesactualizado buscándolo por id (pilla la del nuevo)
-        Pedido pedidoViejo = leerPedidoPorId(pedidoNuevo.getId());
-        //controlamos que no se cambie el id ni el estado
-
-        //NO CAMBIAR ID
-        if (pedidoNuevo.getId() != pedidoViejo.getId()) {
-            throw new IllegalArgumentException("No se puede cambiar el ID de un pedido.");
-        }
-        //permitir cambiar estado (corrección profesor) pata que pueda actualizar algo y sea útl
-        if (pedidoNuevo.getEstado() != pedidoViejo.getEstado()) {
-            pedidoViejo.setEstado(pedidoNuevo.getEstado());
-        }
-
-        //NO CAMBIAR FECHA
-        if (pedidoNuevo.getFecha() != pedidoViejo.getFecha()) {
-            throw new IllegalArgumentException("No se puede cambiar la fecha de un pedido.");
-        }
-        //NO CAMBIAR USUARIO
-        if (pedidoNuevo.getUsuario() != pedidoViejo.getUsuario()) {
-            throw new IllegalArgumentException("No se puede cambiar el usuario de un pedido.");
-        }
-
-        //devolvemos el pedido
-        return pedidoViejo;
-    }
-
-    //METODOS QUE TIENEN QUE VER CON EL ESTADO DEL PEDIDO
-    //se le pasa el Usuario ya que es el que actúa sobre esto, por ejemplo entregar no, porque ahí el cliente ya no tiene nada que ver
-    //CAMBIADO POR CORRECCIÓN DE PROFESORT el controlador solo dirige, no tiene que usar el setter él
-    public Pedido finalizarPedido(Usuario usuario) {
-        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
-        pedido.finalizar();
-        return pedido;
-    }
-
-    public Pedido cancelarPedido(Usuario usuario) {
-        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
-        pedido.cancelar();
-        return pedido;
-    }
-
-    public Pedido entregarPedido(long id) {
-        Pedido pedido = leerPedidoPorId(id);
-        pedido.entregar();
-        return pedido;
+    public void eliminarPedido(long id) throws SQLException {
+        pedidoDAO.delete(id);
     }
 
 
-    //METODOS DE LINEAS DE PEDIDO
-    //aquí no se puede usar el metodo auxiluiar pq si no tiene pedido pendiente lanza exception y no deja que siga el metodo y se cree el pedido pendiente!!!
-    public LineaPedido aniadirLineaPedidoAPedido(Usuario usuario, Producto producto, int cantidad) {
-        //buscamos el pedido pendiente del usuario sin dar exception
-        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcretoONull(usuario);
-
-        //si no encuentra pedido lo crea
-        if (pedido == null) {
-            //asignar el nuevo pedido a pedido para que no sea null
-            pedido = crearPedido(usuario);
-        }
-
-        //se haya creado ahora o ya existía el pedido pendiente, se crea y añade la línea de pedido
-        return crearYAniadirLineaPedido(pedido, producto, cantidad);
+    // METODOS ESPECÍFICOS
+    public List<Pedido> pedidosPorCliente(long usuarioId) throws SQLException {
+        return pedidoDAO.findByCliente(usuarioId);
     }
 
-    //metodo para leer lineas de pedido de UN pedido concreto
-    public Set<LineaPedido> leerLineasPedidoDePedidoConcreto(Usuario usuario) {
-        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
-        return pedido.getLineasPedido();
+    public List<Pedido> pedidosPorEstado(EstadoPedido estado) throws SQLException {
+        return pedidoDAO.findByEstado(estado);
     }
 
-    //metodo para actualizar lineas de pedido de UN pedido concreto
-    public Set<LineaPedido> actualizarLineasPedidoDePedidoConcreto(Usuario usuario, LineaPedido lineaPedidoNueva) {
-        //buscar pedido pendiente
-        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
-        //actualizamos este pedido por el nuevo
-        //buscamos la línea concretamente
-        for (LineaPedido lineaPedido : pedido.getLineasPedido()) {
-            if (lineaPedido.getId() == lineaPedidoNueva.getId()) {
-
-                //NO CAMBIAR ID
-                if (lineaPedidoNueva.getId() != lineaPedido.getId()) {
-                    throw new IllegalArgumentException("No se puede cambiar el ID de una línea de pedido.");
-                }
-
-                //NO CAMBIAR PRODUCTO (no tiene sentido ya que si no quitas el producto y pones el nuevo)
-                if (lineaPedidoNueva.getProducto() != lineaPedido.getProducto()) {
-                    throw new IllegalArgumentException("No se puede cambiar el producto de una línea de pedido.");
-                }
-
-                //a esta línea de pedido le cambiamos lo que se pueda cambiar con setters
-                lineaPedido.setCantidad(lineaPedidoNueva.getCantidad());
-            }
-        }
-        return pedido.getLineasPedido();
+    public List<LineaPedido> lineasDePedido(long pedidoId) throws SQLException {
+        return pedidoDAO.findLineasByPedido(pedidoId);
     }
 
-    //metodo para eliminar una línea de pedido de UN pedido concreto
-    public void eliminarLineaPedidoDePedido(Usuario usuario, long idLinea) {
-        //buscamos el pedido de la línea
-        Pedido pedido = encontrarPedidoPendienteDeUsuarioConcreto(usuario);
-        //buscamos la línea a eliminar
-        for (LineaPedido lineaPedido : pedido.getLineasPedido()) {
-            if (lineaPedido.getId() == idLinea) {
-                //quitamos la línea
-                pedido.getLineasPedido().remove(lineaPedido);
-                //IMPORTANTE obtenemos el producto de la línea y ponemos la línea null (bidireccional)
-                lineaPedido.getProducto().setLineaPedido(null);
-                //cuando lo haga que se salga del metodo
-                return;
-            }
-        }
-
-        //si no encuentra ninguno da exception
-        throw new IllegalArgumentException("El usuario no tiene pedido pendiente.");
+    public void agregarLineaPedido(LineaPedido lineaPedido) throws SQLException {
+        pedidoDAO.addLineaPedido(lineaPedido);
     }
 
-    //METODOS AUXILIARES
-    //metodo para no repetir el crear y añadir una línea de pedido en el metodo de añadir línea pedido
-    public LineaPedido crearYAniadirLineaPedido(Pedido pedido, Producto producto, int cantidad) {
-        LineaPedido lineaPedido = new LineaPedido(cantidad, producto, pedido);
-        lineaPedido.setId(contadorLineaPedido++);
-        pedido.getLineasPedido().add(lineaPedido);
-        //IMPORTANTE la línea de pedido también se añade al producto (bidireccional)
-        producto.setLineaPedido(lineaPedido);
-        return lineaPedido;
-    }
 
-    //metodo para buscar el pedido pendiente de un usuario
-    public Pedido encontrarPedidoPendienteDeUsuarioConcreto(Usuario usuario) {
-        for (Pedido pedido : listaPedidos) {
-            if (pedido.getUsuario().equals(usuario) && pedido.getEstado() == EstadoPedido.PENDIENTE) {
-                return pedido;
-            }
-        }
-        //si no encuentra ninguno da exception
-        throw new IllegalArgumentException("No se encuentra el pedido pendiente del usuario.");
-    }
-
-    //metodo para buscar el pedido pendiente de un usuario si no lo encuentra en vez de lanzar exception, devuelve null
-    //este se usa para el metodo añadirLineaPedido ya que necesito este mismo metodo pero que no lanzara exceptio, que devolviera null para un if que necesito después
-    public Pedido encontrarPedidoPendienteDeUsuarioConcretoONull(Usuario usuario) {
-        for (Pedido pedido : listaPedidos) {
-            if (pedido.getUsuario().equals(usuario) && pedido.getEstado() == EstadoPedido.PENDIENTE) {
-                return pedido;
-            }
-        }
-        //si no encuentra ninguno devuelve null
-        return null;
-    }
-
-    //METODOS PARA EXPOTAR E IMPORTAR PEDIDOS
-    public void exportarPedidosGson() {
+    // GESTOR FICHEROS
+    public void exportarPedidosGson() throws SQLException {
+        List<Pedido> listaPedidos = pedidoDAO.findAll();
         GestorFicherosGSON.exportarPedidosAGson(listaPedidos, "pedidos.json");
     }
 
