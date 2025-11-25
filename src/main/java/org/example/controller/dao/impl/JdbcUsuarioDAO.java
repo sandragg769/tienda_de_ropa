@@ -1,6 +1,5 @@
 package org.example.controller.dao.impl;
 
-import org.example.controller.dao.interfaces.ProductoDAO;
 import org.example.controller.dao.interfaces.UsuarioDAO;
 import org.example.model.Usuario;
 import org.example.model.producto.Producto;
@@ -36,11 +35,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
         return instance;
     }
 
-    // solo para tests
-    static void resetForTests() {
-        instance = null;
-    }
-
+    // CRUD
     //metodo de insertar usuario a la base de datos
     @Override
     public boolean save(Usuario usuario) throws SQLException {
@@ -202,6 +197,8 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
         }
     }
 
+
+    // METODOS ESPECÍFICOS
     //metodo para buscar un usuario por email
     @Override
     public Optional<Usuario> findByEmail(String email) throws SQLException {
@@ -237,7 +234,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                //usar el public ya que si no no deja
+                // usar el public ya que si no no deja
                 Producto producto = JdbcProductoDAO.getInstance().mapearProductoPublic(rs);
                 productosFavoritos.add(producto);
             }

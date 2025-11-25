@@ -41,6 +41,7 @@ public class JdbcProductoDAO implements ProductoDAO {
         return instance;
     }
 
+    // CRUD
     //metodo que guarda un producto en la base de datos, si tiene etiqueta
     // sin id inserta la etiqueta primero, se hace en una transacción para
     // garantizar que no se cree solo una cosa
@@ -496,6 +497,7 @@ public class JdbcProductoDAO implements ProductoDAO {
         }
     }
 
+    // METODOS ESPECÍFICOS
     // metodo que devuelve una lista de los usuarios que tienen un producto concreto (por id) en favoritos
     @Override
     public List<Usuario> findUsuariosFavoritos(long productoId) throws SQLException {
