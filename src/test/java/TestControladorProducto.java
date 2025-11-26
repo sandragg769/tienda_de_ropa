@@ -2,22 +2,15 @@
 import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
 import org.example.model.Usuario;
-import org.example.model.descuento.Descuento;
-import org.example.model.descuento.DescuentoPorcentaje;
 import org.example.model.producto.Etiqueta;
 import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
-import org.example.model.producto.tipo_de_productos.Pantalon;
 import org.example.utils.DatabaseConf;
-import org.example.utils.GestorFicherosJSON;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -36,7 +29,7 @@ class TestControladorProducto {
 
     @BeforeEach
     void setUp() throws SQLException {
-        DatabaseConf.dropAndCreate();
+        DatabaseConf.dropAndCreateTables();
 
         controladorProducto = new ControladorProducto();
         controladorUsuario = new ControladorUsuario();
