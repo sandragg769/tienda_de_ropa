@@ -1,4 +1,5 @@
 
+import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
 import org.example.controller.dao.impl.JdbcProductoDAO;
 import org.example.controller.dao.impl.JdbcUsuarioDAO;
@@ -24,9 +25,6 @@ class TestControladorUsuario {
     private ControladorUsuario controladorUsuario;
     private UsuarioDAO usuarioDAO;
     private Usuario usuarioInicial;
-    // usar funciones de producto necesarias en tests
-    private JdbcProductoDAO productoDAO;
-    private Producto camisa;
 
 
     // este bloque se repetirá cada vez que se haga un test
@@ -122,12 +120,17 @@ class TestControladorUsuario {
     // FIND BY EMAIL
     @Test
     void findByEmailCorrecto() throws Exception {
-        // ????
+        Optional<Usuario> resultado = controladorUsuario.obtenerPorEmail(usuarioInicial.getEmail());
+
+        assertTrue(resultado.isPresent());
+        assertEquals(usuarioInicial.getEmail(), resultado.get().getEmail());
     }
 
     @Test
     void findByEmailInexistenteIncorrecto() throws Exception {
-        // ????
+        assertThrows(IllegalArgumentException.class, () -> {
+            controladorUsuario.obtenerPorEmail("emailInexistente@correo.com");
+        });
     }
 
     // UDDATE
@@ -169,7 +172,9 @@ class TestControladorUsuario {
 
     @Test
     void deleteUsuarioInexistenteIncorrecto() throws Exception {
-        // ????
+        assertThrows(IllegalArgumentException.class, () -> {
+            controladorUsuario.eliminarUsuario(99999);
+        });
     }
 
     // LOGIN
@@ -192,10 +197,22 @@ class TestControladorUsuario {
     // FAVORITOS
     @Test
     void agregarYObtenerFavoritosCorrecto() throws Exception {
+        // Crear producto con etiqueta
         Etiqueta etiqueta = new Etiqueta("Nueva");
-        camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
+        Producto camisa = new Camisa(
+                "Camisa Casual",
+                "MarcaX",
+                29.99,
+                Talla.M,
+                Color.AZUL,
+                etiqueta,
+                2
+        );
+        ControladorProducto controladorProducto = new ControladorProducto();
+        controladorProducto.crearProducto(camisa);
         controladorUsuario.agregarFavorito(camisa, usuarioInicial);
-        assertTrue(controladorUsuario.obtenerFavoritos(usuarioInicial).contains(camisa));
+        List<Producto> favoritos = controladorUsuario.obtenerFavoritos(usuarioInicial.getId());
+        assertTrue(favoritos.stream().anyMatch(p -> p.getId() == camisa.getId()));
     }
 
     @Test
@@ -207,25 +224,45 @@ class TestControladorUsuario {
     @Test
     void eliminarFavoritoCorrecto() throws Exception {
         Etiqueta etiqueta = new Etiqueta("Nueva");
-        camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
-        controladorUsuario.getControladorProducto().registrarProducto(camisa);
+
+        Producto camisa = new Camisa(
+                "Camisa Casual",
+                "MarcaX",
+                29.99,
+                Talla.M,
+                Color.AZUL,
+                etiqueta,
+                2
+        );
+
+        ControladorProducto controladorProducto = new ControladorProducto();
+        controladorProducto.crearProducto(camisa);
         controladorUsuario.agregarFavorito(camisa, usuarioInicial);
-
         controladorUsuario.eliminarFavorito(camisa, usuarioInicial);
-
-        assertFalse(controladorUsuario.obtenerFavoritos(usuarioInicial).contains(camisa));
-    }
-}
-
-@Test
-void eliminarFavoritoIncorrecto() {
-    Etiqueta etiqueta = new Etiqueta("Nueva");
-    camisa = new Camisa("Camisa Casual", "MarcaX", 29.99, Talla.M, Color.AZUL, etiqueta, 2);
-    assertThrows(IllegalArgumentException.class,
-            () -> controladorUsuario.eliminarFavorito(camisa, usuarioInicial));
-}
-
+        List<Producto> favoritos = controladorUsuario.obtenerFavoritos(usuarioInicial.getId());
+        assertFalse(favoritos.stream().anyMatch(p -> p.getId() == camisa.getId()));
     }
 
+    @Test
+    void eliminarFavoritoIncorrecto() {
+        Etiqueta etiqueta = new Etiqueta("Nueva");
+        Producto camisa = new Camisa(
+                "Camisa Casual",
+                "MarcaX",
+                29.99,
+                Talla.M,
+                Color.AZUL,
+                etiqueta,
+                2
+        );
+        // El producto NO está registrado, debe fallar
+        assertThrows(IllegalArgumentException.class,
+                () -> controladorUsuario.eliminarFavorito(camisa, usuarioInicial));
+    }
 
-            }
+}
+
+    
+
+
+            
