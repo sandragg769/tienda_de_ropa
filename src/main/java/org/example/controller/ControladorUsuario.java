@@ -12,15 +12,22 @@ import java.util.List;
 import java.util.Optional;
 
 public class ControladorUsuario {
-    private final UsuarioDAO usuarioDAO = JdbcUsuarioDAO.getInstance();
+    private final UsuarioDAO usuarioDAO;
+
+    public ControladorUsuario() {
+        this.usuarioDAO = JdbcUsuarioDAO.getInstance();
+    }
 
     // LOGIN
     public Optional<Usuario> login(String email, String password) throws SQLException {
-        Optional<Usuario> op = usuarioDAO.findByEmail(email);
-        if (op.isEmpty()) return null;
+        Usuario usuario = usuarioDAO.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email no registrado"));
 
-        Usuario u = op.get();
-        return u.getPassword().equals(password) ? Optional.of(u) : null;
+        if (!usuario.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Contraseña incorrecta");
+        }
+
+        return Optional.of(usuario);
     }
 
     // CRUD
@@ -30,11 +37,13 @@ public class ControladorUsuario {
 
     // obtener por ID
     public Optional<Usuario> obtenerPorId(long id) throws SQLException {
-        return usuarioDAO.findById(id);
+        return Optional.ofNullable(usuarioDAO.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id " + id)));
     }
 
-    public Optional<Usuario> obtenerPorEmail(String email) throws SQLException {
-        return usuarioDAO.findByEmail(email);
+    public Usuario obtenerPorEmail(String email) throws SQLException {
+        return usuarioDAO.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("No existe usuario con email: " + email));
     }
 
     // obtener TODOS los usuarios
@@ -42,19 +51,40 @@ public class ControladorUsuario {
         return usuarioDAO.findAll();
     }
 
-    public boolean actualizarUsuario(Usuario usuario) throws SQLException {
-        return usuarioDAO.update(usuario);
-
+    public void actualizarUsuario(Usuario usuario) throws SQLException {
+        // comprobar que el usuario existe
+        usuarioDAO.findById(usuario.getId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException("No existe un usuario con id: " + usuario.getId()));
+        // comprobar que campos no modificables NO han cambiado: DNI
+        Usuario original = usuarioDAO.findById(usuario.getId()).get();
+        if (!original.getDni().equals(usuario.getDni())) {
+            throw new IllegalArgumentException("El DNI no se puede modificar");
+        }
+        // si tod es correcto → actualizar
+        usuarioDAO.update(usuario);
     }
 
     public boolean eliminarUsuario(long id) throws SQLException {
-        return usuarioDAO.delete(id);
+        boolean eliminado = usuarioDAO.delete(id);
 
+        if (!eliminado) {
+            throw new IllegalArgumentException("No existe usuario con id: " + id);
+
+
+        }
+        // solo llega aquí si se eliminó correctamente
+        return true;
     }
 
     //FAVORITOS
     // obtener favoritos de un usuario
     public List<Producto> obtenerFavoritos(long usuarioId) throws SQLException {
+        // comprobamos existencia
+        usuarioDAO.findById(usuarioId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("No existe usuario con id: " + usuarioId));
+
         return usuarioDAO.findFavoritos(usuarioId);
     }
 

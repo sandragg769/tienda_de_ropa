@@ -38,6 +38,7 @@ class TestControladorUsuario {
         JdbcProductoDAO.resetForTests();
 
         // crear controlador que usa el DAO
+        usuarioDAO = JdbcUsuarioDAO.getInstance();
         controladorUsuario = new ControladorUsuario();
 
         // crear y registrar un usuario base para cada test
@@ -120,14 +121,14 @@ class TestControladorUsuario {
     // FIND BY EMAIL
     @Test
     void findByEmailCorrecto() throws Exception {
-        Optional<Usuario> resultado = controladorUsuario.obtenerPorEmail(usuarioInicial.getEmail());
+        Optional<Usuario> resultado = Optional.ofNullable(controladorUsuario.obtenerPorEmail(usuarioInicial.getEmail()));
 
         assertTrue(resultado.isPresent());
         assertEquals(usuarioInicial.getEmail(), resultado.get().getEmail());
     }
 
     @Test
-    void findByEmailInexistenteIncorrecto() throws Exception {
+    void findByEmailInexistenteIncorrecto() {
         assertThrows(IllegalArgumentException.class, () -> {
             controladorUsuario.obtenerPorEmail("emailInexistente@correo.com");
         });
@@ -144,7 +145,7 @@ class TestControladorUsuario {
     }
 
     @Test
-    void updateUsuarioInexistenteIncorrecto() throws Exception {
+    void updateUsuarioInexistenteIncorrecto() {
         Usuario noExiste = new Usuario(
                 "AAA", "44444444D", "X",
                 LocalDate.of(2000, 1, 1), "600000000",
@@ -171,7 +172,7 @@ class TestControladorUsuario {
     }
 
     @Test
-    void deleteUsuarioInexistenteIncorrecto() throws Exception {
+    void deleteUsuarioInexistenteIncorrecto() {
         assertThrows(IllegalArgumentException.class, () -> {
             controladorUsuario.eliminarUsuario(99999);
         });
@@ -186,7 +187,7 @@ class TestControladorUsuario {
     }
 
     @Test
-    void loginEmailIncorrecto() throws SQLException {
+    void loginEmailIncorrecto() {
         assertThrows(IllegalArgumentException.class,
                 () -> controladorUsuario.login("noexiste@gmail.com", "1234"));
 
@@ -197,7 +198,7 @@ class TestControladorUsuario {
     // FAVORITOS
     @Test
     void agregarYObtenerFavoritosCorrecto() throws Exception {
-        // Crear producto con etiqueta
+        // crear producto con etiqueta
         Etiqueta etiqueta = new Etiqueta("Nueva");
         Producto camisa = new Camisa(
                 "Camisa Casual",

@@ -227,13 +227,19 @@ public class JdbcProductoDAO implements ProductoDAO {
     @Override
     public Optional<Producto> findById(long id) throws SQLException {
         String sentencia =
-                "SELECT p.*, e.nombre AS etiqueta_nombre, e.fecha_creacion AS etiqueta_fecha_creacion " +
-                        "FROM producto p LEFT JOIN etiqueta e ON p.etiqueta_id = e.id WHERE p.id = ?";
-        // conexión
+                "SELECT p.id, p.tipo, p.nombre, p.marca, p.precio_inicial, p.talla, p.color, " +
+                        "p.etiqueta_id, p.descuento_tipo, p.descuento_valor, p.botones, p.bolsillos, " +
+                        "p.con_capucha, p.nivel_abrigo, " +
+                        "e.nombre AS etiqueta_nombre, e.fecha_creacion AS etiqueta_fecha_creacion " +
+                        "FROM producto p " +
+                        "LEFT JOIN etiqueta e ON p.etiqueta_id = e.id " +
+                        "WHERE p.id = ?";
+
+        //conexión
         try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
              PreparedStatement pstmt = con.prepareStatement(sentencia)) {
 
-            // asignamos el id de la base de datos como el del ibjeto a buscar
+            // asignamos el id de la base de datos como el del objeto a buscar
             pstmt.setLong(1, id);
             // ejecutamos la sentencia
             try (ResultSet rs = pstmt.executeQuery()) {
@@ -347,8 +353,11 @@ public class JdbcProductoDAO implements ProductoDAO {
     @Override
     public List<Producto> findAll() throws SQLException {
         String sentencia =
-                "SELECT p.*, e.nombre AS etiqueta_nombre, e.fecha_creacion AS etiqueta_fecha_creacion " +
-                        "FROM producto p LEFT JOIN etiqueta e ON p.etiqueta_id = e.id";
+                "SELECT p.*, " +
+                        "e.nombre AS etiqueta_nombre, " +
+                        "e.fecha_creacion AS etiqueta_fecha_creacion " +
+                        "FROM producto p " +
+                        "LEFT JOIN etiqueta e ON p.etiqueta_id = e.id";
         // creamos la lista a devolver
         List<Producto> lista = new ArrayList<>();
         // conexión
@@ -506,7 +515,13 @@ public class JdbcProductoDAO implements ProductoDAO {
     @Override
     public List<Usuario> findUsuariosFavoritos(long productoId) throws SQLException {
         String sentencia =
-                "SELECT u.* FROM usuario u JOIN usuario_producto_favorito upf ON u.id = upf.usuario_id WHERE upf.producto_id = ?";
+                "SELECT p.*, " +
+                        "e.nombre AS etiqueta_nombre, " +
+                        "e.fecha_creacion AS etiqueta_fecha_creacion " +
+                        "FROM usuario_producto_favorito upf " +
+                        "JOIN producto p ON upf.producto_id = p.id " +
+                        "LEFT JOIN etiqueta e ON p.etiqueta_id = e.id " +
+                        "WHERE upf.usuario_id = ?";
         // creamos la lista de usuarios a devolver
         List<Usuario> usuarios = new ArrayList<>();
         // conexión

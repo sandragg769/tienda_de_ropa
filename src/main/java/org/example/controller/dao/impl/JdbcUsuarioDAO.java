@@ -36,7 +36,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     }
 
     public static void resetForTests() {
-        instance = null;
+        instance = new JdbcUsuarioDAO();
     }
 
     // CRUD
@@ -44,8 +44,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     @Override
     public boolean save(Usuario usuario) throws SQLException {
         //el id se autoincrementa sin tener que ponerlo
-        String sentencia = "INSERT INTO usuario (dni, nombre, direccion, fecha_nacimiento, telefono, email, password) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sentencia = "INSERT INTO usuario (dni, nombre, direccion, fecha_nacimiento, telefono, email, password) " + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         //establecemos conexión con la base de datos
         try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
@@ -87,15 +86,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
     //metodo auxiliar (porque se repite mucho) para pasar de lo obtenido de la consulta a un objeto java, hacer a mano porque JDBC no lo hace
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
-        Usuario usuario = new Usuario(
-                rs.getString("dni"),
-                rs.getString("nombre"),
-                rs.getString("direccion"),
-                rs.getDate("fecha_nacimiento").toLocalDate(),
-                rs.getString("telefono"),
-                rs.getString("email"),
-                rs.getString("password")
-        );
+        Usuario usuario = new Usuario(rs.getString("dni"), rs.getString("nombre"), rs.getString("direccion"), rs.getDate("fecha_nacimiento").toLocalDate(), rs.getString("telefono"), rs.getString("email"), rs.getString("password"));
         usuario.setId(rs.getLong("id"));
         usuario.setId(rs.getLong("id"));
         usuario.setDni(rs.getString("dni"));
@@ -118,8 +109,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     @Override
     public Optional<Usuario> findById(long id) throws SQLException {
         String sentencia = "SELECT * FROM usuario WHERE id = ?";
-        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
-             PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
+        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
 
             //poner el valor del '?' y ponerlo como id (que es lo que buscamos)
             pstmt.setLong(1, id);
@@ -146,8 +136,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
         try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
              //no se necesita prepared ya que no se pasa ningún dato simplemente se obtienen todos los usuarios
-             Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sentencia)) {
+             Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sentencia)) {
 
             //añadir a la lista a devolver los usuarios (mapeados para que java o entienda
             while (rs.next()) {
@@ -164,8 +153,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     public boolean update(Usuario usuario) throws SQLException {
         String sentencia = "UPDATE usuario SET nombre=?, direccion=?, telefono=?, email=?, password=? WHERE id=?";
 
-        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
-             PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
+        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
 
             //pasamos a java los parametros, hacemos un set para cambiarlo
             pstmt.setString(1, usuario.getNombre());
@@ -188,8 +176,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     public boolean delete(long id) throws SQLException {
         String sentencia = "DELETE FROM usuario WHERE id=?";
 
-        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
-             PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
+        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
 
             //asignar el parametro
             pstmt.setLong(1, id);
@@ -207,8 +194,7 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     @Override
     public Optional<Usuario> findByEmail(String email) throws SQLException {
         String sentencia = "SELECT * FROM usuario WHERE email = ?";
-        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
-             PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
+        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
 
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
@@ -227,12 +213,9 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     @Override
     public List<Producto> findFavoritos(long usuarioId) throws SQLException {
         List<Producto> productosFavoritos = new ArrayList<>();
-        String sentencia = "SELECT p.* FROM producto p " +
-                "JOIN usuario_producto_favorito upf ON p.id = upf.producto_id " +
-                "WHERE upf.usuario_id = ?";
+        String sentencia = "SELECT p.* FROM producto p " + "JOIN usuario_producto_favorito upf ON p.id = upf.producto_id " + "WHERE upf.usuario_id = ?";
 
-        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
-             PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
+        try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
 
             pstmt.setLong(1, usuarioId);
             ResultSet rs = pstmt.executeQuery();
