@@ -65,7 +65,23 @@ class TestControladorProducto {
                 Talla.M, Color.AZUL, etiqueta, 2
         );
 
-        assertThrows(SQLException.class, () -> controladorProducto.crearProducto(invalido));
+        assertThrows(IllegalArgumentException.class,
+                () -> controladorProducto.crearProducto(invalido));
+    }
+
+    @Test
+    void crearProductoEtiquetaFKInexistenteLanzaSQLException() {
+        // Creamos un producto con etiqueta ya persistida, pero manipulamos el id para forzar fallo
+        Etiqueta etiqueta = new Etiqueta("NUEVA");
+        etiqueta.setId(99999L); // NO existe en la base → rompe la foreign key
+
+        Producto camisa = new Camisa(
+                "Camisa Error", "MarcaX", 20.0,
+                Talla.M, Color.AZUL,
+                etiqueta, 3
+        );
+
+        assertThrows(SQLException.class, () -> controladorProducto.crearProducto(camisa));
     }
 
     @Test
