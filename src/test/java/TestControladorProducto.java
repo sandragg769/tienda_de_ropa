@@ -55,6 +55,8 @@ class TestControladorProducto {
         controladorProducto.crearProducto(camisa);
 
         List<Producto> productos = controladorProducto.obtenerTodos();
+        System.out.println(productos);
+
         assertEquals(1, productos.size());
     }
 

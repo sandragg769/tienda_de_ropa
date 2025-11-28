@@ -227,13 +227,14 @@ public class JdbcProductoDAO implements ProductoDAO {
     @Override
     public Optional<Producto> findById(long id) throws SQLException {
         String sentencia =
-                "SELECT p.id, p.tipo, p.nombre, p.marca, p.precio_inicial, p.talla, p.color, " +
+                "SELECT p.id, p.tipo, p.nombre, p.marca, p.precio_inicial, p.talla, p.co" +
+                        "lor, " +
                         "p.etiqueta_id, p.descuento_tipo, p.descuento_valor, p.botones, p.bolsillos, " +
                         "p.con_capucha, p.nivel_abrigo, " +
-                        "e.nombre AS etiqueta_nombre, e.fecha_creacion AS etiqueta_fecha_creacion " +
+                        "e.nombre AS etiqueta_nombre, e.fecha_creacion AS etiqueta_fecha_creacion" +
                         "FROM producto p " +
                         "LEFT JOIN etiqueta e ON p.etiqueta_id = e.id " +
-                        "WHERE p.id = ?";
+                        "WHERE p.id = ?;";
 
         //conexión
         try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);

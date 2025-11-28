@@ -179,4 +179,20 @@ public abstract class Producto {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    @Override
+    public String toString() {
+        return "Producto{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", marca='" + marca + '\'' +
+                ", precioInicial=" + precioInicial +
+                ", talla=" + talla +
+                ", color=" + color +
+                ", etiqueta=" + etiqueta +
+                ", usuariosProductosFavoritos=" + usuariosProductosFavoritos +
+                ", lineaPedido=" + lineaPedido +
+                ", descuento=" + descuento +
+                '}';
+    }
 }

@@ -213,7 +213,14 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
     @Override
     public List<Producto> findFavoritos(long usuarioId) throws SQLException {
         List<Producto> productosFavoritos = new ArrayList<>();
-        String sentencia = "SELECT p.* FROM producto p " + "JOIN usuario_producto_favorito upf ON p.id = upf.producto_id " + "WHERE upf.usuario_id = ?";
+        String sentencia = "SELECT p.*, " +
+                "e.id AS etiqueta_id, " +
+                "e.nombre AS etiqueta_nombre, " +
+                "e.fecha_creacion AS etiqueta_fecha_creacion " +
+                "FROM producto p " +
+                "JOIN usuario_producto_favorito upf ON p.id = upf.producto_id " +
+                "LEFT JOIN etiqueta e ON p.etiqueta_id = e.id " +
+                "WHERE upf.usuario_id = ?";
 
         try (Connection connection = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); PreparedStatement pstmt = connection.prepareStatement(sentencia)) {
 
@@ -230,3 +237,4 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
         return productosFavoritos;
     }
 }
+

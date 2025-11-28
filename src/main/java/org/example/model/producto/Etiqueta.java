@@ -84,4 +84,6 @@ public class Etiqueta {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+
 }

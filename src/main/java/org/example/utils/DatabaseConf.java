@@ -9,7 +9,7 @@ public class DatabaseConf {
     //variables estáticas y finales comunes para usar
     public static final String USER = "root";
     public static final String PASS = "#Proyecto2526";
-    public static final String URL = "jdbc:mysql://localhost:3306/sanscloset";
+    public static final String URL = "jdbc:mysql://localhost:3306/sanscloset?useOldAliasMetadataBehavior=true";
 
     //sentencias de creación de tablas
     private static final String crearTablaUsuario =

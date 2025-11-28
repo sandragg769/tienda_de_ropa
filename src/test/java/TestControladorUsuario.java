@@ -115,7 +115,8 @@ class TestControladorUsuario {
     // FIND ALL
     @Test
     void FindAllCorrecto() throws SQLException {
-        assertEquals(1, controladorUsuario.obtenerTodos().size());
+        var usuarios = controladorUsuario.obtenerTodos();
+        assertEquals(1, usuarios.size());
     }
 
     // FIND BY EMAIL
