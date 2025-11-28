@@ -227,11 +227,10 @@ public class JdbcProductoDAO implements ProductoDAO {
     @Override
     public Optional<Producto> findById(long id) throws SQLException {
         String sentencia =
-                "SELECT p.id, p.tipo, p.nombre, p.marca, p.precio_inicial, p.talla, p.co" +
-                        "lor, " +
-                        "p.etiqueta_id, p.descuento_tipo, p.descuento_valor, p.botones, p.bolsillos, " +
-                        "p.con_capucha, p.nivel_abrigo, " +
-                        "e.nombre AS etiqueta_nombre, e.fecha_creacion AS etiqueta_fecha_creacion" +
+                "SELECT p.id, p.tipo, p.nombre, p.marca, p.precio_inicial, p.talla, p.color, " +
+                        "p.etiqueta_id, p.descuento_tipo, p.descuento_valor, " +
+                        "p.botones, p.bolsillos, p.con_capucha, p.nivel_abrigo, " +
+                        "e.nombre AS etiqueta_nombre, e.fecha_creacion AS etiqueta_fecha_creacion " +
                         "FROM producto p " +
                         "LEFT JOIN etiqueta e ON p.etiqueta_id = e.id " +
                         "WHERE p.id = ?;";
@@ -482,7 +481,10 @@ public class JdbcProductoDAO implements ProductoDAO {
                     // id al final (WHERE id = ?)
                     pstmt.setLong(14, producto.getId());
                     // ejecutar consulta
-                    pstmt.executeUpdate();
+                    int filas = pstmt.executeUpdate();
+                    if (filas == 0) {
+                        throw new SQLException("No existe producto con id: " + producto.getId());
+                    }
                 }
                 // si tod va bien hacer commit (igual que save)
                 con.commit();
@@ -507,7 +509,11 @@ public class JdbcProductoDAO implements ProductoDAO {
             // para saber que producto es (por su id)
             pstmt.setLong(1, id);
             // ejecutar consulta
-            pstmt.executeUpdate();
+            int filas = pstmt.executeUpdate();
+
+            if (filas == 0) {
+                throw new SQLException("No existe producto con id: " + id);
+            }
         }
     }
 
@@ -515,14 +521,17 @@ public class JdbcProductoDAO implements ProductoDAO {
     // metodo que devuelve una lista de los usuarios que tienen un producto concreto (por id) en favoritos
     @Override
     public List<Usuario> findUsuariosFavoritos(long productoId) throws SQLException {
+        // chequeo rapido de existencia prodcuto
+        // comprobar existencia del producto
+        if (JdbcProductoDAO.getInstance().findById(productoId).isEmpty()) {
+            throw new SQLException("Producto no existe: " + productoId);
+        }
+
         String sentencia =
-                "SELECT p.*, " +
-                        "e.nombre AS etiqueta_nombre, " +
-                        "e.fecha_creacion AS etiqueta_fecha_creacion " +
+                "SELECT u.* " +
                         "FROM usuario_producto_favorito upf " +
-                        "JOIN producto p ON upf.producto_id = p.id " +
-                        "LEFT JOIN etiqueta e ON p.etiqueta_id = e.id " +
-                        "WHERE upf.usuario_id = ?";
+                        "JOIN usuario u ON upf.usuario_id = u.id " +
+                        "WHERE upf.producto_id = ?";
         // creamos la lista de usuarios a devolver
         List<Usuario> usuarios = new ArrayList<>();
         // conexión
@@ -545,7 +554,9 @@ public class JdbcProductoDAO implements ProductoDAO {
 
     // metodo para agregar un producto concreto a favoritos de un usuario concreto
     @Override
-    public void agregarFavorito(long productoId, long usuarioId) throws SQLException {
+    public List<Usuario> agregarFavorito(long productoId, long usuarioId) throws SQLException {
+        // lista a devolver
+        List<Usuario> usuarios = new ArrayList<>();
         String sentencia =
                 "INSERT INTO usuario_producto_favorito (usuario_id, producto_id) VALUES (?, ?)";
         // conexión
@@ -557,6 +568,7 @@ public class JdbcProductoDAO implements ProductoDAO {
             // ejecutar consulta
             pstmt.executeUpdate();
         }
+        return usuarios;
     }
 
     // metodo para eliminar un producto concreto de favoritos de un usuario concreto
@@ -569,7 +581,11 @@ public class JdbcProductoDAO implements ProductoDAO {
              PreparedStatement pstmt = con.prepareStatement(sentencia)) {
             pstmt.setLong(1, usuarioId);
             pstmt.setLong(2, productoId);
-            pstmt.executeUpdate();
+            int filas = pstmt.executeUpdate();
+
+            if (filas == 0) {
+                throw new SQLException("No existe relación de favorito para eliminar");
+            }
         }
     }
 }

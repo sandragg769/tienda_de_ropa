@@ -21,7 +21,7 @@ public interface ProductoDAO {
     // Extra del enunciado
     List<Usuario> findUsuariosFavoritos(long productoId) throws SQLException;
 
-    void agregarFavorito(long productoId, long usuarioId) throws SQLException;
+    List<Usuario> agregarFavorito(long productoId, long usuarioId) throws SQLException;
 
     void eliminarFavorito(long productoId, long usuarioId) throws SQLException;
 }
