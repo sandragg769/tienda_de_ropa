@@ -37,6 +37,14 @@ public class Usuario {
         //no poner nada en favoritos para empezar y tampoco tiene pedidos
     }
 
+    public Usuario(long id) {
+        this.id = id;
+    }
+
+    public Usuario() {
+    }
+
+
     //getters y setters
 
     public String getNombre() {

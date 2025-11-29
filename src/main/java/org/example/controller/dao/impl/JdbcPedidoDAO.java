@@ -39,6 +39,17 @@ public class JdbcPedidoDAO implements PedidoDAO {
     public void save(Pedido pedido) throws SQLException {
         String sentenciaPedido = "INSERT INTO pedido (fecha, estado, usuario_id) VALUES (?, ?, ?)";
         String sentenciaLinea = "INSERT INTO linea_pedido (cantidad, producto_id, pedido_id) VALUES (?, ?, ?)";
+
+        // validar antes de usar
+        if (pedido == null)
+            throw new SQLException("Pedido nulo");
+
+        if (pedido.getUsuario() == null || pedido.getUsuario().getId() <= 0)
+            throw new SQLException("Usuario inválido en el pedido");
+
+        if (pedido.getFecha() == null)
+            throw new SQLException("Fecha del pedido nula");
+
         // conexión
         try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS)) {
             // desactivar autocommit
@@ -112,16 +123,16 @@ public class JdbcPedidoDAO implements PedidoDAO {
 
     // metodo auxiliar usado varias veces para mapear pedidos
     private Pedido mapearPedido(ResultSet rs) throws SQLException {
-        // mapeamos usuario
-        Usuario usuario = JdbcUsuarioDAO.getInstance().mapearUsuarioPublic(rs);
-
-        // creamos el objeto pedido y lo rellenamos
-        Pedido pedido = new Pedido(usuario);
+        Pedido pedido = new Pedido();
         pedido.setId(rs.getLong("id"));
         pedido.setFecha(rs.getDate("fecha").toLocalDate());
         pedido.setEstado(EstadoPedido.valueOf(rs.getString("estado")));
 
-        // devolver pedido
+        // SOLO setear el id del usuario
+        long usuarioId = rs.getLong("usuario_id");
+        Usuario u = new Usuario(usuarioId);
+        pedido.setUsuario(u);
+
         return pedido;
     }
 
@@ -130,15 +141,31 @@ public class JdbcPedidoDAO implements PedidoDAO {
     public List<Pedido> findAll() throws SQLException {
         // lista a devolver
         List<Pedido> pedidos = new ArrayList<>();
-        String sentencia = "SELECT p.*, u.id AS u_id, u.nombre AS u_nombre, u.email AS u_email " + "FROM pedido p JOIN usuario u ON p.usuario_id = u.id";
+        String sentencia = """
+                SELECT p.id AS pedido_id, p.fecha, p.estado, 
+                       p.usuario_id AS usuario_id
+                FROM pedido p
+                """;
         // conexión
         try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(sentencia)) {
             // mapear los rs obtenidos a objetos pedido
             while (rs.next()) {
-                Pedido pedido = mapearPedido(rs);
-                // añadir las lineasPedido al pedido
+                long usuarioId = rs.getLong("usuario_id");
+
+                // Crear un usuario solo con id (no datos extra)
+                Usuario usuario = new Usuario();
+                usuario.setId(usuarioId);
+
+                // Tu clase Pedido seguramente tiene constructor Pedido(Usuario)
+                Pedido pedido = new Pedido(usuario);
+
+                pedido.setId(rs.getLong("pedido_id"));
+                pedido.setFecha(rs.getDate("fecha").toLocalDate());
+                pedido.setEstado(EstadoPedido.valueOf(rs.getString("estado")));
+
+                // Añadir líneas al pedido
                 pedido.setLineasPedido(new HashSet<>(findLineasByPedido(pedido.getId())));
-                // añadir el pedido completo a la lista a devolver
+
                 pedidos.add(pedido);
             }
         }
@@ -158,7 +185,11 @@ public class JdbcPedidoDAO implements PedidoDAO {
             pstmt.setString(2, pedido.getEstado().name());
             pstmt.setLong(3, pedido.getUsuario().getId());
             pstmt.setLong(4, pedido.getId());
-            pstmt.executeUpdate();
+            int filas = pstmt.executeUpdate();
+
+            if (filas == 0) {
+                throw new SQLException("No se encontró el pedido con id " + pedido.getId());
+            }
         }
     }
 
@@ -170,7 +201,11 @@ public class JdbcPedidoDAO implements PedidoDAO {
         // conexión y ejecutar la consulta
         try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS); PreparedStatement pstmt = con.prepareStatement(setencia)) {
             pstmt.setLong(1, id);
-            pstmt.executeUpdate();
+            int filas = pstmt.executeUpdate();
+
+            if (filas == 0) {
+                throw new SQLException("No se encontró el pedido con id " + id);
+            }
         }
     }
 
@@ -179,6 +214,11 @@ public class JdbcPedidoDAO implements PedidoDAO {
     // obtener pedidos por cliente (es decir todos los pedidos de un cliente)
     @Override
     public List<Pedido> findByCliente(long usuarioId) throws SQLException {
+        // saber si existe usuario antes de buscar pedidos
+        if (!usuarioExiste(usuarioId)) {
+            throw new SQLException("No existe el usuario con id " + usuarioId);
+        }
+
         // lista a devolver
         List<Pedido> pedidos = new ArrayList<>();
         String sentencia = "SELECT p.*, u.id AS u_id, u.nombre AS u_nombre, u.email AS u_email " + "FROM pedido p JOIN usuario u ON p.usuario_id = u.id " + "WHERE usuario_id = ?";
@@ -196,6 +236,18 @@ public class JdbcPedidoDAO implements PedidoDAO {
 
         // devolver lista
         return pedidos;
+    }
+
+    // para buscar si existe un uduario (metodo de findByCliente) para saber si existe el cliente antes de buscar sus pedidos
+    private boolean usuarioExiste(long id) throws SQLException {
+        String sql = "SELECT id FROM usuario WHERE id = ?";
+        try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        }
     }
 
     // encontrar pedidos por estado de este
@@ -222,6 +274,11 @@ public class JdbcPedidoDAO implements PedidoDAO {
     // metodo para obtener las lineas de pedido de un pedido concreto
     @Override
     public List<LineaPedido> findLineasByPedido(long pedidoId) throws SQLException {
+        // verificar que existe pedido antes de buscar sus líneas
+        if (!pedidoExiste(pedidoId)) {
+            throw new SQLException("No existe el pedido con id " + pedidoId);
+        }
+
         // lista a devolver
         List<LineaPedido> lineas = new ArrayList<>();
         String sentencia = "SELECT * FROM linea_pedido WHERE pedido_id = ?";
@@ -237,6 +294,18 @@ public class JdbcPedidoDAO implements PedidoDAO {
 
         // devolver lista de lineas
         return lineas;
+    }
+
+    // metodo auxiliar para saber que existe un pedido antes de buscar sus líneas pedido (igual que con usuario antes)
+    private boolean pedidoExiste(long id) throws SQLException {
+        String sql = "SELECT id FROM pedido WHERE id = ?";
+        try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        }
     }
 
     // metodo auxiliar para mapear lineas

@@ -86,17 +86,17 @@ public class JdbcUsuarioDAO implements UsuarioDAO {
 
     //metodo auxiliar (porque se repite mucho) para pasar de lo obtenido de la consulta a un objeto java, hacer a mano porque JDBC no lo hace
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
-        Usuario usuario = new Usuario(rs.getString("dni"), rs.getString("nombre"), rs.getString("direccion"), rs.getDate("fecha_nacimiento").toLocalDate(), rs.getString("telefono"), rs.getString("email"), rs.getString("password"));
-        usuario.setId(rs.getLong("id"));
-        usuario.setId(rs.getLong("id"));
-        usuario.setDni(rs.getString("dni"));
-        usuario.setNombre(rs.getString("nombre"));
-        usuario.setDireccion(rs.getString("direccion"));
-        usuario.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
-        usuario.setTelefono(rs.getString("telefono"));
-        usuario.setEmail(rs.getString("email"));
-        usuario.setPassword(rs.getString("password"));
-        return usuario;
+        Usuario u = new Usuario(
+                rs.getString("nombre"),
+                rs.getString("dni"),
+                rs.getString("direccion"),
+                rs.getDate("fecha_nacimiento").toLocalDate(),
+                rs.getString("telefono"),
+                rs.getString("email"),
+                rs.getString("password")
+        );
+        u.setId(rs.getLong("id"));
+        return u;
     }
 
     // metodo PÚBLICO que se podrá usar en otra clase, no se puedo poner el mapeo público directamente

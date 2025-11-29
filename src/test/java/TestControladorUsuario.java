@@ -59,10 +59,10 @@ class TestControladorUsuario {
         assertTrue(usuarioInicial.getId() > 0, "El id debe asignarse tras registrar");
     }
 
-    // SAVE/CREAR
-    //cuidado, no repetir email
+    // SAVE
     @Test
     void registrarUsuarioCorrecto() throws SQLException {
+        // creamos otro usuario para comprobar que funciona el registro (distinto al creado anteriormente,e ste no nos vale porque ya está registrado)
         Usuario usuario2 = new Usuario(
                 "Pepe",
                 "22222222B",
@@ -72,6 +72,7 @@ class TestControladorUsuario {
                 "pepe@example.com",
                 "12345"
         );
+        // registramos el usuario
         controladorUsuario.registrarUsuario(usuario2);
 
         // comprobar que está en la BD (findByEmail)
@@ -95,6 +96,7 @@ class TestControladorUsuario {
                 "pw2"
         );
 
+        // comprobamos que da exception al existir el email ya
         assertThrows(Exception.class, () -> controladorUsuario.registrarUsuario(duplicado));
     }
 

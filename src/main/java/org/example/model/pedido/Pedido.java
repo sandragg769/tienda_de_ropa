@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class Pedido {
-   //no hace falta transient por la referencia circular
+    //no hace falta transient por la referencia circular
     private long id;
     private LocalDate fecha;
     private EstadoPedido estado;
@@ -23,6 +23,9 @@ public class Pedido {
         this.fecha = LocalDate.now();
         //el pedido está pendiente ya que se ha creado
         this.estado = EstadoPedido.PENDIENTE;
+    }
+
+    public Pedido() {
     }
 
     //getters y setters
