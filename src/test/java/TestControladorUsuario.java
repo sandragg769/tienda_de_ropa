@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TestControladorUsuario {
     private ControladorUsuario controladorUsuario;
+    private ControladorProducto controladorProducto = new ControladorProducto();
     private UsuarioDAO usuarioDAO;
     private Usuario usuarioInicial;
 
@@ -103,36 +104,45 @@ class TestControladorUsuario {
     // FIND BY ID
     @Test
     void findByIdCorrecto() throws SQLException {
-        Optional<Usuario> opt = controladorUsuario.obtenerPorId(usuarioInicial.getId());
-        assertTrue(opt.isPresent());
-        assertEquals(usuarioInicial.getEmail(), opt.get().getEmail());
+        // obtenemos el usuario con la id del usuario inicial (el que ya tenemos creado)
+        Optional<Usuario> optional = controladorUsuario.obtenerPorId(usuarioInicial.getId());
+        // comprobamos que tiene datos la variable
+        assertTrue(optional.isPresent());
+        // y comprobamos que tiene el mismo email que el usuario inicial
+        assertEquals(usuarioInicial.getEmail(), optional.get().getEmail());
     }
 
     @Test
     void findByIdIncorrecto() {
         assertThrows(IllegalArgumentException.class,
+                // intentamos buscar un usuario con id inexistente
                 () -> controladorUsuario.obtenerPorId(99999));
     }
 
     // FIND ALL
     @Test
     void FindAllCorrecto() throws SQLException {
+        // obtenemos todos los usuarios
         var usuarios = controladorUsuario.obtenerTodos();
+        // y comprobamos que solo hay uno
         assertEquals(1, usuarios.size());
     }
 
     // FIND BY EMAIL
     @Test
     void findByEmailCorrecto() throws Exception {
-        Optional<Usuario> resultado = Optional.ofNullable(controladorUsuario.obtenerPorEmail(usuarioInicial.getEmail()));
-
-        assertTrue(resultado.isPresent());
-        assertEquals(usuarioInicial.getEmail(), resultado.get().getEmail());
+        // guardamos en una variable el resultado de la búsqueda de un usuario por email
+        Optional<Usuario> usuPorEmail = Optional.ofNullable(controladorUsuario.obtenerPorEmail(usuarioInicial.getEmail()));
+        // observamos si es tiene contenido la variable
+        assertTrue(usuPorEmail.isPresent());
+        // comprobamos que son iguales los email
+        assertEquals(usuarioInicial.getEmail(), usuPorEmail.get().getEmail());
     }
 
     @Test
     void findByEmailInexistenteIncorrecto() {
         assertThrows(IllegalArgumentException.class, () -> {
+            // intentamos buscar con un email inexistente y da error
             controladorUsuario.obtenerPorEmail("emailInexistente@correo.com");
         });
     }
@@ -140,27 +150,34 @@ class TestControladorUsuario {
     // UDDATE
     @Test
     void updateUsuarioCorrecto() throws Exception {
+        // le cambiamos el telefono y después actualizamos
         usuarioInicial.setTelefono("777777777");
         controladorUsuario.actualizarUsuario(usuarioInicial);
+        // obtenemos el resultado de buscar por id el usuario (con el telefono cambiado)
         Usuario actualizado =
                 controladorUsuario.obtenerPorId(usuarioInicial.getId()).orElseThrow();
+        // y comprobamos que se ha cambiado el telefono
         assertEquals("777777777", actualizado.getTelefono());
     }
 
     @Test
     void updateUsuarioInexistenteIncorrecto() {
+        // creamos usuario
         Usuario noExiste = new Usuario(
                 "AAA", "44444444D", "X",
                 LocalDate.of(2000, 1, 1), "600000000",
                 "x@gmail.com", "1234"
         );
+        // le ponemos id no registrada
         noExiste.setId(99999);
+        // intentamos actualizar
         assertThrows(IllegalArgumentException.class,
                 () -> controladorUsuario.actualizarUsuario(noExiste));
     }
 
     @Test
     void updateUsuarioCampoNoEditableIncorrecto() {
+        // intentamos cambiar el dni (campo ineditable) y al actualizar nos da error
         usuarioInicial.setDni("00000000Z");
         assertThrows(IllegalArgumentException.class,
                 () -> controladorUsuario.actualizarUsuario(usuarioInicial));
@@ -169,13 +186,16 @@ class TestControladorUsuario {
     // DELETE
     @Test
     void deleteUsuarioCorrecto() throws Exception {
+        // eliminamos usuario
         controladorUsuario.eliminarUsuario(usuarioInicial.getId());
+        // comprobamos que al contarlos todos, no hay ninguno
         long count = controladorUsuario.obtenerTodos().spliterator().getExactSizeIfKnown();
         assertEquals(0, count);
     }
 
     @Test
     void deleteUsuarioInexistenteIncorrecto() {
+        // eliminar usuario con id no registrada
         assertThrows(IllegalArgumentException.class, () -> {
             controladorUsuario.eliminarUsuario(99999);
         });
@@ -184,13 +204,15 @@ class TestControladorUsuario {
     // LOGIN
     @Test
     void loginCorrecto() throws Exception {
-        Optional<Usuario> logged = controladorUsuario.login("sandra@gmail.com", "1234");
-        assertTrue(logged.isPresent());
-        assertEquals(usuarioInicial.getEmail(), logged.get().getEmail());
+        // hacemos login con una cuenta registrada
+        Optional<Usuario> usuLogin = controladorUsuario.login("sandra@gmail.com", "1234");
+        assertTrue(usuLogin.isPresent());
+        assertEquals(usuarioInicial.getEmail(), usuLogin.get().getEmail());
     }
 
     @Test
     void loginEmailIncorrecto() {
+        // loguear con email o contraseña no correctos
         assertThrows(IllegalArgumentException.class,
                 () -> controladorUsuario.login("noexiste@gmail.com", "1234"));
 
@@ -212,23 +234,27 @@ class TestControladorUsuario {
                 etiqueta,
                 2
         );
-        ControladorProducto controladorProducto = new ControladorProducto();
+        // metemos el producto en la base de datos
         controladorProducto.crearProducto(camisa);
+        // lo agregamos como favorito del usuario inicial
         controladorUsuario.agregarFavorito(camisa, usuarioInicial);
+        // obtenemos los favoritos del usuario inicial
         List<Producto> favoritos = controladorUsuario.obtenerFavoritos(usuarioInicial.getId());
+        // comprobamos que está el producto creado
         assertTrue(favoritos.stream().anyMatch(p -> p.getId() == camisa.getId()));
     }
 
     @Test
     void agregarYObtenerFavoritosIncorrecto() {
+        // obtenemos favoritos de id de usuario no registrado
         assertThrows(IllegalArgumentException.class,
                 () -> controladorUsuario.obtenerFavoritos(99999));
     }
 
     @Test
     void eliminarFavoritoCorrecto() throws Exception {
+        // creamos producto
         Etiqueta etiqueta = new Etiqueta("Nueva");
-
         Producto camisa = new Camisa(
                 "Camisa Casual",
                 "MarcaX",
@@ -238,8 +264,7 @@ class TestControladorUsuario {
                 etiqueta,
                 2
         );
-
-        ControladorProducto controladorProducto = new ControladorProducto();
+        // mismo procedimiento que en agregar a favoritos pero eliminandolo antes de comprobar
         controladorProducto.crearProducto(camisa);
         controladorUsuario.agregarFavorito(camisa, usuarioInicial);
         controladorUsuario.eliminarFavorito(camisa, usuarioInicial);
@@ -249,6 +274,7 @@ class TestControladorUsuario {
 
     @Test
     void eliminarFavoritoIncorrecto() {
+        // creamos producto
         Etiqueta etiqueta = new Etiqueta("Nueva");
         Producto camisa = new Camisa(
                 "Camisa Casual",
@@ -259,7 +285,7 @@ class TestControladorUsuario {
                 etiqueta,
                 2
         );
-        // El producto NO está registrado, debe fallar
+        // el producto NO está registrado, debe fallar
         assertThrows(IllegalArgumentException.class,
                 () -> controladorUsuario.eliminarFavorito(camisa, usuarioInicial));
     }

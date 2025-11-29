@@ -49,7 +49,10 @@ class TestControladorProducto {
         );
     }
 
+    // no comentado por ser prácticamente igual que usuario
+
     // CRUD
+    // SAVE
     @Test
     void crearProductoCorrecto() throws SQLException {
         controladorProducto.crearProducto(camisa);
@@ -71,7 +74,7 @@ class TestControladorProducto {
 
     @Test
     void crearProductoEtiquetaFKInexistenteLanzaSQLException() {
-        // Creamos un producto con etiqueta ya persistida, pero manipulamos el id para forzar fallo
+        // creamos un producto con etiqueta ya persistida, pero manipulamos el id para forzar fallo
         Etiqueta etiqueta = new Etiqueta("NUEVA");
         etiqueta.setId(99999L); // NO existe en la base → rompe la foreign key
 
@@ -84,6 +87,7 @@ class TestControladorProducto {
         assertThrows(SQLException.class, () -> controladorProducto.crearProducto(camisa));
     }
 
+    // FIND BY ID
     @Test
     void buscarPorIdCorrecto() throws SQLException {
         controladorProducto.crearProducto(camisa);
@@ -99,13 +103,14 @@ class TestControladorProducto {
         assertTrue(encontrado.isEmpty());
     }
 
+    // FIND ALL
     @Test
     void findAllCorrecto() throws SQLException {
         controladorProducto.crearProducto(camisa);
         assertEquals(1, controladorProducto.obtenerTodos().size());
     }
 
-
+    // UPDATE
     @Test
     void actualizarProductoCorrecto() throws SQLException {
         controladorProducto.crearProducto(camisa);
@@ -129,7 +134,7 @@ class TestControladorProducto {
                 () -> controladorProducto.actualizarProducto(inexistente));
     }
 
-
+    // DELETE
     @Test
     void borrarProductoCorrecto() throws SQLException {
         controladorProducto.crearProducto(camisa);
@@ -142,7 +147,6 @@ class TestControladorProducto {
     void borrarProductoIncorrecto() {
         assertThrows(SQLException.class, () -> controladorProducto.borrarProducto(99999));
     }
-
 
     // FAVORITOS
     @Test

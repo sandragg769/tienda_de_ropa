@@ -11,6 +11,7 @@ import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
+import org.example.model.producto.tipo_de_productos.Pantalon;
 import org.example.utils.DatabaseConf;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,7 +67,10 @@ class TestControladorPedido {
         pedido.getLineasPedido().add(linea);
     }
 
+    // no comentada porque es prácticamente igual que los otros test
+
     // CRUD
+    // SAVE
     @Test
     void crearPedidoCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -84,6 +88,7 @@ class TestControladorPedido {
         assertThrows(SQLException.class, () -> controladorPedido.crearPedido(pInvalido));
     }
 
+    // FIND BY ID
     @Test
     void buscarPorIdCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -100,6 +105,7 @@ class TestControladorPedido {
         assertTrue(encontrado.isEmpty());
     }
 
+    // FIND ALL
     @Test
     void obtenerTodosCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -107,6 +113,7 @@ class TestControladorPedido {
         assertEquals(1, controladorPedido.obtenerTodos().size());
     }
 
+    // UPDATE
     @Test
     void actualizarPedidoCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -127,6 +134,7 @@ class TestControladorPedido {
         assertThrows(SQLException.class, () -> controladorPedido.actualizarPedido(p));
     }
 
+    // DELETE
     @Test
     void eliminarPedidoCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -142,6 +150,7 @@ class TestControladorPedido {
     }
 
     // METODOS ESPECÍFICOS
+    // FIND BY CLIENTE
     @Test
     void pedidosPorClienteCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -158,6 +167,7 @@ class TestControladorPedido {
                 () -> controladorPedido.pedidosPorCliente(999999));
     }
 
+    // FIND BY ESTADO
     @Test
     void pedidosPorEstadoCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -173,6 +183,7 @@ class TestControladorPedido {
                 () -> controladorPedido.pedidosPorEstado(null));
     }
 
+    // FIND LINEAS BY PEDIDO
     @Test
     void obtenerLineasDePedidoCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -189,6 +200,7 @@ class TestControladorPedido {
                 () -> controladorPedido.lineasDePedido(888888));
     }
 
+    // ADD LINEA PEDIDO
     @Test
     void agregarLineaPedidoCorrecto() throws SQLException {
         controladorPedido.crearPedido(pedido);
@@ -209,4 +221,71 @@ class TestControladorPedido {
 
         assertThrows(SQLException.class, () -> controladorPedido.agregarLineaPedido(lp));
     }
+
+    // FUNCIONALIDADES
+    // CATÁLOGO DE PRODUCTOS
+    @Test
+    void crearYListarProductos() throws SQLException {
+        // creamos pantalon
+        Producto pantalon = new Pantalon(
+                "Camisa Azul", "Zara", 29.99,
+                Talla.M, Color.AZUL, null, 5
+        );
+        // añadimos el pantalon (podrian ser varios productos)
+        controladorProducto.crearProducto(pantalon);
+        // obtenemos todos (simular que se cargan todos y que el usuario pueda verlos)
+        List<Producto> productos = controladorProducto.obtenerTodos();
+        // comprobamos que se ha obtenido el pantalon
+        assertTrue(productos.contains(pantalon));
+    }
+
+    // FINALIZAR PEDIDO
+    @Test
+    void finalizarPedidoPendiente() throws SQLException {
+        controladorPedido.crearPedido(pedido);
+
+        controladorPedido.finalizarPedido(pedido.getUsuario(), "TARJETA");
+
+        assertEquals(EstadoPedido.FINALIZADO, pedido.getEstado());
+    }
+
+    @Test
+    void finalizarPedidoPendienteSinPedidoIncorrecto() {
+        // crear otro usuario sin pedido
+        Usuario usuario2 = new Usuario(
+                "Luis", "22222222B", "Otra calle",
+                LocalDate.of(2000, 1, 1), "600000000",
+                "luis@gmail.com", "abcd"
+        );
+        // registramos
+        assertDoesNotThrow(() -> controladorUsuario.registrarUsuario(usuario2));
+        // comprobamos que da exception al finalizarle un pedido
+        SQLException exception = assertThrows(SQLException.class,
+                () -> controladorPedido.finalizarPedido(usuario2, "TARJETA"));
+        assertEquals("No hay pedido pendiente para el usuario con id " + usuario2.getId(), exception.getMessage());
+    }
+
+    // CACELAR PEDIDO
+    @Test
+    void cancelarPedidoPendiente() throws SQLException {
+        controladorPedido.cancelarPedido(usuario);
+
+        Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
+        assertTrue(actualizado.isPresent());
+        assertEquals(EstadoPedido.CANCELADO, actualizado.get().getEstado());
+    }
+
+    // ENTREGAR PEDIDO
+    @Test
+    void entregarPedido() throws SQLException {
+        // primero finalizamos para simular flujo normal
+        controladorPedido.finalizarPedido(usuario, "TARJETA");
+        // entregamos
+        controladorPedido.entregarPedido(pedido.getId());
+        Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
+        assertTrue(actualizado.isPresent());
+        assertEquals(EstadoPedido.ENTREGADO, actualizado.get().getEstado());
+    }
+
+
 }

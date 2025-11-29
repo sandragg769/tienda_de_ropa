@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.controller.dao.impl.JdbcPedidoDAO;
 import org.example.controller.dao.interfaces.PedidoDAO;
+import org.example.model.Usuario;
 import org.example.model.pedido.EstadoPedido;
 import org.example.model.pedido.LineaPedido;
 import org.example.model.pedido.Pedido;
@@ -51,6 +52,19 @@ public class ControladorPedido {
 
     public void agregarLineaPedido(LineaPedido lineaPedido) throws SQLException {
         pedidoDAO.addLineaPedido(lineaPedido);
+    }
+
+    // FUNCIONALIDADES
+    public void finalizarPedido(Usuario usuario, String metodoPago) throws SQLException {
+        pedidoDAO.finalizarPedidoPendiente(usuario.getId(), metodoPago);
+    }
+
+    public void cancelarPedido(Usuario usuario) throws SQLException {
+        pedidoDAO.cancelarPedidoPendiente(usuario.getId());
+    }
+
+    public void entregarPedido(long pedidoId) throws SQLException {
+        pedidoDAO.entregarPedido(pedidoId);
     }
 
 

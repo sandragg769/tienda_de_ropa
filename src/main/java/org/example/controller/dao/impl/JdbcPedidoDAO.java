@@ -341,4 +341,73 @@ public class JdbcPedidoDAO implements PedidoDAO {
         }
     }
 
+
+    // FUNCIONALIDADES
+    // busca pedido pendiente de un usuario concreto y lo finaliza
+    @Override
+    public Pedido finalizarPedidoPendiente(long usuarioId, String metodoPago) throws SQLException {
+        // obtener el pedido pendiente del usuario
+        Optional<Pedido> pedidoPendiente = findPedidoPendienteByUsuario(usuarioId);
+
+        // comprobar si lo encuentra
+        if (pedidoPendiente.isEmpty()) {
+            throw new SQLException("No hay pedido pendiente para el usuario con id " + usuarioId);
+        }
+
+        // cambiar el estado a FINALIZADO
+        Pedido pedido = pedidoPendiente.get();
+        pedido.setEstado(EstadoPedido.FINALIZADO);
+
+        // actualizar en la base de datos
+        update(pedido);
+        return pedido;
+    }
+
+    // metodo auxiliar necesario para otros metodos de las funcionalidades
+    private Optional<Pedido> findPedidoPendienteByUsuario(long usuarioId) throws SQLException {
+        String sentencia = "SELECT * FROM pedido WHERE usuario_id = ? AND estado = ?";
+        try (Connection con = DriverManager.getConnection(DatabaseConf.URL, DatabaseConf.USER, DatabaseConf.PASS);
+             PreparedStatement pstmt = con.prepareStatement(sentencia)) {
+            pstmt.setLong(1, usuarioId);
+            pstmt.setString(2, EstadoPedido.PENDIENTE.name());
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Pedido pedido = mapearPedido(rs);
+                pedido.setLineasPedido(new HashSet<>(findLineasByPedido(pedido.getId())));
+                return Optional.of(pedido);
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
+
+    // busca pedido pendiente de un usuario concreto y lo cancela
+    @Override
+    public Pedido cancelarPedidoPendiente(long usuarioId) throws SQLException {
+        Optional<Pedido> pedidoPendiente = findPedidoPendienteByUsuario(usuarioId);
+
+        if (pedidoPendiente.isEmpty()) {
+            throw new SQLException("No hay pedido pendiente para el usuario con id " + usuarioId);
+        }
+
+        Pedido pedido = pedidoPendiente.get();
+        pedido.setEstado(EstadoPedido.CANCELADO);
+        update(pedido);
+        return pedido;
+    }
+
+    // entregar un pedido
+    @Override
+    public void entregarPedido(long pedidoId) throws SQLException {
+        Optional<Pedido> pedidoOpt = findById(pedidoId);
+
+        if (pedidoOpt.isEmpty()) {
+            throw new SQLException("No existe el pedido con id " + pedidoId);
+        }
+
+        Pedido pedido = pedidoOpt.get();
+        pedido.setEstado(EstadoPedido.ENTREGADO);
+        update(pedido);
+    }
+
 }
