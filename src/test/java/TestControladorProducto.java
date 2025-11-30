@@ -196,6 +196,4 @@ class TestControladorProducto {
         assertThrows(SQLException.class,
                 () -> controladorProducto.eliminarFavorito(99999, usuario.getId()));
     }
-
-
 }

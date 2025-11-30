@@ -233,6 +233,7 @@ class TestControladorPedido {
         );
         // añadimos el pantalon (podrian ser varios productos)
         controladorProducto.crearProducto(pantalon);
+
         // obtenemos todos (simular que se cargan todos y que el usuario pueda verlos)
         List<Producto> productos = controladorProducto.obtenerTodos();
         // comprobamos que se ha obtenido el pantalon
@@ -246,6 +247,7 @@ class TestControladorPedido {
         controladorPedido.crearPedido(pedido);
         // lo finalizamos
         controladorPedido.finalizarPedido(pedido.getUsuario(), "TARJETA");
+
         // buscamos el pedido y comprobamos si lo encuentra y si el estado es finalizado
         Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
         assertTrue(actualizado.isPresent());
@@ -260,6 +262,7 @@ class TestControladorPedido {
                 LocalDate.of(2000, 1, 1), "600000000",
                 "luis@gmail.com", "abcd"
         );
+
         // registramos
         assertDoesNotThrow(() -> controladorUsuario.registrarUsuario(usuario2));
         // comprobamos que da exception al finalizarle un pedido
@@ -274,6 +277,7 @@ class TestControladorPedido {
         // misma dinámica que el finalizar
         controladorPedido.crearPedido(pedido);
         controladorPedido.cancelarPedido(usuario);
+
         Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
         assertTrue(actualizado.isPresent());
         assertEquals(EstadoPedido.CANCELADO, actualizado.get().getEstado());
@@ -287,10 +291,9 @@ class TestControladorPedido {
         // primero finalizamos para simular flujo normal
         controladorPedido.finalizarPedido(usuario, "TARJETA");
         controladorPedido.entregarPedido(pedido.getId());
+
         Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
         assertTrue(actualizado.isPresent());
         assertEquals(EstadoPedido.ENTREGADO, actualizado.get().getEstado());
     }
-
-
 }

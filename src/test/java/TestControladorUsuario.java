@@ -289,7 +289,6 @@ class TestControladorUsuario {
         assertThrows(IllegalArgumentException.class,
                 () -> controladorUsuario.eliminarFavorito(camisa, usuarioInicial));
     }
-
 }
 
     

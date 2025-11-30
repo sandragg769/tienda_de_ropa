@@ -21,7 +21,7 @@ public class ControladorProducto {
     List<Etiqueta> listaEtiquetas = new ArrayList<>();
 
     // CRUD
-    //guardar producto (con su etiqueta si la tiene)
+    // guardar producto (con su etiqueta si la tiene)
     public void crearProducto(Producto producto) throws SQLException {
         productoDAO.save(producto);
     }

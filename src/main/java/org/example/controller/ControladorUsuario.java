@@ -35,7 +35,6 @@ public class ControladorUsuario {
         usuarioDAO.save(usuario);
     }
 
-    // obtener por ID
     public Optional<Usuario> obtenerPorId(long id) throws SQLException {
         return Optional.ofNullable(usuarioDAO.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con id " + id)));
@@ -46,7 +45,6 @@ public class ControladorUsuario {
                 .orElseThrow(() -> new IllegalArgumentException("No existe usuario con email: " + email));
     }
 
-    // obtener TODOS los usuarios
     public List<Usuario> obtenerTodos() throws SQLException {
         return usuarioDAO.findAll();
     }
@@ -77,7 +75,8 @@ public class ControladorUsuario {
         return true;
     }
 
-    //FAVORITOS
+
+    // FAVORITOS
     // obtener favoritos de un usuario
     public List<Producto> obtenerFavoritos(long usuarioId) throws SQLException {
         // comprobamos existencia

@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class JdbcProductoDAO implements ProductoDAO {
-    //campor estático que contendrá la única instancia del DAO
+    // campo estático que contendrá la única instancia del DAO
     private static volatile JdbcProductoDAO instance;
 
-    //constructor privado para evitar instanciación externa
+    //bconstructor privado para evitar instanciación externa
     private JdbcProductoDAO() {
     }
 
@@ -46,7 +46,7 @@ public class JdbcProductoDAO implements ProductoDAO {
     }
 
     // CRUD
-    //metodo que guarda un producto en la base de datos, si tiene etiqueta
+    // metodo que guarda un producto en la base de datos, si tiene etiqueta
     // sin id inserta la etiqueta primero, se hace en una transacción para
     // garantizar que no se cree solo una cosa
     @Override
@@ -349,7 +349,7 @@ public class JdbcProductoDAO implements ProductoDAO {
     }
 
 
-    //metodo que devuelve todos los productos
+    // metodo que devuelve todos los productos
     @Override
     public List<Producto> findAll() throws SQLException {
         String sentencia =
@@ -375,7 +375,7 @@ public class JdbcProductoDAO implements ProductoDAO {
         return lista;
     }
 
-    //metodo para actualizar un producto
+    //cmetodo para actualizar un producto
     @Override
     public void update(Producto producto) throws SQLException {
         String sentenciaEtiqueta =

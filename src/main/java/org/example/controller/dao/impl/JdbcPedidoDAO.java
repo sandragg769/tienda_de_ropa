@@ -384,6 +384,7 @@ public class JdbcPedidoDAO implements PedidoDAO {
     // busca pedido pendiente de un usuario concreto y lo cancela
     @Override
     public Pedido cancelarPedidoPendiente(long usuarioId) throws SQLException {
+        // misma dinámica que finalizar
         Optional<Pedido> pedidoPendiente = findPedidoPendienteByUsuario(usuarioId);
 
         if (pedidoPendiente.isEmpty()) {
@@ -399,6 +400,7 @@ public class JdbcPedidoDAO implements PedidoDAO {
     // entregar un pedido
     @Override
     public void entregarPedido(long pedidoId) throws SQLException {
+        // misma dinámica que finalizar
         Optional<Pedido> pedidoOpt = findById(pedidoId);
 
         if (pedidoOpt.isEmpty()) {

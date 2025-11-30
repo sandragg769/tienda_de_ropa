@@ -54,6 +54,7 @@ public class ControladorPedido {
         pedidoDAO.addLineaPedido(lineaPedido);
     }
 
+
     // FUNCIONALIDADES
     public void finalizarPedido(Usuario usuario, String metodoPago) throws SQLException {
         pedidoDAO.finalizarPedidoPendiente(usuario.getId(), metodoPago);
@@ -81,5 +82,4 @@ public class ControladorPedido {
             pedidoDAO.save(p);
         }
     }
-
 }
