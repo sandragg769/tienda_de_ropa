@@ -242,11 +242,14 @@ class TestControladorPedido {
     // FINALIZAR PEDIDO
     @Test
     void finalizarPedidoPendiente() throws SQLException {
+        // creamos el pedido en la base (antes no se hacía)
         controladorPedido.crearPedido(pedido);
-
+        // lo finalizamos
         controladorPedido.finalizarPedido(pedido.getUsuario(), "TARJETA");
-
-        assertEquals(EstadoPedido.FINALIZADO, pedido.getEstado());
+        // buscamos el pedido y comprobamos si lo encuentra y si el estado es finalizado
+        Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
+        assertTrue(actualizado.isPresent());
+        assertEquals(EstadoPedido.FINALIZADO, actualizado.get().getEstado());
     }
 
     @Test
@@ -265,11 +268,12 @@ class TestControladorPedido {
         assertEquals("No hay pedido pendiente para el usuario con id " + usuario2.getId(), exception.getMessage());
     }
 
-    // CACELAR PEDIDO
+    // CANCELAR PEDIDO
     @Test
     void cancelarPedidoPendiente() throws SQLException {
+        // misma dinámica que el finalizar
+        controladorPedido.crearPedido(pedido);
         controladorPedido.cancelarPedido(usuario);
-
         Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
         assertTrue(actualizado.isPresent());
         assertEquals(EstadoPedido.CANCELADO, actualizado.get().getEstado());
@@ -278,9 +282,10 @@ class TestControladorPedido {
     // ENTREGAR PEDIDO
     @Test
     void entregarPedido() throws SQLException {
+        // misma dinámica que finalizar
+        controladorPedido.crearPedido(pedido);
         // primero finalizamos para simular flujo normal
         controladorPedido.finalizarPedido(usuario, "TARJETA");
-        // entregamos
         controladorPedido.entregarPedido(pedido.getId());
         Optional<Pedido> actualizado = controladorPedido.buscarPorId(pedido.getId());
         assertTrue(actualizado.isPresent());
