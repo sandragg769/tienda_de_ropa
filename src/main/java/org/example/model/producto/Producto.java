@@ -64,9 +64,6 @@ public abstract class Producto {
     //un set porque no hay usuarios repetidos, representa los usuarios que han puesto el producto en favoritos (que pueden ser muchos)
     private transient Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
 
-    @JsonIgnore
-    //un producto puede tener una línea de pedido (la línea tiene id por lo que no se refiere en general, si no que a esa especifica)
-    //private transient LineaPedido lineaPedido;
 
     @Embedded
     //un producto puede tener 0 o 1 descuentos
@@ -156,14 +153,6 @@ public abstract class Producto {
         this.usuariosProductosFavoritos = usuariosProductosFavoritos;
     }
 
-    //public LineaPedido getLineaPedido() {
-    //    return lineaPedido;
-    //}
-
-   // public void setLineaPedido(LineaPedido lineaPedido) {
-   //     this.lineaPedido = lineaPedido;
-   // }
-
     public Descuento getDescuento() {
         return descuento;
     }
@@ -213,7 +202,6 @@ public abstract class Producto {
                 ", color=" + color +
                 ", etiqueta=" + etiqueta +
                 ", usuariosProductosFavoritos=" + usuariosProductosFavoritos +
-                ", lineaPedido=" + lineaPedido +
                 ", descuento=" + descuento +
                 '}';
     }

@@ -3,27 +3,36 @@ package org.example.model.producto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Entity
+@Table(name = "etiqueta")
 public class Etiqueta {
-    //no id en JSON
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     //excluimos id para CSV (no lo anotamos)
     private long id;
+
     //para CSV
     @CsvBindByName(column = "nombre")
+    @Column(nullable = false)
     private String nombre;
     //para CSV
     @CsvBindByName(column = "fechaCreacion")
     @CsvDate("dd/MM/yyyy") // formato español
+    @Column(nullable = false)
     private LocalDate fechaCreacion;
+
     //evitar errores JSON y CSV
     @JsonIgnore
     //un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
+    @OneToMany(mappedBy = "etiqueta", fetch = FetchType.LAZY)
     private transient Set<Producto> productos = new HashSet<>();
 
     //constructor

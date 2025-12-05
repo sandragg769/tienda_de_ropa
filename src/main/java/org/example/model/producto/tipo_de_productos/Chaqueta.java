@@ -1,11 +1,16 @@
 package org.example.model.producto.tipo_de_productos;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import org.example.model.producto.Etiqueta;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Talla;
 
+@Entity
+@DiscriminatorValue("CHAQUETA")
 public class Chaqueta extends Producto {
+    // opcinal
     private boolean conCapucha;
     private int nivelAbrigo;
 

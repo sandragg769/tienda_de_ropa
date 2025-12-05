@@ -6,15 +6,32 @@ import org.example.model.Usuario;
 import java.time.LocalDate;
 import java.util.*;
 
-
+@Entity
+@Table(name = "pedido")
 public class Pedido {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     //no hace falta transient por la referencia circular
     private long id;
+
+    @Column(nullable = false)
     private LocalDate fecha;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EstadoPedido estado;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "usuario_id", nullable = false)
     //creo un objeto y no una lista porque un pedido es tenido por un usuario solo
     private transient Usuario usuario;
+
     //uso una lista para poder tener muchas lineasPedido en un producto (pueden repetirse)
+    @OneToMany(
+            mappedBy = "pedido",
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private Set<LineaPedido> lineasPedido = new HashSet<>();
 
     //constructor
