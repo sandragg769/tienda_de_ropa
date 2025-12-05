@@ -3,6 +3,7 @@ package org.example.model.producto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.*;
 import org.example.model.Usuario;
 import org.example.model.descuento.Descuento;
 import org.example.model.pedido.LineaPedido;
@@ -29,24 +30,45 @@ import java.util.Set;
         @JsonSubTypes.Type(value = Chaqueta.class, name = "Chaqueta")
 })
 
+@Entity
+@Table(name = "producto")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo")
 //clase que usaremos de plantilla para los diferentes productos
 public abstract class Producto {
     //no id en JSON
     @JsonIgnore
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(nullable = false)
     private String nombre;
+    @Column(nullable = false)
     private String marca;
+    @Column(nullable = false)
     private double precioInicial;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Talla talla;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Color color;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     //solo puede tener una etiqueta por eso no se hace lista
     private Etiqueta etiqueta;
+
+    @ManyToMany(mappedBy = "favoritos")
     @JsonIgnore
     //un set porque no hay usuarios repetidos, representa los usuarios que han puesto el producto en favoritos (que pueden ser muchos)
     private transient Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
+
     @JsonIgnore
     //un producto puede tener una línea de pedido (la línea tiene id por lo que no se refiere en general, si no que a esa especifica)
-    private transient LineaPedido lineaPedido;
+    //private transient LineaPedido lineaPedido;
+
+    @Embedded
     //un producto puede tener 0 o 1 descuentos
     private Descuento descuento;
 
@@ -134,13 +156,13 @@ public abstract class Producto {
         this.usuariosProductosFavoritos = usuariosProductosFavoritos;
     }
 
-    public LineaPedido getLineaPedido() {
-        return lineaPedido;
-    }
+    //public LineaPedido getLineaPedido() {
+    //    return lineaPedido;
+    //}
 
-    public void setLineaPedido(LineaPedido lineaPedido) {
-        this.lineaPedido = lineaPedido;
-    }
+   // public void setLineaPedido(LineaPedido lineaPedido) {
+   //     this.lineaPedido = lineaPedido;
+   // }
 
     public Descuento getDescuento() {
         return descuento;

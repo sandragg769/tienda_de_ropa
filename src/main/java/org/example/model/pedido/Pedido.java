@@ -1,9 +1,11 @@
 package org.example.model.pedido;
 
+import jakarta.persistence.*;
 import org.example.model.Usuario;
 
 import java.time.LocalDate;
 import java.util.*;
+
 
 public class Pedido {
     //no hace falta transient por la referencia circular
