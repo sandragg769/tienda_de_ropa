@@ -8,7 +8,7 @@ import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Talla;
 
 @Entity
-@DiscriminatorValue("CAMISA")
+@DiscriminatorValue("Camisa")
 public class Camisa extends Producto {
     // opcional
     private int botones;

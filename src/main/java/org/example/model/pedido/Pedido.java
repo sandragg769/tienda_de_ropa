@@ -20,10 +20,10 @@ public class Pedido {
     @Column(nullable = false)
     private EstadoPedido estado;
 
+    //creo un objeto y no una lista porque un pedido es tenido por un usuario solo
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
-    //creo un objeto y no una lista porque un pedido es tenido por un usuario solo
-    private transient Usuario usuario;
+    private Usuario usuario;
 
     //uso una lista para poder tener muchas lineasPedido en un producto (pueden repetirse)
     @OneToMany(

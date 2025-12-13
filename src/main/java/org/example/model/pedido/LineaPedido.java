@@ -1,15 +1,24 @@
 package org.example.model.pedido;
 
+import jakarta.persistence.*;
 import org.example.model.producto.Producto;
 
+@Entity
+@Table(name = "linea_pedido")
 public class LineaPedido {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private int cantidad;
-    //transient por el GSON por la referencia circular
+
     //una línea de producto puede tener solo un pedido
-    private transient Producto producto;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Producto producto;
+
     //añadir pedido
-    private transient Pedido pedido;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Pedido pedido;
 
     //constructor
     //aquí sí hay que poner un Producto obligatoriamente

@@ -55,18 +55,17 @@ public abstract class Producto {
     @Column(nullable = false)
     private Color color;
 
-    @ManyToOne(cascade = CascadeType.ALL)
     //solo puede tener una etiqueta por eso no se hace lista
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Etiqueta etiqueta;
 
-    @ManyToMany(mappedBy = "favoritos")
-    @JsonIgnore
     //un set porque no hay usuarios repetidos, representa los usuarios que han puesto el producto en favoritos (que pueden ser muchos)
-    private transient Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
+    @ManyToMany(mappedBy = "favoritos", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
 
-
-    @Embedded
     //un producto puede tener 0 o 1 descuentos
+    @Embedded
     private Descuento descuento;
 
     //constructor vacío para la exportación e importación de JSON

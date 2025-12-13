@@ -29,11 +29,11 @@ public class Etiqueta {
     @Column(nullable = false)
     private LocalDate fechaCreacion;
 
+    //un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
     //evitar errores JSON y CSV
     @JsonIgnore
-    //un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
-    @OneToMany(mappedBy = "etiqueta", fetch = FetchType.LAZY)
-    private transient Set<Producto> productos = new HashSet<>();
+    @OneToMany(mappedBy = "etiqueta", fetch = FetchType.EAGER)
+    private Set<Producto> productos = new HashSet<>();
 
     //constructor
     //vacío para JSON y CSV

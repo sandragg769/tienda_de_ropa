@@ -17,35 +17,34 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String nombre;
-    @Column(nullable = false, unique = true)
+
     // opcionales
-    private String dni;
     private String direccion;
+    private String telefono;
+
     @Column(nullable = false)
     private LocalDate fechaNacimiento;
     @Column(nullable = false, unique = true)
-    private String telefono;
+    private String dni;
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
     private String password;
 
-    // FAVORITOS - ManyToMany EAGER y en cascada
+    //un set de Productos favoritos, para que no se repitan productos favoritos, pero puede tener muchos
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_producto_favorito",
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
-    //un set de Productos favoritos, para que no se repitan productos favoritos, pero puede tener muchos
-    private transient Set<Producto> favoritos = new HashSet<>();
+    private Set<Producto> favoritos = new HashSet<>();
 
-    // PEDIDOS
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     // un set de pedidos (para que no se repitan los mismos pedidos) ya que un usuario puede tener muchos pedidos, lo hacemos Linkedhash para que se ordene por inserción
-    private transient Set<Pedido> pedidos = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Pedido> pedidos = new LinkedHashSet<>();
 
     //constructor
     //no id
