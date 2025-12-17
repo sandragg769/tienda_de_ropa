@@ -1,7 +1,7 @@
 package org.example.controller;
 
 
-import org.example.controller.dao.impl.JdbcProductoDAO;
+import org.example.controller.dao.impl.ProductoJpaDAO;
 import org.example.controller.dao.interfaces.ProductoDAO;
 import org.example.model.Usuario;
 import org.example.model.producto.Etiqueta;
@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class ControladorProducto {
-    private final ProductoDAO productoDAO = JdbcProductoDAO.getInstance();
+    // cambiar nombre de la clase a jpa en vez de jdbc
+    private final ProductoDAO productoDAO = ProductoJpaDAO.getInstance();
 
     // para gestionar ficheros
     List<Etiqueta> listaEtiquetas = new ArrayList<>();

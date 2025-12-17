@@ -36,7 +36,7 @@ class TestControladorPedido {
 
     @BeforeEach
     void setUp() throws SQLException {
-        DatabaseConf.dropAndCreateTables();
+        // DatabaseConf.dropAndCreateTables();
 
         controladorPedido = new ControladorPedido();
         controladorUsuario = new ControladorUsuario();

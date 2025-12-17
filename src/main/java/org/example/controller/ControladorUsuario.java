@@ -1,7 +1,7 @@
 package org.example.controller;
 
-import org.example.controller.dao.impl.JdbcProductoDAO;
-import org.example.controller.dao.impl.JdbcUsuarioDAO;
+import org.example.controller.dao.impl.ProductoJpaDAO;
+import org.example.controller.dao.impl.UsuarioJpaDAO;
 import org.example.controller.dao.interfaces.ProductoDAO;
 import org.example.controller.dao.interfaces.UsuarioDAO;
 import org.example.model.Usuario;
@@ -12,11 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class ControladorUsuario {
-    private final UsuarioDAO usuarioDAO;
-
-    public ControladorUsuario() {
-        this.usuarioDAO = JdbcUsuarioDAO.getInstance();
-    }
+    // cambiar nombre de la clase a jpa en vez de jdbc
+    private final UsuarioDAO usuarioDAO = UsuarioJpaDAO.getInstance();
 
     // LOGIN
     public Optional<Usuario> login(String email, String password) throws SQLException {
@@ -92,7 +89,7 @@ public class ControladorUsuario {
             throw new IllegalArgumentException("Usuario inválido.");
         if (producto == null || producto.getId() <= 0)
             throw new IllegalArgumentException("Producto inválido o sin persistir.");
-        ProductoDAO productoDAO = JdbcProductoDAO.getInstance();
+        ProductoDAO productoDAO = ProductoJpaDAO.getInstance();
         productoDAO.agregarFavorito(usuario.getId(), producto.getId());
     }
 
@@ -101,7 +98,7 @@ public class ControladorUsuario {
             throw new IllegalArgumentException("Usuario inválido.");
         if (producto == null || producto.getId() <= 0)
             throw new IllegalArgumentException("Producto inválido o sin persistir.");
-        ProductoDAO productoDAO = JdbcProductoDAO.getInstance();
+        ProductoDAO productoDAO = ProductoJpaDAO.getInstance();
         productoDAO.eliminarFavorito(usuario.getId(), producto.getId());
     }
 

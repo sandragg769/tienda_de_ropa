@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import org.example.controller.dao.impl.JdbcPedidoDAO;
+import org.example.controller.dao.impl.PedidoJpaDAO;
 import org.example.controller.dao.interfaces.PedidoDAO;
 import org.example.model.Usuario;
 import org.example.model.pedido.EstadoPedido;
@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class ControladorPedido {
-    private final PedidoDAO pedidoDAO = JdbcPedidoDAO.getInstance();
+    // cambiar nombre de la clase a jpa en vez de jdbc
+    private final PedidoDAO pedidoDAO = PedidoJpaDAO.getInstance();
 
     // CRUD
     public void crearPedido(Pedido pedido) throws SQLException {

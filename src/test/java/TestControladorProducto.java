@@ -29,7 +29,7 @@ class TestControladorProducto {
 
     @BeforeEach
     void setUp() throws SQLException {
-        DatabaseConf.dropAndCreateTables();
+        // DatabaseConf.dropAndCreateTables();
 
         controladorProducto = new ControladorProducto();
         controladorUsuario = new ControladorUsuario();

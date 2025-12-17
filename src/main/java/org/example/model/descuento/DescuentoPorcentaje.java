@@ -2,13 +2,17 @@ package org.example.model.descuento;
 
 import org.example.model.producto.Producto;
 
-public class DescuentoPorcentaje implements Descuento {
+public class DescuentoPorcentaje extends Descuento {
     private float descuentoPorcentaje;
 
     //constructor (comprobar que no sea descuento negativo, si lo es lo igual a 0)
     public DescuentoPorcentaje(float porcentaje) {
         if (porcentaje < 0) porcentaje = 0;
         this.descuentoPorcentaje = porcentaje;
+    }
+
+    // constructor vacío JPA
+    public DescuentoPorcentaje() {
     }
 
     //getters y setters

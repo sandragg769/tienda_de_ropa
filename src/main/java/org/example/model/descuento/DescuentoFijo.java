@@ -2,7 +2,7 @@ package org.example.model.descuento;
 
 import org.example.model.producto.Producto;
 
-public class DescuentoFijo implements Descuento {
+public class DescuentoFijo extends Descuento {
     //la cantidad a restar del descuento
     private float descuentoFijo;
 
@@ -10,6 +10,11 @@ public class DescuentoFijo implements Descuento {
     public DescuentoFijo(float descuentoFijo) {
         if (descuentoFijo < 0) descuentoFijo = 0;
         this.descuentoFijo = descuentoFijo;
+    }
+
+    // constructor vacío JPA
+    public DescuentoFijo() {
+
     }
 
     //getters y setters

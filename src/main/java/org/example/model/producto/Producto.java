@@ -65,7 +65,8 @@ public abstract class Producto {
     private Set<Usuario> usuariosProductosFavoritos = new HashSet<>();
 
     //un producto puede tener 0 o 1 descuentos
-    @Embedded
+    @OneToOne(cascade = CascadeType.ALL, optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "descuento_id")
     private Descuento descuento;
 
     //constructor vacío para la exportación e importación de JSON

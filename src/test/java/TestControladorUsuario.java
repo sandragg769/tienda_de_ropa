@@ -1,8 +1,6 @@
 
 import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
-import org.example.controller.dao.impl.JdbcProductoDAO;
-import org.example.controller.dao.impl.JdbcUsuarioDAO;
 import org.example.controller.dao.interfaces.UsuarioDAO;
 import org.example.model.Usuario;
 import org.example.model.producto.Etiqueta;
@@ -10,7 +8,6 @@ import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
-import org.example.utils.DatabaseConf;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,16 +28,11 @@ class TestControladorUsuario {
     // este bloque se repetirá cada vez que se haga un test
     @BeforeEach
     void setUp() throws Exception {
-        // reiniciar la BD a estado conocido
-        DatabaseConf.dropAndCreateTables();
-
-        // reset singletons / estado en memoria para tests
-        JdbcUsuarioDAO.resetForTests();
-        JdbcProductoDAO.resetForTests();
+        // DatabaseConf.dropAndCreateTables();
 
         // crear controlador que usa el DAO
-        usuarioDAO = JdbcUsuarioDAO.getInstance();
         controladorUsuario = new ControladorUsuario();
+        controladorProducto = new ControladorProducto();
 
         // crear y registrar un usuario base para cada test
         usuarioInicial = new Usuario(
@@ -189,8 +181,7 @@ class TestControladorUsuario {
         // eliminamos usuario
         controladorUsuario.eliminarUsuario(usuarioInicial.getId());
         // comprobamos que al contarlos todos, no hay ninguno
-        long count = controladorUsuario.obtenerTodos().spliterator().getExactSizeIfKnown();
-        assertEquals(0, count);
+        assertEquals(0, controladorUsuario.obtenerTodos().size());
     }
 
     @Test
