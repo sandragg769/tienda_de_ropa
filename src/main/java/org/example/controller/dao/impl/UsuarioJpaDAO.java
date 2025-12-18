@@ -20,7 +20,7 @@ public class UsuarioJpaDAO implements UsuarioDAO {
     private static UsuarioJpaDAO instance;
 
     //
-    private final EntityManagerFactory emf;
+    private EntityManagerFactory emf;
 
     private UsuarioJpaDAO() {
         this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
@@ -31,6 +31,13 @@ public class UsuarioJpaDAO implements UsuarioDAO {
         return instance;
     }
 
+    public void reset() {
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
+        emf = null;
+        this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
+    }
 
     // CRUD
     // metodo de insertar usuario a la base de datos

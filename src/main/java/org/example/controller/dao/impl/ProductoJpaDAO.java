@@ -28,7 +28,7 @@ public class ProductoJpaDAO implements ProductoDAO {
     private static ProductoJpaDAO instance;
 
     //
-    private final EntityManagerFactory emf;
+    private EntityManagerFactory emf;
 
     private ProductoJpaDAO() {
         this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
@@ -37,6 +37,14 @@ public class ProductoJpaDAO implements ProductoDAO {
     public static ProductoJpaDAO getInstance() {
         if (instance == null) instance = new ProductoJpaDAO();
         return instance;
+    }
+
+    public void reset() {
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
+        emf = null;
+        this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
     }
 
     // CRUD

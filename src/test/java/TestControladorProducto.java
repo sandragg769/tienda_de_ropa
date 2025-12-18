@@ -1,6 +1,8 @@
 
 import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
+import org.example.controller.dao.impl.ProductoJpaDAO;
+import org.example.controller.dao.impl.UsuarioJpaDAO;
 import org.example.model.Usuario;
 import org.example.model.producto.Etiqueta;
 import org.example.model.producto.Producto;
@@ -31,6 +33,7 @@ class TestControladorProducto {
     void setUp() throws SQLException {
         // DatabaseConf.dropAndCreateTables();
 
+        ProductoJpaDAO.getInstance().reset();
         controladorProducto = new ControladorProducto();
         controladorUsuario = new ControladorUsuario();
 

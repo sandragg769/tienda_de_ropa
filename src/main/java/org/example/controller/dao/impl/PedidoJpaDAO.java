@@ -17,7 +17,7 @@ public class PedidoJpaDAO implements PedidoDAO {
     private static PedidoJpaDAO instance;
 
     //
-    private final EntityManagerFactory emf;
+    private EntityManagerFactory emf;
 
     private PedidoJpaDAO() {
         this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
@@ -26,6 +26,14 @@ public class PedidoJpaDAO implements PedidoDAO {
     public static PedidoJpaDAO getInstance() {
         if (instance == null) instance = new PedidoJpaDAO();
         return instance;
+    }
+
+    public  void reset() {
+        if (emf != null && emf.isOpen()) {
+            emf.close();
+        }
+        emf = null;
+        this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
     }
 
     // CRUD

@@ -21,6 +21,10 @@ public class LineaPedido {
     private Pedido pedido;
 
     //constructor
+
+    public LineaPedido() {
+    }
+
     //aquí sí hay que poner un Producto obligatoriamente
     public LineaPedido(int cantidad, Producto producto, Pedido pedido) {
         this.cantidad = cantidad;

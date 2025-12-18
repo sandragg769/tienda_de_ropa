@@ -25,4 +25,6 @@ public interface UsuarioDAO {
     Optional<Usuario> findByEmail(String email) throws SQLException;
 
     List<Producto> findFavoritos(long usuarioId) throws SQLException;
+
+
 }

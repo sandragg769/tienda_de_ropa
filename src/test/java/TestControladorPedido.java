@@ -2,6 +2,8 @@
 import org.example.controller.ControladorPedido;
 import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
+import org.example.controller.dao.impl.PedidoJpaDAO;
+import org.example.controller.dao.impl.UsuarioJpaDAO;
 import org.example.model.Usuario;
 import org.example.model.pedido.EstadoPedido;
 import org.example.model.pedido.LineaPedido;
@@ -38,6 +40,7 @@ class TestControladorPedido {
     void setUp() throws SQLException {
         // DatabaseConf.dropAndCreateTables();
 
+        PedidoJpaDAO.getInstance().reset();
         controladorPedido = new ControladorPedido();
         controladorUsuario = new ControladorUsuario();
         controladorProducto = new ControladorProducto();
