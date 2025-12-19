@@ -175,7 +175,6 @@ public class Usuario {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", favoritos=" + favoritos +
-                ", pedidos=" + pedidos +
                 '}';
     }
 }
