@@ -90,7 +90,7 @@ public class Pedido {
 
     //Este metodo nos devuelve la suma de las líneas del pedido
     //cogemos la lista de líneas de pedido, obtenemos los subtotales de cada uno y los sumamos
-    public double getPecioTotal() {
+    public double getPrecioTotal() {
         return lineasPedido.stream()
                 //double ya que hay que devolver double
                 .mapToDouble(LineaPedido::getPrecioSubTotal)

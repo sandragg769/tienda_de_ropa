@@ -47,16 +47,13 @@ public class ControladorUsuario {
     }
 
     public void actualizarUsuario(Usuario usuario) throws SQLException {
-        // comprobar que el usuario existe
-        usuarioDAO.findById(usuario.getId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("No existe un usuario con id: " + usuario.getId()));
-        // comprobar que campos no modificables NO han cambiado: DNI
-        Usuario original = usuarioDAO.findById(usuario.getId()).get();
+        // en una sola llamada comprobamos existencia y obtenemos datos para comparar
+        Usuario original = usuarioDAO.findById(usuario.getId())
+                .orElseThrow(() -> new IllegalArgumentException("No existe usuario con id: " + usuario.getId()));
+
         if (!original.getDni().equals(usuario.getDni())) {
             throw new IllegalArgumentException("El DNI no se puede modificar");
         }
-        // si tod es correcto → actualizar
         usuarioDAO.update(usuario);
     }
 
@@ -90,7 +87,7 @@ public class ControladorUsuario {
         if (producto == null || producto.getId() <= 0)
             throw new IllegalArgumentException("Producto inválido o sin persistir.");
         ProductoDAO productoDAO = ProductoJpaDAO.getInstance();
-        productoDAO.agregarFavorito(usuario.getId(), producto.getId());
+        productoDAO.agregarFavorito(producto.getId(),usuario.getId());
     }
 
     public void eliminarFavorito(Producto producto, Usuario usuario) throws SQLException {

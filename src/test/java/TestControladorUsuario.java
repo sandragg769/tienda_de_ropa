@@ -2,7 +2,6 @@
 import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
 import org.example.controller.dao.impl.UsuarioJpaDAO;
-import org.example.controller.dao.interfaces.UsuarioDAO;
 import org.example.model.Usuario;
 import org.example.model.producto.Etiqueta;
 import org.example.model.producto.Producto;
@@ -22,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class TestControladorUsuario {
     private ControladorUsuario controladorUsuario;
     private ControladorProducto controladorProducto = new ControladorProducto();
-    private UsuarioDAO usuarioDAO;
     private Usuario usuarioInicial;
 
 
@@ -71,7 +69,8 @@ class TestControladorUsuario {
         controladorUsuario.registrarUsuario(usuario2);
 
         // comprobar que está en la BD (findByEmail)
-        Optional<Usuario> encontrado = usuarioDAO.findByEmail("pepe@example.com");
+        Optional<Usuario> encontrado =
+                Optional.ofNullable(controladorUsuario.obtenerPorEmail("pepe@example.com"));
         assertTrue(encontrado.isPresent());
         assertEquals("Pepe", encontrado.get().getNombre());
     }

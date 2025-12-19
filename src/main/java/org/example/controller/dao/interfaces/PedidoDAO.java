@@ -29,9 +29,9 @@ public interface PedidoDAO {
     void addLineaPedido(LineaPedido linea) throws SQLException;
 
     // FUNCIONALIDADES
-    Pedido finalizarPedidoPendiente(long usuarioId, String metodoPago) throws SQLException;
+    void finalizarPedidoPendiente(long usuarioId, String metodoPago) throws SQLException;
 
-    Pedido cancelarPedidoPendiente(long usuarioId) throws SQLException;
+    void cancelarPedidoPendiente(long usuarioId) throws SQLException;
 
     void entregarPedido(long pedidoId) throws SQLException;
 }

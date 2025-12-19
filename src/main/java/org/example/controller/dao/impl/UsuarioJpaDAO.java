@@ -8,6 +8,7 @@ import org.example.model.Usuario;
 import org.example.model.producto.Producto;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -139,7 +140,7 @@ public class UsuarioJpaDAO implements UsuarioDAO {
         try {
             Usuario u = em.find(Usuario.class, usuarioId);
             if (u == null) throw new RuntimeException("Usuario no existe");
-            return (List<Producto>) u.getFavoritos();
+            return new ArrayList<>(u.getFavoritos());
         } finally {
             em.close();
         }

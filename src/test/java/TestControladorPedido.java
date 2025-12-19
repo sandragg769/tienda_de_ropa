@@ -3,7 +3,6 @@ import org.example.controller.ControladorPedido;
 import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
 import org.example.controller.dao.impl.PedidoJpaDAO;
-import org.example.controller.dao.impl.UsuarioJpaDAO;
 import org.example.model.Usuario;
 import org.example.model.pedido.EstadoPedido;
 import org.example.model.pedido.LineaPedido;
@@ -14,7 +13,6 @@ import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
 import org.example.model.producto.tipo_de_productos.Pantalon;
-import org.example.utils.DatabaseConf;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -49,8 +49,8 @@ public class ControladorProducto {
         return productoDAO.findUsuariosFavoritos(productoId);
     }
 
-    public void agregarFavorito(long productoId, long usuarioId) throws SQLException {
-        productoDAO.agregarFavorito(productoId, usuarioId);
+    public List<Usuario> agregarFavorito(long productoId, long usuarioId) throws SQLException {
+        return productoDAO.agregarFavorito(productoId, usuarioId);
     }
 
     public void eliminarFavorito(long productoId, long usuarioId) throws SQLException {

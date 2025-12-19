@@ -1,7 +1,9 @@
 package org.example.model.descuento;
 
+import jakarta.persistence.Entity;
 import org.example.model.producto.Producto;
 
+@Entity
 public class DescuentoFijo extends Descuento {
     //la cantidad a restar del descuento
     private float descuentoFijo;

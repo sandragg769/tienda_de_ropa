@@ -2,14 +2,12 @@
 import org.example.controller.ControladorProducto;
 import org.example.controller.ControladorUsuario;
 import org.example.controller.dao.impl.ProductoJpaDAO;
-import org.example.controller.dao.impl.UsuarioJpaDAO;
 import org.example.model.Usuario;
 import org.example.model.producto.Etiqueta;
 import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.enumeraciones.Talla;
 import org.example.model.producto.tipo_de_productos.Camisa;
-import org.example.utils.DatabaseConf;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
