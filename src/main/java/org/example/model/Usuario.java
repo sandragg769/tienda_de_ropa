@@ -43,7 +43,7 @@ public class Usuario {
     private Set<Producto> favoritos = new HashSet<>();
 
     // un set de pedidos (para que no se repitan los mismos pedidos) ya que un usuario puede tener muchos pedidos, lo hacemos Linkedhash para que se ordene por inserción
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Pedido> pedidos = new LinkedHashSet<>();
 
     //constructor

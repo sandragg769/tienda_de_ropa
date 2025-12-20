@@ -21,14 +21,14 @@ public class Pedido {
     private EstadoPedido estado;
 
     //creo un objeto y no una lista porque un pedido es tenido por un usuario solo
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     //uso una lista para poder tener muchas lineasPedido en un producto (pueden repetirse)
     @OneToMany(
             mappedBy = "pedido",
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
@@ -44,6 +44,7 @@ public class Pedido {
         this.estado = EstadoPedido.PENDIENTE;
     }
 
+    // para JPA
     public Pedido() {
     }
 

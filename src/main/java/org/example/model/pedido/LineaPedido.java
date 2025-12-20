@@ -13,11 +13,11 @@ public class LineaPedido {
     private int cantidad;
 
     //una línea de producto puede tener solo un pedido
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Producto producto;
 
     //añadir pedido
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Pedido pedido;
 
     //constructor

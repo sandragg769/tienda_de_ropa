@@ -30,29 +30,14 @@ public class PedidoJpaDAO implements PedidoDAO {
         return instance;
     }
 
-    /*public void reset() {
+    public void reset() {
         if (emf != null && emf.isOpen()) {
             emf.close();
         }
         emf = null;
         this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
-    }*/
-
-    public void reset() {
-        if (emf != null && emf.isOpen()) emf.close();
-        this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
-
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM linea_pedido").executeUpdate();
-        em.createNativeQuery("DELETE FROM pedido").executeUpdate();
-        em.createNativeQuery("DELETE FROM usuario_producto_favorito").executeUpdate();
-        em.createNativeQuery("DELETE FROM producto").executeUpdate();
-        em.createNativeQuery("DELETE FROM etiqueta").executeUpdate();
-        em.createNativeQuery("DELETE FROM usuario").executeUpdate();
-        em.getTransaction().commit();
-        em.close();
     }
+
 
     // CRUD
     // inserta pedidos y todas sus lineas
@@ -85,29 +70,10 @@ public class PedidoJpaDAO implements PedidoDAO {
     }
 
     // obtener todos los pedidos
-    /*@Override
-    public List<Pedido> findAll() throws SQLException {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return em.createQuery(
-                    "SELECT p FROM Pedido p JOIN FETCH p.usuario",
-                    Pedido.class
-            ).getResultList();
-        } finally {
-            em.close();
-        }
-    }*/
-
     @Override
-    public List<Pedido> findAll() throws SQLException {
+    public List<Pedido> findAll() {
         EntityManager em = emf.createEntityManager();
         List<Pedido> lista = em.createQuery("SELECT p FROM Pedido p", Pedido.class).getResultList();
-
-        // Esto asegura que Hibernate termine de leer el ResultSet antes de cerrar
-        for(Pedido p : lista) {
-            p.getLineasPedido().size();
-        }
-
         em.close();
         return lista;
     }
@@ -128,7 +94,6 @@ public class PedidoJpaDAO implements PedidoDAO {
         em.getTransaction().commit();
         em.close();
     }
-
 
     // metodo que borrar pedido por su id
     @Override
@@ -152,26 +117,17 @@ public class PedidoJpaDAO implements PedidoDAO {
     // obtener pedidos por cliente (es decir todos los pedidos de un cliente)
     @Override
     public List<Pedido> findByCliente(long usuarioId) throws SQLException {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             if (em.find(Usuario.class, usuarioId) == null)
                 throw new SQLException("Cliente no existe");
 
             // Traemos los pedidos
-            List<Pedido> pedidos = em.createQuery(
+            return em.createQuery(
                             "SELECT p FROM Pedido p WHERE p.usuario.id = :uid", Pedido.class)
                     .setParameter("uid", usuarioId)
                     .getResultList();
-
-            // TRUCO PARA EL ENUNCIADO: Forzamos la carga antes de cerrar el EM
-            for (Pedido p : pedidos) {
-                p.getLineasPedido().size(); // Acceso táctico para hidratar la lista Eager
-            }
-
-            return pedidos;
-        } finally {
-            em.close(); // Cerramos después de haber "tocado" todas las listas
         }
+        // Cerramos después de haber "tocado" todas las listas
     }
 
     // encontrar pedidos por estado de este
@@ -201,8 +157,6 @@ public class PedidoJpaDAO implements PedidoDAO {
         return lineas;
     }
 
-
-
     // añadir linea de pedido
     @Override
     public void addLineaPedido(LineaPedido linea) throws SQLException {
@@ -217,6 +171,7 @@ public class PedidoJpaDAO implements PedidoDAO {
         em.close();
     }
 
+
     // FUNCIONALIDADES
     // busca pedido pendiente de un usuario concreto y lo finaliza
     @Override
@@ -225,37 +180,15 @@ public class PedidoJpaDAO implements PedidoDAO {
         // Importante: em.clear() ayuda a evitar el AssertionFailure de Hibernate
         em.clear();
         em.getTransaction().begin();
-        Pedido p = findPedidoAux(em, usuarioId);
+        Pedido p = findPedidoPendiente(em, usuarioId);
         p.setEstado(EstadoPedido.FINALIZADO);
         em.merge(p);
         em.getTransaction().commit();
         em.close();
     }
 
-
     // metodo auxiliar necesario para otros metodos de las funcionalidades
-    /*private Pedido findPedidoPendiente(EntityManager em, long usuarioId) throws SQLException {
-        // Quitamos los FETCH para evitar el error "AssertionFailure"
-        List<Pedido> pedidos = em.createQuery(
-                        "SELECT p FROM Pedido p " +
-                                "WHERE p.usuario.id = :uid AND p.estado = :estado",
-                        Pedido.class
-                )
-                .setParameter("uid", usuarioId)
-                .setParameter("estado", EstadoPedido.PENDIENTE)
-                .getResultList();
-
-        if (pedidos.isEmpty()) {
-            // Importante cerrar o hacer rollback si falla antes de lanzar la excepción
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
-            em.close();
-            throw new SQLException("No hay pedido pendiente para el usuario con id " + usuarioId);
-        }
-
-        return pedidos.get(0);
-    }*/
-
-    private Pedido findPedidoAux(EntityManager em, long uid) throws SQLException {
+    private Pedido findPedidoPendiente(EntityManager em, long uid) throws SQLException {
         List<Pedido> lista = em.createQuery("SELECT p FROM Pedido p WHERE p.usuario.id = :uid AND p.estado = :est", Pedido.class)
                 .setParameter("uid", uid)
                 .setParameter("est", EstadoPedido.PENDIENTE)
@@ -272,13 +205,12 @@ public class PedidoJpaDAO implements PedidoDAO {
         EntityManager em = emf.createEntityManager();
         em.clear();
         em.getTransaction().begin();
-        Pedido p = findPedidoAux(em, usuarioId);
+        Pedido p = findPedidoPendiente(em, usuarioId);
         p.setEstado(EstadoPedido.CANCELADO);
         em.merge(p);
         em.getTransaction().commit();
         em.close();
     }
-
 
     // entregar un pedido
     @Override
@@ -295,6 +227,4 @@ public class PedidoJpaDAO implements PedidoDAO {
         em.getTransaction().commit();
         em.close();
     }
-
-
 }

@@ -37,6 +37,7 @@ public class ProductoJpaDAO implements ProductoDAO {
         this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
     }
 
+
     // CRUD
     // metodo que guarda un producto en la base de datos
     @Override
@@ -67,8 +68,7 @@ public class ProductoJpaDAO implements ProductoDAO {
     // metodo para encontrar un producto en concreto por id
     @Override
     public Optional<Producto> findById(long id) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery(
                             "SELECT p FROM Producto p " +
                                     "LEFT JOIN FETCH p.etiqueta " +
@@ -77,17 +77,13 @@ public class ProductoJpaDAO implements ProductoDAO {
                     .setParameter("id", id)
                     .getResultStream()
                     .findFirst();
-        } finally {
-            em.close();
         }
     }
-
 
     // metodo que devuelve todos los productos
     @Override
     public List<Producto> findAll() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             // Usamos JOIN FETCH para traer etiqueta y descuento en un solo SELECT
             // DISTINCT evita que salgan productos duplicados por los joins
             return em.createQuery(
@@ -95,8 +91,6 @@ public class ProductoJpaDAO implements ProductoDAO {
                             "LEFT JOIN FETCH p.etiqueta " +
                             "LEFT JOIN FETCH p.descuento", Producto.class
             ).getResultList();
-        } finally {
-            em.close();
         }
     }
 
@@ -136,12 +130,12 @@ public class ProductoJpaDAO implements ProductoDAO {
         em.close();
     }
 
+
     // METODOS ESPECÍFICOS
     // metodo que devuelve una lista de los usuarios que tienen un producto concreto (por id) en favoritos
     @Override
     public List<Usuario> findUsuariosFavoritos(long productoId) throws SQLException {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             Producto p = em.find(Producto.class, productoId);
 
             // El test falla porque aquí tenías "RuntimeException"
@@ -151,8 +145,6 @@ public class ProductoJpaDAO implements ProductoDAO {
 
             // Recuerda usar new ArrayList para evitar el error de casteo de Set a List
             return new ArrayList<>(p.getUsuariosProductosFavoritos());
-        } finally {
-            em.close();
         }
     }
 
@@ -208,10 +200,6 @@ public class ProductoJpaDAO implements ProductoDAO {
 
         em.merge(u);
         em.getTransaction().commit();
-
-        // 4. Devolvemos la lista actualizada (convertida a ArrayList para evitar problemas de tipos)
-        List<Usuario> usuariosRestantes = new ArrayList<>(p.getUsuariosProductosFavoritos());
-
         em.close();
     }
 }

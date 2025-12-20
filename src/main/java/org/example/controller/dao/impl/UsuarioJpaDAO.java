@@ -7,7 +7,6 @@ import org.example.controller.dao.interfaces.UsuarioDAO;
 import org.example.model.Usuario;
 import org.example.model.producto.Producto;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +39,7 @@ public class UsuarioJpaDAO implements UsuarioDAO {
         this.emf = Persistence.createEntityManagerFactory("tiendaRopa-jpa");
     }
 
+
     // CRUD
     // metodo de insertar usuario a la base de datos
     @Override
@@ -61,24 +61,18 @@ public class UsuarioJpaDAO implements UsuarioDAO {
     // metodo para encontrar un usuario mediante su id
     @Override
     public Optional<Usuario> findById(long id) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             return Optional.ofNullable(em.find(Usuario.class, id));
-        } finally {
-            em.close();
         }
     }
 
     // metodo que devuelve todos los usuarios
     @Override
     public List<Usuario> findAll() {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery(
                     "SELECT u FROM Usuario u", Usuario.class
             ).getResultList();
-        } finally {
-            em.close();
         }
     }
 
@@ -102,8 +96,7 @@ public class UsuarioJpaDAO implements UsuarioDAO {
     // metodo para borrar un usuario
     @Override
     public boolean delete(long id) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             Usuario u = em.find(Usuario.class, id);
             if (u == null) return false;
 
@@ -111,8 +104,6 @@ public class UsuarioJpaDAO implements UsuarioDAO {
             em.remove(u);
             em.getTransaction().commit();
             return true;
-        } finally {
-            em.close();
         }
     }
 
@@ -121,28 +112,22 @@ public class UsuarioJpaDAO implements UsuarioDAO {
     // metodo para buscar un usuario por email
     @Override
     public Optional<Usuario> findByEmail(String email) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             return em.createQuery(
                             "SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
                     .setParameter("email", email)
                     .getResultStream()
                     .findFirst();
-        } finally {
-            em.close();
         }
     }
 
     // metodo se obtienen los productos favoritos de un usuario
     @Override
     public List<Producto> findFavoritos(long usuarioId) {
-        EntityManager em = emf.createEntityManager();
-        try {
+        try (EntityManager em = emf.createEntityManager()) {
             Usuario u = em.find(Usuario.class, usuarioId);
             if (u == null) throw new RuntimeException("Usuario no existe");
             return new ArrayList<>(u.getFavoritos());
-        } finally {
-            em.close();
         }
     }
 }
