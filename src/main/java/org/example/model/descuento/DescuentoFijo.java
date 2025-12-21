@@ -3,23 +3,25 @@ package org.example.model.descuento;
 import jakarta.persistence.Entity;
 import org.example.model.producto.Producto;
 
+// marca la clase como una entidad JPA (se persistirá en la base de datos)
 @Entity
 public class DescuentoFijo extends Descuento {
-    //la cantidad a restar del descuento
+
     private float descuentoFijo;
 
-    //constructor (comprobar que no sea descuento negativo, si lo es lo igual a 0)
+    // constructor (comprobar que no sea descuento negativo, si lo es lo igual a 0)
     public DescuentoFijo(float descuentoFijo) {
         if (descuentoFijo < 0) descuentoFijo = 0;
         this.descuentoFijo = descuentoFijo;
     }
 
-    // constructor vacío JPA
+    // constructor vacío obligatorio para JPA
     public DescuentoFijo() {
 
     }
 
-    //getters y setters
+
+    // getters y setters
     public float getDescuentoFijo() {
         return descuentoFijo;
     }
@@ -28,19 +30,20 @@ public class DescuentoFijo extends Descuento {
         this.descuentoFijo = descuentoFijo;
     }
 
-    //metodo implementado
+
+    // METODO IMPLEMENTADO
     @Override
     public double calcularMontoDescuento(Producto producto) {
-        //si no hay producto que devuelva 0 (para que no quite nada)
+        // si no hay producto que devuelva 0 (para que no quite nada)
         if (producto == null) return 0;
         double precio = producto.getPrecioInicial();
-        //no puede superar el 80% del precio inicial
+        // no puede superar el 80% del precio inicial
         if (descuentoFijo > precio * 0.8) {
             throw new IllegalArgumentException(
                     "El descuento fijo no puede superar el 80% del precio del producto."
             );
         }
-        //devuelve el dinero a descontar del precio del producto
+        // devuelve el dinero a descontar del precio del producto
         return descuentoFijo;
     }
 }

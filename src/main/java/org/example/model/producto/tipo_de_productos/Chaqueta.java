@@ -7,24 +7,27 @@ import org.example.model.producto.enumeraciones.Color;
 import org.example.model.producto.Producto;
 import org.example.model.producto.enumeraciones.Talla;
 
+// marca la clase como una entidad JPA (se persistirá en la base de datos)
 @Entity
+// columna que JPA usará para saber que subclase concreta es cada fila
 @DiscriminatorValue("Chaqueta")
 public class Chaqueta extends Producto {
-    // opcinal
+    // campo opcinal
     private boolean conCapucha;
     private int nivelAbrigo;
 
-    //constructor
-    //vacío para JSON
+    // constructor vacío obligatorio para JPA
     public Chaqueta() {
     }
 
+    // constructor
     public Chaqueta(String nombre, String marca, double precioInicial, Talla talla,
                     Color color, Etiqueta etiqueta, boolean conCapucha, int nivelAbrigo) {
         super(nombre, marca, precioInicial, talla, color, etiqueta);
         this.conCapucha = conCapucha;
         this.nivelAbrigo = nivelAbrigo;
     }
+
 
     //getters y setters
     public boolean isConCapucha() {

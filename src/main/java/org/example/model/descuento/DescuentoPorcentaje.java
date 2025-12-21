@@ -3,21 +3,24 @@ package org.example.model.descuento;
 import jakarta.persistence.Entity;
 import org.example.model.producto.Producto;
 
+// marca la clase como una entidad JPA (se persistirá en la base de datos)
 @Entity
 public class DescuentoPorcentaje extends Descuento {
+
     private float descuentoPorcentaje;
 
-    //constructor (comprobar que no sea descuento negativo, si lo es lo igual a 0)
+    // constructor (comprobar que no sea descuento negativo, si lo es lo igual a 0)
     public DescuentoPorcentaje(float porcentaje) {
         if (porcentaje < 0) porcentaje = 0;
         this.descuentoPorcentaje = porcentaje;
     }
 
-    // constructor vacío JPA
+    // constructor vacío obligatorio para JPA
     public DescuentoPorcentaje() {
     }
 
-    //getters y setters
+
+    // getters y setters
     public float getDescuentoPorcentaje() {
         return descuentoPorcentaje;
     }
@@ -26,13 +29,14 @@ public class DescuentoPorcentaje extends Descuento {
         this.descuentoPorcentaje = descuentoPorcentaje;
     }
 
-    //metodo implementado
-    //si no hay producto devuelve 0, si hay, calcula el dinero a restar para que se aplique el descuento
+
+    // METODO IMPLEMENTADO
+    // si no hay producto devuelve 0, si hay, calcula el dinero a restar para que se aplique el descuento
     @Override
     public double calcularMontoDescuento(Producto producto) {
-        //si no paso producto que no quite nada
+        // si no paso producto que no quite nada
         if (producto == null) return 0;
-        //devuelve el dinero que después tengo que descontar al precio
+        // devuelve el dinero que después tengo que descontar al precio
         return producto.getPrecioInicial() * (descuentoPorcentaje / 100.0);
     }
 }

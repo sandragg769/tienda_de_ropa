@@ -10,44 +10,61 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+// marca la clase como una entidad JPA (se persistirá en la base de datos)
 @Entity
+// nombre de la tabla en la base de datos
 @Table(name = "usuario")
 public class Usuario {
+    // identificador único de la entidad
     @Id
+    // el valor del ID se genera automáticamente
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    // campo obligatorio
     @Column(nullable = false)
     private String nombre;
 
-    // opcionales
+    // campos opcionales
     private String direccion;
     private String telefono;
 
+    // campo obligatorio
     @Column(nullable = false)
     private LocalDate fechaNacimiento;
+    // campo obligatorio y único
     @Column(nullable = false, unique = true)
     private String dni;
+    // campo obligatorio y único
     @Column(nullable = false, unique = true)
     private String email;
+    // campo obligatorio
     @Column(nullable = false)
     private String password;
 
-    //un set de Productos favoritos, para que no se repitan productos favoritos, pero puede tener muchos
+    // un set de Productos favoritos, para que no se repitan productos favoritos, pero puede tener muchos
+    // eager: cuando cargues un usuario en JPA automáticamente carga también todos los productos favoritos
     @ManyToMany(fetch = FetchType.EAGER)
+    // se crea tabla intermedia usuario_producto_favorito
     @JoinTable(
+            // nombre de la tabla en la base de datos
             name = "usuario_producto_favorito",
+            // define la columna de la FK que apunta al usuario en la tabla intermedia
             joinColumns = @JoinColumn(name = "usuario_id"),
+            // define la columna de la FK que apunta al producto en la tabla intermedia
             inverseJoinColumns = @JoinColumn(name = "producto_id")
     )
     private Set<Producto> favoritos = new HashSet<>();
 
     // un set de pedidos (para que no se repitan los mismos pedidos) ya que un usuario puede tener muchos pedidos, lo hacemos Linkedhash para que se ordene por inserción
+    // mappedBy indica que la FK está en Pedido (campo usuario)
+    // all: persistencia propagada a pedidos
+    // lazy: el producto no se carga hasta que se accede explícitamente
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Pedido> pedidos = new LinkedHashSet<>();
 
-    //constructor
-    //no id
+    // constructor
+    // no id
     public Usuario(String nombre, String dni, String direccion, LocalDate fechaNacimiento,
                    String telefono, String email, String password) {
         this.nombre = nombre;
@@ -64,12 +81,12 @@ public class Usuario {
         this.id = id;
     }
 
+    // constructor vacío obligatorio para JPA
     public Usuario() {
     }
 
 
     //getters y setters
-
     public String getNombre() {
         return nombre;
     }
@@ -150,7 +167,8 @@ public class Usuario {
         this.pedidos = pedidos;
     }
 
-    //hasCode y equals por los Set
+
+    // hasCode y equals por los Set
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

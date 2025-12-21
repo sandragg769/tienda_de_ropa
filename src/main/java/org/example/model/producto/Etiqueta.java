@@ -10,45 +10,55 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+// marca la clase como una entidad JPA (se persistirá en la base de datos)
 @Entity
+// nombre de la tabla en la base de datos
 @Table(name = "etiqueta")
 public class Etiqueta {
+    // identificador único de la entidad
     @Id
+    // el valor del ID se genera automáticamente
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
-    //excluimos id para CSV (no lo anotamos)
+    // excluimos id para CSV (no lo anotamos)
     private long id;
 
-    //para CSV
+    // para CSV
     @CsvBindByName(column = "nombre")
+    // campo obligatorio
     @Column(nullable = false)
     private String nombre;
-    //para CSV
+
+    // para CSV
     @CsvBindByName(column = "fechaCreacion")
     @CsvDate("dd/MM/yyyy") // formato español
+    // campo obligatorio
     @Column(nullable = false)
     private LocalDate fechaCreacion;
 
-    //un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
-    //evitar errores JSON y CSV
+    // un conjunto para que no se repitan, una etiqueta puede ser de muchos productos (pero que no se repitan)
+    // evitar errores JSON y CSV
     @JsonIgnore
+    // mappedBy indica que el dueño es Producto (campo etiqueta)
+    // eager: cuando cargues un usuario en JPA automáticamente carga también la etiqueta
     @OneToMany(mappedBy = "etiqueta", fetch = FetchType.EAGER)
     private Set<Producto> productos = new HashSet<>();
 
-    //constructor
-    //vacío para JSON y CSV
+    // constructor vacío obligatorio para JPA
     public Etiqueta() {
     }
 
-    //no id
-    //no poner productos ya que solo estamos creando la etiqueta, no asignando productos a etiquetas
+    // constructor
+    // no id
+    // no poner productos ya que solo estamos creando la etiqueta, no asignando productos a etiquetas
     public Etiqueta(String nombre) {
         this.nombre = nombre;
         //fecha del día en que se crea
         this.fechaCreacion = LocalDate.now();
     }
 
-    //getters y setters
+
+    // getters y setters
     public long getId() {
         return id;
     }
@@ -81,7 +91,7 @@ public class Etiqueta {
         this.productos = productos;
     }
 
-    //hasCode y equals por el Set
+    // hasCode y equals por el Set
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
