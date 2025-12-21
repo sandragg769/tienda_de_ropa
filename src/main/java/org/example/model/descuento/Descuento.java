@@ -16,6 +16,7 @@ import org.example.model.producto.Producto;
         @JsonSubTypes.Type(value = DescuentoPorcentaje.class, name = "DescuentoPorcentaje")
 })
 
+// se va a persistir en la base de datos, corresponde a una tabla
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_descuento")

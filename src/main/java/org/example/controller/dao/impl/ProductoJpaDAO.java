@@ -13,11 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+// misma estructura que implementación de UsuarioJpaDAO, los metodos no están tan explicados al ser muy parecidos todos
 public class ProductoJpaDAO implements ProductoDAO {
-    // campo estático que contendrá la única instancia del DAO
     private static ProductoJpaDAO instance;
 
-    //
     private EntityManagerFactory emf;
 
     private ProductoJpaDAO() {
@@ -42,39 +41,45 @@ public class ProductoJpaDAO implements ProductoDAO {
     // metodo que guarda un producto en la base de datos
     @Override
     public Producto save(Producto producto) throws SQLException {
+        // validamos datos válidos
         if (producto.getNombre() == null) {
             throw new IllegalArgumentException("El nombre no puede ser nulo");
         }
 
-        EntityManager em = emf.createEntityManager();
-
-        // Cambiamos la lógica: si el ID es 0, es que no se ha asignado ID aún.
-        // Pero el test fuerza un ID 99999, así que comprobamos si existe en la BD.
-        if (producto.getEtiqueta() != null && producto.getEtiqueta().getId() != 0) {
-            Etiqueta e = em.find(Etiqueta.class, producto.getEtiqueta().getId());
-            if (e == null) {
-                em.close();
-                throw new SQLException("La etiqueta con ID " + producto.getEtiqueta().getId() + " no existe");
+        try (EntityManager em = emf.createEntityManager()) {
+            // validación de etiqueta (comprobamos que existe en la BD) si no existe lanzamos SQL Exception
+            if (producto.getEtiqueta() != null && producto.getEtiqueta().getId() != 0) {
+                Etiqueta e = em.find(Etiqueta.class, producto.getEtiqueta().getId());
+                if (e == null) {
+                    throw new SQLException("La etiqueta con ID " + producto.getEtiqueta().getId() + " no existe");
+                }
             }
-        }
 
-        em.getTransaction().begin();
-        em.persist(producto);
-        em.getTransaction().commit();
-        em.close();
-        return producto;
+            em.getTransaction().begin();
+            // el objeto producto es gestionado por JPA, se asigna ID, aquí el objeto ya es MANAGED
+            em.persist(producto);
+            // JPA genera y envía el comando para insertar a la base de datos
+            em.getTransaction().commit();
+
+            // se devuelve el producto
+            return producto;
+        }
     }
 
     // metodo para encontrar un producto en concreto por id
     @Override
     public Optional<Producto> findById(long id) {
         try (EntityManager em = emf.createEntityManager()) {
+            // en lugar de un simple find, usar una Query para hacer JOIN FETCH y poder traer también sus etiquetas y descuentos
+            // sin el FETCH al cerrar el EM al leer la etiqueta fuera de aquí el programa daría una exception
             return em.createQuery(
                             "SELECT p FROM Producto p " +
                                     "LEFT JOIN FETCH p.etiqueta " +
                                     "LEFT JOIN FETCH p.descuento " +
                                     "WHERE p.id = :id", Producto.class)
+                    // evitamos inyección SQL con parámetros
                     .setParameter("id", id)
+                    // convertimos resultado a Stream u cogemos el primero
                     .getResultStream()
                     .findFirst();
         }
@@ -84,9 +89,9 @@ public class ProductoJpaDAO implements ProductoDAO {
     @Override
     public List<Producto> findAll() {
         try (EntityManager em = emf.createEntityManager()) {
-            // Usamos JOIN FETCH para traer etiqueta y descuento en un solo SELECT
-            // DISTINCT evita que salgan productos duplicados por los joins
+            // no usar un simple select, usar JOIN FETCH para cargar etiqueta y descuento
             return em.createQuery(
+                    // distinct para evitar duplicados por el join
                     "SELECT DISTINCT p FROM Producto p " +
                             "LEFT JOIN FETCH p.etiqueta " +
                             "LEFT JOIN FETCH p.descuento", Producto.class
@@ -99,7 +104,7 @@ public class ProductoJpaDAO implements ProductoDAO {
     public void update(Producto producto) throws SQLException {
         EntityManager em = emf.createEntityManager();
 
-        // 3. Validar existencia para el test: actualizarProductoInexistenteIncorrecto
+        // validar existencia (vemos que el producto tiene ID), para este EM nuevo entá en estado DETACHED (no lo conoce)
         Producto existente = em.find(Producto.class, producto.getId());
         if (existente == null) {
             em.close();
@@ -107,8 +112,11 @@ public class ProductoJpaDAO implements ProductoDAO {
         }
 
         em.getTransaction().begin();
+        // busca el registro por ID, lo marca como "sucio" para que deba actualizarse
         em.merge(producto);
+        // JPA genera un SQL de update comparando los campos que cambiaron
         em.getTransaction().commit();
+        // cierre manual
         em.close();
     }
 
@@ -117,15 +125,19 @@ public class ProductoJpaDAO implements ProductoDAO {
     public void delete(long id) throws SQLException {
         EntityManager em = emf.createEntityManager();
 
-        // 4. Validar para el test: borrarProductoIncorrecto
+        // buscar el objeto, si existe JPA lo gestiona (MANAGED)
         Producto p = em.find(Producto.class, id);
+
+        // validación de existencia
         if (p == null) {
             em.close();
             throw new SQLException("No existe el producto para borrar");
         }
 
         em.getTransaction().begin();
+        // se marca para eliminar (REMOVED)
         em.remove(p);
+        // JPA lanza consulta de delete para borrarlo de la base de datos
         em.getTransaction().commit();
         em.close();
     }
@@ -136,14 +148,14 @@ public class ProductoJpaDAO implements ProductoDAO {
     @Override
     public List<Usuario> findUsuariosFavoritos(long productoId) throws SQLException {
         try (EntityManager em = emf.createEntityManager()) {
+            // cargar el producto
             Producto p = em.find(Producto.class, productoId);
-
-            // El test falla porque aquí tenías "RuntimeException"
+            // validación de existencia
             if (p == null) {
                 throw new SQLException("Producto no existe");
             }
 
-            // Recuerda usar new ArrayList para evitar el error de casteo de Set a List
+            // copia en memoria de Java con datos cargados para poder usar los datos en el controlador
             return new ArrayList<>(p.getUsuariosProductosFavoritos());
         }
     }
@@ -153,26 +165,25 @@ public class ProductoJpaDAO implements ProductoDAO {
     public List<Usuario> agregarFavorito(long productoId, long usuarioId) throws SQLException {
         EntityManager em = emf.createEntityManager();
 
-        // 1. Buscamos ambos objetos
+        // buscamos ambos objetos (cargamos para que estén en estado MANAGED)
         Producto p = em.find(Producto.class, productoId);
         Usuario u = em.find(Usuario.class, usuarioId);
 
-        // 2. Comprobamos existencia.
-        // Si no existen, lanzamos SQLException para que el test se ponga en verde
+        // comprobamos existencia, si alguno es null lanza SQL exception
         if (p == null || u == null) {
             em.close();
             throw new SQLException("Usuario o producto no existe");
         }
 
-        // 3. Si existen, realizamos la operación
         em.getTransaction().begin();
+        // añadimos el producto a la lista de favoritos del usuario en Java
         u.getFavoritos().add(p);
+        // JPA detecta que hay un nuevo elemento en la lista y genera automáticamente un intert en la tabla usuarios_favoritos
         em.merge(u);
         em.getTransaction().commit();
-        // 4. IMPORTANTE: Devolvemos la lista de usuarios que tienen este producto como favorito
-        // Usamos el constructor de ArrayList para convertir el Set y evitar errores de casteo
-        List<Usuario> usuariosQueLoTienen = new ArrayList<>(p.getUsuariosProductosFavoritos());
 
+        // usar una copia de la lista de productos favoritos antes de cerrar el EM
+        List<Usuario> usuariosQueLoTienen = new ArrayList<>(p.getUsuariosProductosFavoritos());
         em.close();
         return usuariosQueLoTienen;
     }
@@ -180,26 +191,23 @@ public class ProductoJpaDAO implements ProductoDAO {
     // metodo para eliminar un producto concreto de favoritos de un usuario concreto
     @Override
     public void eliminarFavorito(long productoId, long usuarioId) throws SQLException {
-        EntityManager em = emf.createEntityManager();
+        try (EntityManager em = emf.createEntityManager()) {
 
-        // 1. Buscamos el producto y el usuario
-        Producto p = em.find(Producto.class, productoId);
-        Usuario u = em.find(Usuario.class, usuarioId);
+            // cargar objetos (estado MANAGED)
+            Producto p = em.find(Producto.class, productoId);
+            Usuario u = em.find(Usuario.class, usuarioId);
 
-        // 2. VALIDACIÓN PARA EL TEST: Si el producto o usuario no existen, lanzamos la excepción
-        if (p == null || u == null) {
-            em.close();
-            throw new SQLException("No se puede eliminar: Producto o Usuario inexistente");
+            // validación de existencia
+            if (p == null || u == null) {
+                throw new SQLException("No se puede eliminar: Producto o Usuario inexistente");
+            }
+
+            em.getTransaction().begin();
+            // eliminar el producto de la lista (estado REMOVED)
+            u.getFavoritos().remove(p);
+            // JPA compara la lista vieja con la nueva y comprueba que falta "p", asique lanza automáticamente un delete a la BD
+            em.merge(u);
+            em.getTransaction().commit();
         }
-
-        // 3. Si existen, procedemos con la lógica de borrado
-        em.getTransaction().begin();
-
-        // Eliminamos de la colección (JPA se encarga de la tabla intermedia al hacer commit)
-        u.getFavoritos().remove(p);
-
-        em.merge(u);
-        em.getTransaction().commit();
-        em.close();
     }
 }
